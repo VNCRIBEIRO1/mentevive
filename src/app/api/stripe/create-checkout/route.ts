@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
 import { db } from "@/lib/db";
-import { payments, patients } from "@/db/schema";
+import { payments, patients, tenants } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { createCheckoutSession, isStripeConfigured } from "@/lib/stripe";
+import { createCheckoutSession, createConnectedCheckoutSession, isStripeConfigured } from "@/lib/stripe";
 import { createCheckoutSchema, formatZodError } from "@/lib/validations";
 import { getAuthorizedPayment } from "@/lib/payment-access";
 
@@ -73,6 +73,19 @@ export async function POST(req: NextRequest) {
       .where(eq(patients.id, payment.patientId))
       .limit(1);
 
+    // Get tenant's Stripe Connect account (if onboarding complete)
+    const [tenant] = await db
+      .select({
+        stripeAccountId: tenants.stripeAccountId,
+        stripeOnboardingComplete: tenants.stripeOnboardingComplete,
+      })
+      .from(tenants)
+      .where(eq(tenants.id, auth.tenantId!));
+    const connectedAccountId =
+      tenant?.stripeOnboardingComplete && tenant?.stripeAccountId
+        ? tenant.stripeAccountId
+        : null;
+
     // Build appointment-aware redirect URLs so the user can reach the waiting room
     const baseUrl = process.env.NEXTAUTH_URL || "https://psicolobia.vercel.app";
     let successUrl: string | undefined;
@@ -93,14 +106,22 @@ export async function POST(req: NextRequest) {
       cancelUrl = `${baseUrl}/portal/agendar?${cancelParams.toString()}`;
     }
 
-    const result = await createCheckoutSession({
+    const checkoutInput = {
       paymentId: payment.id,
       amount: parseFloat(payment.amount),
-      description: payment.description || "Sessão de Psicologia — Psicolobia",
+      description: payment.description || "Sessão de Psicologia — MenteVive",
       customerEmail: patient?.email || undefined,
       successUrl,
       cancelUrl,
-    });
+    };
+
+    const result = connectedAccountId
+      ? await createConnectedCheckoutSession({
+          ...checkoutInput,
+          connectedAccountId,
+          applicationFeeAmount: 0, // Platform fee (0 = no fee for now)
+        })
+      : await createCheckoutSession(checkoutInput);
 
     if (!result) {
       return NextResponse.json(

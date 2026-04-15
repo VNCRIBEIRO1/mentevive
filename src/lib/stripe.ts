@@ -207,3 +207,154 @@ export function mapStripeStatus(stripeStatus: string): "pending" | "paid" | "can
       return "pending";
   }
 }
+
+/* ── Stripe Connect ── */
+
+export type CreateConnectAccountResult = {
+  accountId: string;
+  onboardingUrl: string;
+};
+
+/**
+ * Create a Stripe Connect Express account for a tenant (v2 controller pattern).
+ * Returns account ID + onboarding URL.
+ */
+export async function createConnectAccount(
+  tenantSlug: string,
+  tenantId: string,
+  returnUrl: string,
+  refreshUrl: string
+): Promise<CreateConnectAccountResult | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  // Use Accounts v1 with controller properties (v2 requires Bearer auth which is different)
+  const account = await (client.accounts as any).create({
+    controller: {
+      stripe_dashboard: { type: "express" },
+      fees: { payer: "application" },
+      losses: { payments: "application" },
+      requirement_collection: "stripe",
+    },
+    capabilities: {
+      card_payments: { requested: true },
+      transfers: { requested: true },
+    },
+    metadata: {
+      tenant_id: tenantId,
+      tenant_slug: tenantSlug,
+    },
+  });
+
+  const link = await client.accountLinks.create({
+    account: account.id,
+    refresh_url: refreshUrl,
+    return_url: returnUrl,
+    type: "account_onboarding",
+  });
+
+  return {
+    accountId: account.id,
+    onboardingUrl: link.url,
+  };
+}
+
+/**
+ * Generate a new onboarding link for an existing Connect account (e.g. refresh).
+ */
+export async function refreshConnectOnboardingLink(
+  accountId: string,
+  returnUrl: string,
+  refreshUrl: string
+): Promise<string | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  const link = await client.accountLinks.create({
+    account: accountId,
+    refresh_url: refreshUrl,
+    return_url: returnUrl,
+    type: "account_onboarding",
+  });
+
+  return link.url;
+}
+
+/**
+ * Check if a Connect account has completed onboarding.
+ */
+export async function checkConnectAccountReady(accountId: string): Promise<boolean> {
+  const client = getClient();
+  if (!client) return false;
+
+  const account = await client.accounts.retrieve(accountId);
+  return (
+    account.details_submitted === true &&
+    account.charges_enabled === true &&
+    account.payouts_enabled === true
+  );
+}
+
+/**
+ * Create a Checkout Session using destination charge to a connected account.
+ * The platform collects an application fee, and funds go to the tenant's account.
+ */
+export type CreateConnectedCheckoutInput = CreateCheckoutInput & {
+  connectedAccountId: string;
+  applicationFeeAmount?: number; // BRL cents (default: 0 for now)
+};
+
+export async function createConnectedCheckoutSession(
+  input: CreateConnectedCheckoutInput
+): Promise<CreateCheckoutResult | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  const baseUrl = process.env.NEXTAUTH_URL || "https://mentevive.vercel.app";
+
+  const session = await client.checkout.sessions.create({
+    mode: "payment",
+    currency: "brl",
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price_data: {
+          currency: "brl",
+          product_data: {
+            name: input.description,
+          },
+          unit_amount: Math.round(input.amount * 100), // BRL cents
+        },
+        quantity: 1,
+      },
+    ],
+    customer_email: input.customerEmail || undefined,
+    client_reference_id: input.paymentId,
+    success_url: input.successUrl || `${baseUrl}/portal/pagamentos?stripe_status=success`,
+    cancel_url: input.cancelUrl || `${baseUrl}/portal/pagamentos?stripe_status=cancelled`,
+    expires_at: Math.floor(Date.now() / 1000) + 24 * 3600,
+    payment_intent_data: {
+      transfer_data: {
+        destination: input.connectedAccountId,
+      },
+      ...(input.applicationFeeAmount && input.applicationFeeAmount > 0
+        ? { application_fee_amount: input.applicationFeeAmount }
+        : {}),
+    },
+    metadata: {
+      payment_id: input.paymentId,
+      tenant_id: input.paymentId, // overridden by caller metadata if needed
+      source: "mentevive",
+    },
+  });
+
+  if (!session.id || !session.url) {
+    throw new Error("Stripe não retornou ID ou URL de checkout.");
+  }
+
+  return {
+    sessionId: session.id,
+    checkoutUrl: session.url,
+  };
+}
+
