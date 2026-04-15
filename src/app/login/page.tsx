@@ -133,13 +133,13 @@ function LoginForm() {
     <div className="min-h-screen bg-bg flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
+          <div className="inline-flex items-center gap-2.5 mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-heading text-2xl font-bold">
-              Ψ
+              M
             </div>
-          </Link>
-          <h1 className="font-heading text-2xl font-bold text-txt">Entrar no Psicolobia</h1>
-          <p className="text-sm text-txt-light mt-1">Acesse o painel administrativo ou portal do paciente</p>
+          </div>
+          <h1 className="font-heading text-2xl font-bold text-txt">Entrar no MenteVive</h1>
+          <p className="text-sm text-txt-light mt-1">O portal ideal para paciente e psicólogo</p>
         </div>
 
         {/* Registration success + booking banner */}
@@ -302,7 +302,7 @@ function LoginForm() {
         )}
 
         <p className="text-center text-xs text-txt-muted mt-6">
-          <Link href="/" className="hover:text-primary-dark transition-colors">← Voltar ao site</Link>
+          MenteVive — Plataforma para Psicólogos e Pacientes
         </p>
       </div>
     </div>

@@ -17,33 +17,24 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://psicolobia.vercel.app"),
+  metadataBase: new URL("https://mentevive.vercel.app"),
   title: {
-    default: "Psicolobia — Beatriz Ribeiro | Psicóloga Clínica Online em São Paulo",
-    template: "%s | Psicolobia",
+    default: "MenteVive — Portal para Psicólogos e Pacientes",
+    template: "%s | MenteVive",
   },
   description:
-    "Beatriz Ribeiro (Bea) — Psicóloga Clínica CRP 06/173961. Especialista no emocional de quem vive da internet. +3500 atendimentos. Terapia online com ACT, tratamento de ansiedade, depressão e traumas. Agende sua sessão.",
+    "MenteVive — O portal ideal para paciente e psicólogo. Gerencie consultas, agendamentos e atendimentos online em um só lugar.",
   keywords: [
-    "psicóloga online",
-    "terapia online",
-    "psicóloga São Paulo",
-    "psicóloga clínica",
-    "terapia ACT",
-    "ansiedade",
-    "depressão",
-    "tratamento de traumas",
-    "criadores de conteúdo",
-    "burnout digital",
-    "autoconhecimento",
-    "terapia de casal online",
-    "Beatriz Ribeiro psicóloga",
-    "Psicolobia",
-    "CRP 06/173961",
+    "plataforma psicologia",
+    "portal psicólogo",
+    "portal paciente",
+    "gestão consultório online",
+    "agendamento terapia",
+    "MenteVive",
   ],
-  authors: [{ name: "Beatriz Ribeiro", url: "https://psicolobia.vercel.app" }],
-  creator: "Beatriz Ribeiro — Psicóloga Clínica",
-  publisher: "Psicolobia",
+  authors: [{ name: "MenteVive", url: "https://mentevive.vercel.app" }],
+  creator: "MenteVive",
+  publisher: "MenteVive",
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -53,41 +44,34 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://psicolobia.vercel.app",
-    siteName: "Psicolobia",
-    title: "Psicolobia — Beatriz Ribeiro | Psicóloga Clínica Online",
+    url: "https://mentevive.vercel.app",
+    siteName: "MenteVive",
+    title: "MenteVive — Portal para Psicólogos e Pacientes",
     description:
-      "Psicóloga Clínica especialista no emocional de quem vive da internet. +3500 atendimentos. Terapia online acolhedora com ACT. Agende sua sessão.",
+      "O portal ideal para paciente e psicólogo. Gerencie consultas, agendamentos e atendimentos online.",
     images: [
       {
-        url: "/bia.png",
+        url: "/og-mentevive.png",
         width: 1200,
         height: 630,
-        alt: "Beatriz Ribeiro — Psicóloga Clínica Psicolobia",
+        alt: "MenteVive — Portal para Psicólogos e Pacientes",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Psicolobia — Beatriz Ribeiro | Psicóloga Clínica Online",
+    title: "MenteVive — Portal para Psicólogos e Pacientes",
     description:
-      "Psicóloga Clínica especialista no emocional de quem vive da internet. +3500 atendimentos. Agende sua sessão online.",
-    images: ["/bia.png"],
+      "O portal ideal para paciente e psicólogo. Gerencie consultas, agendamentos e atendimentos online.",
+    images: ["/og-mentevive.png"],
   },
   robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
+    index: false,
+    follow: false,
   },
   alternates: {
-    canonical: "https://psicolobia.vercel.app",
+    canonical: "https://mentevive.vercel.app",
   },
   category: "health",
 };

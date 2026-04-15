@@ -1,14 +1,13 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://psicolobia.vercel.app";
+  const baseUrl = "https://mentevive.vercel.app";
 
   return {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
-        disallow: ["/admin/", "/portal/", "/api/", "/redefinir-senha/"],
+        disallow: ["/"],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
