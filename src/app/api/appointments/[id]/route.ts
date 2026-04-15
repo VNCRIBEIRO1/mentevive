@@ -16,7 +16,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const [appointment] = await db.select().from(appointments).where(eq(appointments.id, id));
+    const tenantId = auth.tenantId!;
+    const [appointment] = await db.select().from(appointments).where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id)));
     if (!appointment) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }
@@ -63,7 +64,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const { date, startTime, endTime, modality, status, notes, meetingUrl, therapistFeedback } = parsed.data;
 
     // Get current appointment to detect status changes
-    const [current] = await db.select().from(appointments).where(eq(appointments.id, id));
+    const [current] = await db.select().from(appointments).where(and(eq(appointments.tenantId, auth.tenantId!), eq(appointments.id, id)));
     if (!current) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }
@@ -88,6 +89,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         .from(appointments)
         .where(
           and(
+            eq(appointments.tenantId, auth.tenantId!),
             eq(appointments.date, effectiveDate),
             ne(appointments.status, "cancelled"),
             ne(appointments.id, id),
@@ -131,7 +133,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(finalMeetingUrl !== undefined && { meetingUrl: finalMeetingUrl }),
       ...(therapistFeedback !== undefined && { therapistFeedback }),
       updatedAt: new Date(),
-    }).where(eq(appointments.id, id)).returning();
+    }).where(and(eq(appointments.tenantId, auth.tenantId!), eq(appointments.id, id))).returning();
 
     if (!updated) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
@@ -151,6 +153,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         patientId: updated.patientId,
         appointmentId: updated.id,
         linkUrl: `/admin/agenda`,
+        tenantId: auth.tenantId!,
       });
 
       // Cancel linked pending payments when appointment is cancelled
@@ -195,6 +198,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                 status: "pending",
                 dueDate: updated.date,
                 description: `Sessão ${modalityLabel} — ${updated.date}`,
+                tenantId: auth.tenantId!,
               }).returning();
 
               if (newPayment) {
@@ -205,6 +209,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                   patientId: updated.patientId,
                   paymentId: newPayment.id,
                   linkUrl: `/admin/financeiro`,
+                  tenantId: auth.tenantId!,
                 });
               }
             }
@@ -248,7 +253,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
       console.error("Cancel linked payments on delete error:", payErr);
     }
 
-    const [deleted] = await db.delete(appointments).where(eq(appointments.id, id)).returning();
+    const [deleted] = await db.delete(appointments).where(and(eq(appointments.tenantId, auth.tenantId!), eq(appointments.id, id))).returning();
     if (!deleted) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }

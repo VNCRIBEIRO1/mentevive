@@ -23,12 +23,13 @@ export async function GET() {
     if (auth.error) return auth.response;
 
     const userId = auth.session!.user.id;
+    const tenantId = auth.tenantId!;
 
     // Find the patient record linked to this user
     const [patient] = await db
       .select()
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {
@@ -58,12 +59,13 @@ export async function POST(req: NextRequest) {
     if (auth.error) return auth.response;
 
     const userId = auth.session!.user.id;
+    const tenantId = auth.tenantId!;
 
     // Find the patient record linked to this user
     const [patient] = await db
       .select()
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {
@@ -99,7 +101,7 @@ export async function POST(req: NextRequest) {
     const [blocked] = await db
       .select({ id: blockedDates.id })
       .from(blockedDates)
-      .where(eq(blockedDates.date, date))
+      .where(and(eq(blockedDates.date, date), eq(blockedDates.tenantId, tenantId)))
       .limit(1);
 
     if (blocked) {
@@ -117,11 +119,12 @@ export async function POST(req: NextRequest) {
         .from(availability)
         .where(
           and(
+            eq(availability.tenantId, tenantId),
             eq(availability.dayOfWeek, dow),
             eq(availability.active, true)
           )
         ),
-      getCustomAvailability(),
+      getCustomAvailability(tenantId),
     ]);
     const availSlots = [
       ...weeklySlots,
@@ -149,6 +152,7 @@ export async function POST(req: NextRequest) {
       .from(appointments)
       .where(
         and(
+          eq(appointments.tenantId, tenantId),
           eq(appointments.date, date),
           ne(appointments.status, "cancelled"),
           lt(appointments.startTime, endTime),
@@ -167,6 +171,7 @@ export async function POST(req: NextRequest) {
     const [newAppointment] = await db
       .insert(appointments)
       .values({
+        tenantId,
         patientId: patient.id,
         date,
         startTime,
@@ -178,10 +183,11 @@ export async function POST(req: NextRequest) {
       .returning();
 
     const modalityLabel = finalModality === "presencial" ? "presencial" : "online";
-    const amount = await getSessionPrice(finalModality);
+    const amount = await getSessionPrice(tenantId, finalModality);
     const [newPayment] = await db
       .insert(payments)
       .values({
+        tenantId,
         patientId: patient.id,
         appointmentId: newAppointment.id,
         amount: amount.toFixed(2),
@@ -241,6 +247,7 @@ export async function POST(req: NextRequest) {
 
     // Notify admin about new appointment from patient
     await createNotification({
+      tenantId,
       type: "appointment",
       title: "Novo agendamento",
       message: `${patient.name} solicitou agendamento para ${date} às ${startTime}.`,

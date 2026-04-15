@@ -14,6 +14,8 @@ export async function GET(req: NextRequest) {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
+    const tenantId = auth.tenantId!;
+
     const { searchParams } = new URL(req.url);
     const patientId = searchParams.get("patientId");
     const dateFrom = searchParams.get("from");
@@ -21,6 +23,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status");
 
     const conditions = [];
+    conditions.push(eq(appointments.tenantId, tenantId));
     if (patientId) conditions.push(eq(appointments.patientId, patientId));
     if (status) conditions.push(eq(appointments.status, status as "pending" | "confirmed" | "cancelled" | "completed" | "no_show"));
     if (dateFrom) conditions.push(gte(appointments.date, dateFrom));
@@ -69,6 +72,7 @@ export async function POST(req: NextRequest) {
       .from(appointments)
       .where(
         and(
+          eq(appointments.tenantId, auth.tenantId!),
           eq(appointments.date, date),
           ne(appointments.status, "cancelled"),
           lt(appointments.startTime, endTime),
@@ -92,6 +96,7 @@ export async function POST(req: NextRequest) {
       modality: finalModality,
       notes: notes || null,
       status: initialStatus,
+      tenantId: auth.tenantId!,
     }).returning();
 
     let newAppointment = createdAppointment;
@@ -126,6 +131,7 @@ export async function POST(req: NextRequest) {
           status: "pending",
           dueDate: date,
           description: `Sessão ${modalityLabel} em ${date} às ${startTime}`,
+          tenantId: auth.tenantId!,
         })
         .returning();
     }
@@ -139,6 +145,7 @@ export async function POST(req: NextRequest) {
       patientId,
       appointmentId: newAppointment.id,
       linkUrl: `/admin/agenda`,
+      tenantId: auth.tenantId!,
     });
 
     if (newPayment) {
@@ -150,6 +157,7 @@ export async function POST(req: NextRequest) {
         appointmentId: newAppointment.id,
         paymentId: newPayment.id,
         linkUrl: `/admin/financeiro`,
+        tenantId: auth.tenantId!,
       });
     }
 

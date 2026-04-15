@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { availability } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 
 export async function GET() {
@@ -9,7 +9,8 @@ export async function GET() {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
-    const result = await db.select().from(availability).orderBy(desc(availability.dayOfWeek));
+    const tenantId = auth.tenantId!;
+    const result = await db.select().from(availability).where(eq(availability.tenantId, tenantId)).orderBy(desc(availability.dayOfWeek));
     return NextResponse.json(result);
   } catch (error) {
     console.error("GET /api/availability error:", error);
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
+    const tenantId = auth.tenantId!;
     const body = await req.json();
 
     // Support batch format: { slots: [...] }
@@ -33,7 +35,7 @@ export async function POST(req: NextRequest) {
 
       // Use transaction to ensure delete + insert are atomic
       const result = await db.transaction(async (tx) => {
-        await tx.delete(availability);
+        await tx.delete(availability).where(eq(availability.tenantId, tenantId));
 
         if (activeSlots.length === 0) return [];
 
@@ -45,6 +47,7 @@ export async function POST(req: NextRequest) {
               startTime: s.startTime,
               endTime: s.endTime,
               active: s.active ?? true,
+              tenantId,
             }))
           )
           .returning();
@@ -69,6 +72,7 @@ export async function POST(req: NextRequest) {
       startTime,
       endTime,
       active: active ?? true,
+      tenantId,
     }).returning();
 
     return NextResponse.json(newSlot, { status: 201 });

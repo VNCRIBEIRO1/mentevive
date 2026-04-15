@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
 
@@ -42,11 +42,11 @@ function sanitizeSlots(value: unknown): CustomAvailabilitySlot[] {
     );
 }
 
-export async function getCustomAvailability(): Promise<CustomAvailabilitySlot[]> {
+export async function getCustomAvailability(tenantId: string): Promise<CustomAvailabilitySlot[]> {
   const [row] = await db
     .select({ value: settings.value })
     .from(settings)
-    .where(eq(settings.key, CUSTOM_AVAILABILITY_KEY))
+    .where(and(eq(settings.tenantId, tenantId), eq(settings.key, CUSTOM_AVAILABILITY_KEY)))
     .limit(1);
 
   if (!row?.value) return [];
@@ -58,15 +58,15 @@ export async function getCustomAvailability(): Promise<CustomAvailabilitySlot[]>
   }
 }
 
-export async function saveCustomAvailability(slots: CustomAvailabilitySlot[]): Promise<CustomAvailabilitySlot[]> {
+export async function saveCustomAvailability(tenantId: string, slots: CustomAvailabilitySlot[]): Promise<CustomAvailabilitySlot[]> {
   const sanitized = sanitizeSlots(slots);
   const serialized = JSON.stringify(sanitized);
 
   await db
     .insert(settings)
-    .values({ key: CUSTOM_AVAILABILITY_KEY, value: serialized })
+    .values({ tenantId, key: CUSTOM_AVAILABILITY_KEY, value: serialized })
     .onConflictDoUpdate({
-      target: settings.key,
+      target: [settings.tenantId, settings.key],
       set: { value: serialized, updatedAt: new Date() },
     });
 
@@ -74,9 +74,10 @@ export async function saveCustomAvailability(slots: CustomAvailabilitySlot[]): P
 }
 
 export async function addCustomAvailabilitySlot(
+  tenantId: string,
   input: Omit<CustomAvailabilitySlot, "id" | "active"> & { active?: boolean }
 ): Promise<CustomAvailabilitySlot[]> {
-  const current = await getCustomAvailability();
+  const current = await getCustomAvailability(tenantId);
   const duplicate = current.find(
     (slot) =>
       slot.date === input.date &&
@@ -88,7 +89,7 @@ export async function addCustomAvailabilitySlot(
     return current;
   }
 
-  return saveCustomAvailability([
+  return saveCustomAvailability(tenantId, [
     ...current,
     {
       id: randomUUID(),
@@ -100,13 +101,13 @@ export async function addCustomAvailabilitySlot(
   ]);
 }
 
-export async function removeCustomAvailabilitySlot(id: string): Promise<CustomAvailabilitySlot[]> {
-  const current = await getCustomAvailability();
-  return saveCustomAvailability(current.filter((slot) => slot.id !== id));
+export async function removeCustomAvailabilitySlot(tenantId: string, id: string): Promise<CustomAvailabilitySlot[]> {
+  const current = await getCustomAvailability(tenantId);
+  return saveCustomAvailability(tenantId, current.filter((slot) => slot.id !== id));
 }
 
-export async function listUpcomingCustomAvailability(fromDate?: string): Promise<CustomAvailabilitySlot[]> {
-  const current = await getCustomAvailability();
+export async function listUpcomingCustomAvailability(tenantId: string, fromDate?: string): Promise<CustomAvailabilitySlot[]> {
+  const current = await getCustomAvailability(tenantId);
   if (!fromDate) return current;
   return current.filter((slot) => slot.date >= fromDate).sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime));
 }

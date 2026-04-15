@@ -11,12 +11,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     const { id } = await params;
     const role = auth.session!.user.role;
+    const tenantId = auth.tenantId!;
 
     if (role === "admin" || role === "therapist") {
       const [appointment] = await db
         .select()
         .from(appointments)
-        .where(eq(appointments.id, id))
+        .where(and(eq(appointments.id, id), eq(appointments.tenantId, tenantId)))
         .limit(1);
 
       if (!appointment) {
@@ -30,7 +31,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const [patient] = await db
       .select({ id: patients.id })
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {

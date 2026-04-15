@@ -4,19 +4,17 @@ import { getToken } from "next-auth/jwt";
 import { getAuthSecret } from "@/lib/auth-secret";
 
 /**
- * Edge Proxy — auth guard for /admin/* and /portal/* routes.
+ * Edge Proxy — auth guard for /admin/*, /portal/*, and /select-tenant routes.
  *
- * Checks JWT token at the edge (before the request reaches the API/page).
+ * Multi-tenant aware: checks JWT + tenant cookies.
  * Redirects unauthenticated users to /login.
+ * Redirects users without a selected tenant to /select-tenant.
  * Checks role-based access for admin routes.
- *
- * Public routes (API webhooks, blog, auth) are NOT affected.
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip public paths — API auth, webhook, public pages, static assets,
-  // and scheduling data endpoints (used by landing page calendar without auth)
+  // Skip public paths
   if (
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/stripe/webhook") ||
@@ -50,25 +48,59 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Admin routes: require admin or therapist role
+  // Tenant context: JWT activeTenantId or cookie fallback
+  const activeTenantId =
+    token.activeTenantId || request.cookies.get("active-tenant-id")?.value;
+  const membershipRole =
+    token.membershipRole || request.cookies.get("membership-role")?.value;
+
+  // Allow select-tenant page even without active tenant
+  if (pathname === "/select-tenant") {
+    // If already has tenant selected, redirect to appropriate dashboard
+    if (activeTenantId && membershipRole) {
+      const dest = membershipRole === "patient" ? "/portal" : "/admin";
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Super admin routes don't require tenant selection
+  if (pathname.startsWith("/super")) {
+    if (!token.isSuperAdmin) {
+      return NextResponse.redirect(new URL("/portal", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Require tenant selection for all protected routes
+  if (!activeTenantId) {
+    if (token.needsTenantSelection) {
+      return NextResponse.redirect(new URL("/select-tenant", request.url));
+    }
+    // No tenant and no memberships → back to login
+    const loginUrl = new URL("/login", request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Admin routes: require admin or therapist membership role
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
-    if (token.role !== "admin" && token.role !== "therapist") {
+    if (membershipRole !== "admin" && membershipRole !== "therapist") {
       return NextResponse.redirect(new URL("/portal", request.url));
     }
   }
 
-  return NextResponse.next();
+  // Inject tenant headers for downstream use
+  const response = NextResponse.next();
+  response.headers.set("x-tenant-id", activeTenantId);
+  if (membershipRole) {
+    response.headers.set("x-membership-role", membershipRole);
+  }
+
+  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, sitemap.xml, robots.txt
-     * - public folder files
-     */
     "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

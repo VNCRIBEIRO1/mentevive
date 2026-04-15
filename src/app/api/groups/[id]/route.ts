@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { groups } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -10,7 +10,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const [group] = await db.select().from(groups).where(eq(groups.id, id));
+    const tenantId = auth.tenantId!;
+    const [group] = await db.select().from(groups).where(and(eq(groups.tenantId, tenantId), eq(groups.id, id)));
     if (!group) {
       return NextResponse.json({ error: "Grupo não encontrado." }, { status: 404 });
     }
@@ -40,7 +41,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (price !== undefined) updateData.price = price !== null ? String(price) : null;
     if (active !== undefined) updateData.active = active;
 
-    const [updated] = await db.update(groups).set(updateData).where(eq(groups.id, id)).returning();
+    const [updated] = await db.update(groups).set(updateData).where(and(eq(groups.tenantId, auth.tenantId!), eq(groups.id, id))).returning();
     if (!updated) {
       return NextResponse.json({ error: "Grupo não encontrado." }, { status: 404 });
     }
@@ -57,7 +58,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const [deleted] = await db.delete(groups).where(eq(groups.id, id)).returning();
+    const [deleted] = await db.delete(groups).where(and(eq(groups.tenantId, auth.tenantId!), eq(groups.id, id))).returning();
     if (!deleted) {
       return NextResponse.json({ error: "Grupo não encontrado." }, { status: 404 });
     }

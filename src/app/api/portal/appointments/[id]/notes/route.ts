@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { appointments, patients } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireAuth } from "@/lib/api-auth";
 
 export async function PUT(
@@ -14,12 +14,13 @@ export async function PUT(
 
     const userId = auth.session!.user.id;
     const { id } = await params;
+    const tenantId = auth.tenantId!;
 
     // Find patient record
     const [patient] = await db
       .select({ id: patients.id })
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {

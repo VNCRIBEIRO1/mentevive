@@ -132,6 +132,7 @@ export async function POST(req: NextRequest) {
       };
 
       await createNotification({
+        tenantId: existingPayment.tenantId,
         type: "payment",
         title: statusLabels[newStatus] || "Atualização de pagamento",
         message: `Pagamento de R$ ${existingPayment.amount} atualizado via Stripe (${paymentStatus}).`,

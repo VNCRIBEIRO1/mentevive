@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { notifications } from "@/db/schema";
 
 type CreateNotification = {
+  tenantId: string;
   type: "triage" | "appointment" | "payment" | "registration" | "status_change";
   title: string;
   message: string;
@@ -19,6 +20,7 @@ type CreateNotification = {
 export async function createNotification(data: CreateNotification) {
   try {
     await db.insert(notifications).values({
+      tenantId: data.tenantId,
       type: data.type,
       title: data.title,
       message: data.message,

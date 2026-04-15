@@ -1,8 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { users, tenantMemberships, tenants } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { loginSchema } from "@/lib/validations";
@@ -18,6 +18,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Senha", type: "password" },
         turnstileToken: { label: "Turnstile Token", type: "text" },
         website: { label: "Website", type: "text" },
+        tenantSlug: { label: "Tenant Slug", type: "text" },
       },
       async authorize(credentials, req) {
         const parsed = loginSchema.safeParse(credentials);
@@ -34,8 +35,18 @@ export const authOptions: NextAuthOptions = {
         if (!captchaOk) return null;
 
         try {
+          // Step 1: Authenticate globally (no tenant filter)
           const [user] = await db
-            .select()
+            .select({
+              id: users.id,
+              email: users.email,
+              name: users.name,
+              role: users.role,
+              phone: users.phone,
+              password: users.password,
+              active: users.active,
+              isSuperAdmin: users.isSuperAdmin,
+            })
             .from(users)
             .where(eq(users.email, email))
             .limit(1);
@@ -45,12 +56,72 @@ export const authOptions: NextAuthOptions = {
           const isValid = await bcrypt.compare(password, user.password);
           if (!isValid) return null;
 
+          // Step 2: Look up active memberships
+          const memberships = await db
+            .select({
+              tenantId: tenantMemberships.tenantId,
+              role: tenantMemberships.role,
+              slug: tenants.slug,
+              tenantName: tenants.name,
+            })
+            .from(tenantMemberships)
+            .innerJoin(tenants, eq(tenantMemberships.tenantId, tenants.id))
+            .where(
+              and(
+                eq(tenantMemberships.userId, user.id),
+                eq(tenantMemberships.active, true),
+                eq(tenants.active, true),
+              )
+            );
+
+          // Step 3: Determine tenant context
+          const tenantSlug = credentials?.tenantSlug || undefined;
+          let activeTenantId: string | undefined;
+          let activeSlug: string | undefined;
+          let membershipRole: string | undefined;
+          let needsTenantSelection = false;
+
+          if (user.isSuperAdmin) {
+            // Superadmin: auto-select if they have exactly 1 membership
+            if (memberships.length === 1) {
+              activeTenantId = memberships[0].tenantId;
+              activeSlug = memberships[0].slug;
+              membershipRole = memberships[0].role;
+            }
+            // Otherwise they can pick later or go to super admin dashboard
+          } else if (tenantSlug) {
+            // Specific tenant requested
+            const match = memberships.find(m => m.slug === tenantSlug);
+            if (match) {
+              activeTenantId = match.tenantId;
+              activeSlug = match.slug;
+              membershipRole = match.role;
+            } else {
+              return null; // No membership for requested tenant
+            }
+          } else if (memberships.length === 1) {
+            // Single membership → auto-select
+            activeTenantId = memberships[0].tenantId;
+            activeSlug = memberships[0].slug;
+            membershipRole = memberships[0].role;
+          } else if (memberships.length > 1) {
+            needsTenantSelection = true;
+          } else if (!user.isSuperAdmin) {
+            // No memberships and not superadmin → reject
+            return null;
+          }
+
           return {
             id: user.id,
             email: user.email,
             name: user.name,
             role: user.role,
             phone: user.phone,
+            isSuperAdmin: user.isSuperAdmin ?? false,
+            activeTenantId,
+            tenantSlug: activeSlug,
+            membershipRole,
+            needsTenantSelection,
           };
         } catch {
           return null;
@@ -66,9 +137,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
         token.id = user.id;
+        token.role = user.role;
         token.phone = user.phone;
+        token.isSuperAdmin = user.isSuperAdmin;
+        token.activeTenantId = user.activeTenantId;
+        token.tenantSlug = user.tenantSlug;
+        token.membershipRole = user.membershipRole;
+        token.needsTenantSelection = user.needsTenantSelection;
       }
       return token;
     },
@@ -77,6 +153,11 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.phone = token.phone;
+        session.user.isSuperAdmin = token.isSuperAdmin;
+        session.user.activeTenantId = token.activeTenantId;
+        session.user.tenantSlug = token.tenantSlug;
+        session.user.membershipRole = token.membershipRole;
+        session.user.needsTenantSelection = token.needsTenantSelection;
       }
       return session;
     },

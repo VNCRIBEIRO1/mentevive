@@ -17,19 +17,20 @@ export async function GET(req: NextRequest) {
     }
 
     const role = auth.session!.user.role;
+    const tenantId = auth.tenantId!;
 
     let apt;
     if (role === "admin" || role === "therapist") {
       [apt] = await db
         .select()
         .from(appointments)
-        .where(eq(appointments.id, appointmentId));
+        .where(and(eq(appointments.id, appointmentId), eq(appointments.tenantId, tenantId)));
     } else {
       const userId = auth.session!.user.id;
       const [patient] = await db
         .select({ id: patients.id })
         .from(patients)
-        .where(eq(patients.userId, userId))
+        .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
         .limit(1);
 
       [apt] = await db
@@ -82,10 +83,11 @@ export async function POST(req: NextRequest) {
     }
     // Verify appointment belongs to this patient
     const userId = auth.session!.user.id;
+    const tenantId = auth.tenantId!;
     const [patient] = await db
       .select({ id: patients.id })
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {
@@ -135,6 +137,7 @@ export async function POST(req: NextRequest) {
       if (aptForNotif) {
         const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, aptForNotif.patientId));
         await createNotification({
+          tenantId,
           type: "triage",
           title: "Triagem atualizada",
           message: `${pat?.name || "Paciente"} atualizou a triagem da sess\u00e3o de ${aptForNotif.date}.`,
@@ -150,6 +153,7 @@ export async function POST(req: NextRequest) {
     const [created] = await db
       .insert(triages)
       .values({
+        tenantId,
         appointmentId,
         mood,
         sleepQuality,
@@ -167,6 +171,7 @@ export async function POST(req: NextRequest) {
     if (aptForNotif2) {
       const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, aptForNotif2.patientId));
       await createNotification({
+        tenantId,
         type: "triage",
         title: "Nova triagem recebida",
         message: `${pat?.name || "Paciente"} preencheu a triagem pr\u00e9-sess\u00e3o de ${aptForNotif2.date}.${mainConcern ? ` Queixa: ${mainConcern.substring(0, 80)}${mainConcern.length > 80 ? "..." : ""}` : ""}`,

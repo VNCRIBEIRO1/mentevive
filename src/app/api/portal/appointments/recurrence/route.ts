@@ -32,11 +32,12 @@ export async function POST(req: NextRequest) {
     if (auth.error) return auth.response;
 
     const userId = auth.session!.user.id;
+    const tenantId = auth.tenantId!;
 
     const [patient] = await db
       .select()
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {
@@ -88,13 +89,14 @@ export async function POST(req: NextRequest) {
       db
         .select()
         .from(availability)
-        .where(and(eq(availability.dayOfWeek, dow), eq(availability.active, true))),
-      getCustomAvailability(),
+        .where(and(eq(availability.tenantId, tenantId), eq(availability.dayOfWeek, dow), eq(availability.active, true))),
+      getCustomAvailability(tenantId),
     ]);
     // Fetch blocked dates
     const allBlocked = await db
       .select({ date: blockedDates.date })
-      .from(blockedDates);
+      .from(blockedDates)
+      .where(eq(blockedDates.tenantId, tenantId));
     const blockedSet = new Set(allBlocked.map((b) => b.date));
 
     // Check each date for conflicts, skip blocked/conflicting ones
@@ -128,6 +130,7 @@ export async function POST(req: NextRequest) {
         .from(appointments)
         .where(
           and(
+            eq(appointments.tenantId, tenantId),
             eq(appointments.date, date),
             ne(appointments.status, "cancelled"),
             lt(appointments.startTime, endTime),
@@ -145,6 +148,7 @@ export async function POST(req: NextRequest) {
       const [newApt] = await db
         .insert(appointments)
         .values({
+          tenantId,
           patientId: patient.id,
           date,
           startTime,
@@ -169,11 +173,12 @@ export async function POST(req: NextRequest) {
     // Create pending payments for each created appointment
     try {
       const modalityLabel = finalModality === "presencial" ? "presencial" : "online";
-      const amount = await getSessionPrice(finalModality);
+      const amount = await getSessionPrice(tenantId, finalModality);
       if (amount > 0) {
         const paymentMethod = isStripeConfigured() ? "stripe" : "pix";
         for (const apt of created) {
           await db.insert(payments).values({
+            tenantId,
             patientId: patient.id,
             appointmentId: apt.id,
             amount: amount.toFixed(2),
@@ -190,6 +195,7 @@ export async function POST(req: NextRequest) {
     // Notify admin
     const label = recurrenceType === "weekly" ? "semanal" : "quinzenal";
     await createNotification({
+      tenantId,
       type: "appointment",
       title: "Processo terapêutico agendado",
       message: `${patient.name} ativou processo ${label} — ${created.length} sessões a partir de ${startDate} às ${startTime}.`,

@@ -9,7 +9,7 @@ import {
   groupMembers,
   triages,
 } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 
 /**
@@ -24,6 +24,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
+    const tenantId = auth.tenantId!;
+
     const { id: targetId } = await params;
     const { sourcePatientId } = await req.json();
 
@@ -36,8 +38,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     // Get both patient records
-    const [target] = await db.select().from(patients).where(eq(patients.id, targetId));
-    const [source] = await db.select().from(patients).where(eq(patients.id, sourcePatientId));
+    const [target] = await db.select().from(patients).where(and(eq(patients.tenantId, tenantId), eq(patients.id, targetId)));
+    const [source] = await db.select().from(patients).where(and(eq(patients.tenantId, tenantId), eq(patients.id, sourcePatientId)));
 
     if (!target) return NextResponse.json({ error: "Paciente destino não encontrado." }, { status: 404 });
     if (!source) return NextResponse.json({ error: "Paciente origem não encontrado." }, { status: 404 });
@@ -135,7 +137,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     // --- Delete source patient ---
-    await db.delete(patients).where(eq(patients.id, sourcePatientId));
+    await db.delete(patients).where(and(eq(patients.tenantId, tenantId), eq(patients.id, sourcePatientId)));
 
     // Get updated target
     const [updated] = await db.select().from(patients).where(eq(patients.id, targetId));

@@ -10,11 +10,14 @@ export async function GET(req: NextRequest) {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
+    const tenantId = auth.tenantId!;
+
     const { searchParams } = new URL(req.url);
     const limit = Math.min(parseInt(searchParams.get("limit") || "30") || 30, 100);
     const unreadOnly = searchParams.get("unreadOnly") === "true";
 
     const conditions = [];
+    conditions.push(eq(notifications.tenantId, tenantId));
     if (unreadOnly) conditions.push(eq(notifications.read, false));
 
     const result = await db
@@ -32,7 +35,7 @@ export async function GET(req: NextRequest) {
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(notifications)
-      .where(eq(notifications.read, false));
+      .where(and(eq(notifications.tenantId, tenantId), eq(notifications.read, false)));
 
     return NextResponse.json({ notifications: result, unreadCount: count });
   } catch (error) {
@@ -51,7 +54,7 @@ export async function PUT(req: NextRequest) {
     const { id, markAllRead } = body;
 
     if (markAllRead) {
-      await db.update(notifications).set({ read: true }).where(eq(notifications.read, false));
+      await db.update(notifications).set({ read: true }).where(and(eq(notifications.tenantId, auth.tenantId!), eq(notifications.read, false)));
       return NextResponse.json({ message: "Todas notificações marcadas como lidas." });
     }
 
@@ -62,7 +65,7 @@ export async function PUT(req: NextRequest) {
     const [updated] = await db
       .update(notifications)
       .set({ read: true })
-      .where(eq(notifications.id, id))
+      .where(and(eq(notifications.tenantId, auth.tenantId!), eq(notifications.id, id)))
       .returning();
 
     if (!updated) {
@@ -87,7 +90,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "ID é obrigatório." }, { status: 400 });
     }
 
-    await db.delete(notifications).where(eq(notifications.id, id));
+    await db.delete(notifications).where(and(eq(notifications.tenantId, auth.tenantId!), eq(notifications.id, id)));
     return NextResponse.json({ message: "Notificação removida." });
   } catch (error) {
     console.error("DELETE /api/notifications error:", error);

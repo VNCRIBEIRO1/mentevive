@@ -3,6 +3,7 @@ import { contactSchema, formatZodError } from "@/lib/validations";
 import { createNotification } from "@/lib/notifications";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { verifyTurnstileToken } from "@/lib/turnstile";
+import { getPublicTenantId } from "@/lib/tenant";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,8 +32,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const tenant = await getPublicTenantId(req);
+    if (tenant.error || !tenant.tenantId) {
+      return NextResponse.json({ error: tenant.error || "Missing tenant" }, { status: 400 });
+    }
+
     // Persist contact submission as admin notification (visible in NotificationBell)
     await createNotification({
+      tenantId: tenant.tenantId,
       type: "registration", // reuse existing type for contact messages
       title: `📬 Contato: ${subject}`,
       message: `De: ${name} (${email})\n${message}`,

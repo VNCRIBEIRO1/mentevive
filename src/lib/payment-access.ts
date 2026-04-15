@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { patients, payments } from "@/db/schema";
 
@@ -11,11 +11,11 @@ export function isPrivilegedRole(role: string): boolean {
   return role === "admin" || role === "therapist";
 }
 
-export async function getAuthorizedPayment(paymentId: string, user: AuthUser) {
+export async function getAuthorizedPayment(paymentId: string, user: AuthUser, tenantId: string) {
   const [payment] = await db
     .select()
     .from(payments)
-    .where(eq(payments.id, paymentId))
+    .where(and(eq(payments.id, paymentId), eq(payments.tenantId, tenantId)))
     .limit(1);
 
   if (!payment) {
@@ -29,7 +29,7 @@ export async function getAuthorizedPayment(paymentId: string, user: AuthUser) {
   const [patient] = await db
     .select({ id: patients.id })
     .from(patients)
-    .where(eq(patients.userId, user.id))
+    .where(and(eq(patients.userId, user.id), eq(patients.tenantId, tenantId)))
     .limit(1);
 
   if (!patient || patient.id !== payment.patientId) {

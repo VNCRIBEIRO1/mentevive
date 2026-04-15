@@ -10,10 +10,13 @@ export async function GET(req: NextRequest) {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
+    const tenantId = auth.tenantId!;
+
     const { searchParams } = new URL(req.url);
     const patientId = searchParams.get("patientId");
 
     const conditions = [];
+    conditions.push(eq(clinicalRecords.tenantId, tenantId));
     if (patientId) conditions.push(eq(clinicalRecords.patientId, patientId));
 
     const result = await db
@@ -59,6 +62,7 @@ export async function POST(req: NextRequest) {
       riskAssessment: riskAssessment || null,
       nextSessionPlan: nextSessionPlan || null,
       private: true,
+      tenantId: auth.tenantId!,
     }).returning();
 
     return NextResponse.json(newRecord, { status: 201 });

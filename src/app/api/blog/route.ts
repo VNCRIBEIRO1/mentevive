@@ -6,6 +6,7 @@ import { slugify } from "@/lib/utils";
 import { requireAdmin } from "@/lib/api-auth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { getPublicTenantScope } from "@/lib/tenant";
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,7 +18,20 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
     const isAdmin = session?.user?.role === "admin" || session?.user?.role === "therapist";
 
+    // Resolve tenant: admin uses session, public uses ?tenant= param
+    let tenantId: string | undefined;
+    if (isAdmin && session?.user?.activeTenantId) {
+      tenantId = session.user.activeTenantId;
+    } else {
+      const tenantResult = await getPublicTenantScope(req);
+      if (tenantResult.error || !tenantResult.tdb) {
+        return NextResponse.json({ error: tenantResult.error || "Tenant não encontrado." }, { status: 400 });
+      }
+      tenantId = tenantResult.tdb.id;
+    }
+
     const conditions = [];
+    conditions.push(eq(blogPosts.tenantId, tenantId));
     if (isAdmin && status) {
       conditions.push(eq(blogPosts.status, status as "draft" | "published" | "archived"));
     } else if (!isAdmin) {
@@ -53,8 +67,8 @@ export async function POST(req: NextRequest) {
 
     const slug = slugify(title);
 
-    // Check slug uniqueness
-    const existing = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
+    // Check slug uniqueness within tenant
+    const existing = await db.select().from(blogPosts).where(and(eq(blogPosts.tenantId, auth.tenantId!), eq(blogPosts.slug, slug)));
     if (existing.length > 0) {
       return NextResponse.json({ error: "Já existe um post com esse título." }, { status: 409 });
     }
@@ -69,6 +83,7 @@ export async function POST(req: NextRequest) {
       status: status || "draft",
       authorId: auth.session!.user.id,
       publishedAt: status === "published" ? new Date() : null,
+      tenantId: auth.tenantId!,
     }).returning();
 
     return NextResponse.json(newPost, { status: 201 });

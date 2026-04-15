@@ -1,12 +1,12 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
 
-export async function getSessionPrice(modality: "online" | "presencial" = "online"): Promise<number> {
+export async function getSessionPrice(tenantId: string, modality: "online" | "presencial" = "online"): Promise<number> {
   const [pricingRow] = await db
     .select({ value: settings.value })
     .from(settings)
-    .where(eq(settings.key, "pricing"))
+    .where(and(eq(settings.tenantId, tenantId), eq(settings.key, "pricing")))
     .limit(1);
 
   const defaultPrice = modality === "presencial" ? 220 : 180;

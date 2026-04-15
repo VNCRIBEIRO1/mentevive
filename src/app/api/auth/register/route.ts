@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, patients } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { users, patients, tenants, tenantMemberships } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { createNotification } from "@/lib/notifications";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     }
 
     const { name, email, password, phone, turnstileToken } = parsed.data;
+    const tenantSlug = body.tenantSlug as string | undefined;
 
     const captchaOk = await verifyTurnstileToken(turnstileToken, ip);
     if (!captchaOk) {
@@ -36,35 +37,76 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user already exists
-    const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    if (existing.length > 0) {
-      return NextResponse.json({ error: "Este e-mail já está cadastrado." }, { status: 409 });
+    // Resolve tenant
+    let tenantId: string;
+    if (tenantSlug) {
+      const [tenant] = await db.select({ id: tenants.id }).from(tenants)
+        .where(and(eq(tenants.slug, tenantSlug), eq(tenants.active, true))).limit(1);
+      if (!tenant) {
+        return NextResponse.json({ error: "Consultório não encontrado." }, { status: 404 });
+      }
+      tenantId = tenant.id;
+    } else {
+      // Fallback: use the first (default) tenant
+      const [defaultTenant] = await db.select({ id: tenants.id }).from(tenants)
+        .where(eq(tenants.active, true)).limit(1);
+      if (!defaultTenant) {
+        return NextResponse.json({ error: "Nenhum consultório disponível." }, { status: 500 });
+      }
+      tenantId = defaultTenant.id;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Check if user already exists
+    const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
-    const [newUser] = await db.insert(users).values({
-      name,
-      email,
-      password: hashedPassword,
+    let userId: string;
+    let isNewUser = false;
+
+    if (existing.length > 0) {
+      userId = existing[0].id;
+      // Check if user already has membership in this tenant
+      const [existingMembership] = await db.select().from(tenantMemberships)
+        .where(and(
+          eq(tenantMemberships.userId, userId),
+          eq(tenantMemberships.tenantId, tenantId),
+        )).limit(1);
+      if (existingMembership) {
+        return NextResponse.json({ error: "Você já tem conta neste consultório. Faça login." }, { status: 409 });
+      }
+    } else {
+      // Create new user
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const [newUser] = await db.insert(users).values({
+        name,
+        email,
+        password: hashedPassword,
+        role: "patient",
+        phone: phone || null,
+      }).returning();
+      userId = newUser.id;
+      isNewUser = true;
+    }
+
+    // Create tenant membership
+    await db.insert(tenantMemberships).values({
+      userId,
+      tenantId,
       role: "patient",
-      phone: phone || null,
-    }).returning();
+    });
 
-    // Check if patient record already exists (admin may have pre-created it)
+    // Check if patient record already exists for this tenant
     const [existingPatient] = await db
       .select()
       .from(patients)
-      .where(eq(patients.email, email))
+      .where(and(eq(patients.email, email), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     let patientId: string | undefined;
 
     if (existingPatient && !existingPatient.userId) {
-      // Link existing patient to new user account
+      // Link existing patient to user account
       await db.update(patients).set({
-        userId: newUser.id,
+        userId,
         phone: phone || existingPatient.phone,
         updatedAt: new Date(),
       }).where(eq(patients.id, existingPatient.id));
@@ -72,7 +114,8 @@ export async function POST(request: Request) {
     } else if (!existingPatient) {
       // Create new patient record
       const [newPatient] = await db.insert(patients).values({
-        userId: newUser.id,
+        userId,
+        tenantId,
         name,
         email,
         phone: phone || "",
@@ -82,6 +125,7 @@ export async function POST(request: Request) {
 
     // Notify admin about new registration
     await createNotification({
+      tenantId,
       type: "registration",
       title: "Novo paciente cadastrado",
       message: `${name} (${email}) se cadastrou no portal.${existingPatient ? " Vinculado a cadastro existente." : ""}`,

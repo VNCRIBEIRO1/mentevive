@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { appointments } from "@/db/schema";
-import { ne, gte, and } from "drizzle-orm";
+import { ne, gte, and, eq } from "drizzle-orm";
+import { getPublicTenantId } from "@/lib/tenant";
 
 function todaySP(): string {
   return new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
@@ -12,8 +13,14 @@ function todaySP(): string {
  * for non-cancelled appointments from today onward.
  * Does NOT expose patient info — only date/time.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const tenant = await getPublicTenantId(req);
+    if (tenant.error || !tenant.tenantId) {
+      return NextResponse.json({ error: tenant.error || "Missing tenant" }, { status: 400 });
+    }
+    const tenantId = tenant.tenantId;
+
     const today = todaySP();
     const result = await db
       .select({
@@ -23,6 +30,7 @@ export async function GET() {
       .from(appointments)
       .where(
         and(
+          eq(appointments.tenantId, tenantId),
           ne(appointments.status, "cancelled"),
           gte(appointments.date, today)
         )

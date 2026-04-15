@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { groups } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 import { createGroupSchema, formatZodError } from "@/lib/validations";
 
@@ -10,7 +10,8 @@ export async function GET() {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
-    const result = await db.select().from(groups).orderBy(desc(groups.createdAt));
+    const tenantId = auth.tenantId!;
+    const result = await db.select().from(groups).where(eq(groups.tenantId, tenantId)).orderBy(desc(groups.createdAt));
     return NextResponse.json(result);
   } catch (error) {
     console.error("GET /api/groups error:", error);
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
       maxParticipants: maxParticipants || 8,
       price: price !== undefined && price !== null ? String(price) : null,
       active: true,
+      tenantId: auth.tenantId!,
     }).returning();
 
     return NextResponse.json(newGroup, { status: 201 });

@@ -46,7 +46,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       const newSlug = slugify(title);
       // Check slug uniqueness excluding the current post
       const [existing] = await db.select({ id: blogPosts.id }).from(blogPosts)
-        .where(and(eq(blogPosts.slug, newSlug), ne(blogPosts.id, id)));
+        .where(and(eq(blogPosts.tenantId, auth.tenantId!), eq(blogPosts.slug, newSlug), ne(blogPosts.id, id)));
       if (existing) {
         return NextResponse.json({ error: "Já existe um post com esse título/slug." }, { status: 409 });
       }
@@ -62,7 +62,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       if (status === "published") updateData.publishedAt = new Date();
     }
 
-    const [updated] = await db.update(blogPosts).set(updateData).where(eq(blogPosts.id, id)).returning();
+    const [updated] = await db.update(blogPosts).set(updateData).where(and(eq(blogPosts.tenantId, auth.tenantId!), eq(blogPosts.id, id))).returning();
     if (!updated) {
       return NextResponse.json({ error: "Post não encontrado." }, { status: 404 });
     }
@@ -79,7 +79,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const [deleted] = await db.delete(blogPosts).where(eq(blogPosts.id, id)).returning();
+    const [deleted] = await db.delete(blogPosts).where(and(eq(blogPosts.tenantId, auth.tenantId!), eq(blogPosts.id, id))).returning();
     if (!deleted) {
       return NextResponse.json({ error: "Post não encontrado." }, { status: 404 });
     }

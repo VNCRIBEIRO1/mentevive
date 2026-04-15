@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { payments, patients } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { requireAuth } from "@/lib/api-auth";
 
 export async function GET() {
@@ -10,12 +10,13 @@ export async function GET() {
     if (auth.error) return auth.response;
 
     const userId = auth.session!.user.id;
+    const tenantId = auth.tenantId!;
 
     // Find the patient record linked to this user
     const [patient] = await db
       .select()
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {

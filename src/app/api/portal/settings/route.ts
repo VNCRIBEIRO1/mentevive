@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
+import { getPublicTenantId } from "@/lib/tenant";
 
 // Public endpoint — patient-facing pages can read pricing/areas
 export async function GET(req: NextRequest) {
   try {
+    const tenant = await getPublicTenantId(req);
+    if (tenant.error || !tenant.tenantId) {
+      return NextResponse.json({ error: tenant.error || "Missing tenant" }, { status: 400 });
+    }
+    const tenantId = tenant.tenantId;
+
     const { searchParams } = new URL(req.url);
     const key = searchParams.get("key");
 
@@ -16,7 +23,7 @@ export async function GET(req: NextRequest) {
       if (!(publicKeys as readonly string[]).includes(key)) {
         return NextResponse.json({ error: "Chave não permitida." }, { status: 403 });
       }
-      const [row] = await db.select().from(settings).where(eq(settings.key, key));
+      const [row] = await db.select().from(settings).where(and(eq(settings.tenantId, tenantId), eq(settings.key, key)));
       if (!row) return NextResponse.json({ key, value: null });
       try {
         return NextResponse.json({ key: row.key, value: JSON.parse(row.value) });
@@ -27,7 +34,7 @@ export async function GET(req: NextRequest) {
 
     // Return all public settings in a single query (avoids N+1)
     const rows = await db.select().from(settings).where(
-      inArray(settings.key, [...publicKeys])
+      and(eq(settings.tenantId, tenantId), inArray(settings.key, [...publicKeys]))
     );
     const result: Record<string, unknown> = {};
     for (const row of rows) {

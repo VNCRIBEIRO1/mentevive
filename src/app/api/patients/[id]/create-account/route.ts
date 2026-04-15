@@ -14,7 +14,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { email, password, linkExisting } = await req.json();
 
     // Get the patient record
-    const [patient] = await db.select().from(patients).where(eq(patients.id, id));
+    const [patient] = await db.select().from(patients).where(and(eq(patients.tenantId, auth.tenantId!), eq(patients.id, id)));
     if (!patient) {
       return NextResponse.json({ error: "Paciente não encontrado." }, { status: 404 });
     }

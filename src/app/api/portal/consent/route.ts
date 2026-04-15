@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { patients } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireAuth } from "@/lib/api-auth";
 
 export async function GET() {
   const auth = await requireAuth();
   if (auth.error) return auth.response;
 
+  const tenantId = auth.tenantId!;
+
   const patient = await db.query.patients.findFirst({
-    where: eq(patients.userId, auth.session!.user.id),
+    where: and(eq(patients.userId, auth.session!.user.id), eq(patients.tenantId, tenantId)),
     columns: { consentAcceptedAt: true },
   });
 
@@ -24,8 +26,10 @@ export async function POST() {
   const auth = await requireAuth();
   if (auth.error) return auth.response;
 
+  const tenantId = auth.tenantId!;
+
   const patient = await db.query.patients.findFirst({
-    where: eq(patients.userId, auth.session!.user.id),
+    where: and(eq(patients.userId, auth.session!.user.id), eq(patients.tenantId, tenantId)),
     columns: { id: true },
   });
 

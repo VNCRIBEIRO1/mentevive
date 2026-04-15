@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { blockedDates } from "@/db/schema";
-import { eq, gte, asc } from "drizzle-orm";
+import { eq, gte, asc, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 
 export async function GET() {
@@ -9,9 +9,11 @@ export async function GET() {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
+    const tenantId = auth.tenantId!;
     const result = await db
       .select()
       .from(blockedDates)
+      .where(eq(blockedDates.tenantId, tenantId))
       .orderBy(asc(blockedDates.date));
 
     return NextResponse.json(result);
@@ -26,6 +28,7 @@ export async function POST(req: NextRequest) {
     const auth = await requireAdmin();
     if (auth.error) return auth.response;
 
+    const tenantId = auth.tenantId!;
     const body = await req.json();
 
     // Support batch: { dates: [{ date, reason }] }
@@ -39,9 +42,10 @@ export async function POST(req: NextRequest) {
           toInsert.map((d: { date: string; reason?: string }) => ({
             date: d.date,
             reason: d.reason || null,
+            tenantId,
           }))
         )
-        .onConflictDoNothing({ target: blockedDates.date })
+        .onConflictDoNothing({ target: [blockedDates.tenantId, blockedDates.date] })
         .returning();
 
       return NextResponse.json(inserted, { status: 201 });
@@ -55,8 +59,8 @@ export async function POST(req: NextRequest) {
 
     const [newBlocked] = await db
       .insert(blockedDates)
-      .values({ date, reason: reason || null })
-      .onConflictDoNothing({ target: blockedDates.date })
+      .values({ date, reason: reason || null, tenantId })
+      .onConflictDoNothing({ target: [blockedDates.tenantId, blockedDates.date] })
       .returning();
 
     if (!newBlocked) {
@@ -80,12 +84,12 @@ export async function DELETE(req: NextRequest) {
     const date = searchParams.get("date");
 
     if (id) {
-      const deleted = await db.delete(blockedDates).where(eq(blockedDates.id, id)).returning();
+      const deleted = await db.delete(blockedDates).where(and(eq(blockedDates.tenantId, auth.tenantId!), eq(blockedDates.id, id))).returning();
       if (deleted.length === 0) {
         return NextResponse.json({ error: "Data bloqueada não encontrada." }, { status: 404 });
       }
     } else if (date) {
-      const deleted = await db.delete(blockedDates).where(eq(blockedDates.date, date)).returning();
+      const deleted = await db.delete(blockedDates).where(and(eq(blockedDates.tenantId, auth.tenantId!), eq(blockedDates.date, date))).returning();
       if (deleted.length === 0) {
         return NextResponse.json({ error: "Data bloqueada não encontrada." }, { status: 404 });
       }

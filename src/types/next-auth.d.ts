@@ -1,10 +1,16 @@
 import "next-auth";
+import "next-auth/jwt";
 
 declare module "next-auth" {
   interface User {
     id: string;
     role: string;
     phone?: string | null;
+    isSuperAdmin: boolean;
+    activeTenantId?: string;
+    tenantSlug?: string;
+    membershipRole?: string;
+    needsTenantSelection?: boolean;
   }
   interface Session {
     user: {
@@ -13,6 +19,11 @@ declare module "next-auth" {
       email: string;
       role: string;
       phone?: string | null;
+      isSuperAdmin: boolean;
+      activeTenantId?: string;
+      tenantSlug?: string;
+      membershipRole?: string;
+      needsTenantSelection?: boolean;
     };
   }
 }
@@ -22,5 +33,10 @@ declare module "next-auth/jwt" {
     id: string;
     role: string;
     phone?: string | null;
+    isSuperAdmin: boolean;
+    activeTenantId?: string;
+    tenantSlug?: string;
+    membershipRole?: string;
+    needsTenantSelection?: boolean;
   }
 }

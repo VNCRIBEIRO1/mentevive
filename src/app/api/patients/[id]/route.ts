@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { patients, users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -10,7 +10,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const [patient] = await db.select().from(patients).where(eq(patients.id, id));
+    const tenantId = auth.tenantId!;
+    const [patient] = await db.select().from(patients).where(and(eq(patients.tenantId, tenantId), eq(patients.id, id)));
     if (!patient) {
       return NextResponse.json({ error: "Paciente não encontrado." }, { status: 404 });
     }
@@ -43,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(notes !== undefined && { notes }),
       ...(active !== undefined && { active }),
       updatedAt: new Date(),
-    }).where(eq(patients.id, id)).returning();
+    }).where(and(eq(patients.tenantId, auth.tenantId!), eq(patients.id, id))).returning();
 
     if (!updated) {
       return NextResponse.json({ error: "Paciente não encontrado." }, { status: 404 });
@@ -74,13 +75,13 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params;
 
     // Get patient to check for linked user
-    const [patient] = await db.select().from(patients).where(eq(patients.id, id));
+    const [patient] = await db.select().from(patients).where(and(eq(patients.tenantId, auth.tenantId!), eq(patients.id, id)));
     if (!patient) {
       return NextResponse.json({ error: "Paciente não encontrado." }, { status: 404 });
     }
 
     // Delete patient (cascade handles related records)
-    await db.delete(patients).where(eq(patients.id, id));
+    await db.delete(patients).where(and(eq(patients.tenantId, auth.tenantId!), eq(patients.id, id)));
 
     // Deactivate linked user account (preserve audit trail)
     if (patient.userId) {

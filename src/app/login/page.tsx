@@ -38,6 +38,7 @@ function LoginForm() {
   const bookingNotes = searchParams.get("notes") || "";
   const isRegistered = searchParams.get("registered") === "true";
   const hasBooking = !!(bookingDate && bookingTime && redirectTo);
+  const tenantSlug = searchParams.get("tenant") || "";
 
   // Check for existing session on mount
   useEffect(() => {
@@ -65,6 +66,7 @@ function LoginForm() {
       password,
       turnstileToken: formData.get("turnstileToken"),
       website: formData.get("website"),
+      tenantSlug,
       redirect: false,
     });
 
@@ -75,9 +77,18 @@ function LoginForm() {
       return;
     }
 
-    // Redirect based on role + booking flow
+    // Redirect based on role + booking flow + tenant selection
     const session = await getSession();
-    if (hasBooking && session?.user?.role === "patient") {
+    const user = session?.user as { role?: string; needsTenantSelection?: boolean; membershipRole?: string };
+
+    if (user?.needsTenantSelection) {
+      router.push("/select-tenant");
+      return;
+    }
+
+    const effectiveRole = user?.membershipRole || user?.role;
+
+    if (hasBooking && effectiveRole === "patient") {
       // Build redirect URL with booking params
       const params = new URLSearchParams({
         date: bookingDate,
@@ -86,7 +97,7 @@ function LoginForm() {
         ...(bookingNotes ? { notes: bookingNotes } : {}),
       });
       router.push(`${redirectTo}?${params.toString()}`);
-    } else if (session?.user?.role === "patient") {
+    } else if (effectiveRole === "patient") {
       router.push("/portal");
     } else {
       router.push("/admin");

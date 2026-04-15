@@ -23,8 +23,8 @@ export async function GET(req: NextRequest) {
     const from = searchParams.get("from");
 
     const rows = from
-      ? await listUpcomingCustomAvailability(from)
-      : await getCustomAvailability();
+      ? await listUpcomingCustomAvailability(auth.tenantId!, from)
+      : await getCustomAvailability(auth.tenantId!);
 
     return NextResponse.json(date ? rows.filter((slot) => slot.date === date) : rows);
   } catch (error) {
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Cada horário disponível precisa ter pelo menos 60 minutos." }, { status: 400 });
     }
 
-    const rows = await addCustomAvailabilitySlot({ date, startTime, endTime });
+    const rows = await addCustomAvailabilitySlot(auth.tenantId!, { date, startTime, endTime });
     return NextResponse.json(rows, { status: 201 });
   } catch (error) {
     console.error("POST /api/custom-availability error:", error);
@@ -73,7 +73,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "ID do horário personalizado é obrigatório." }, { status: 400 });
     }
 
-    const rows = await removeCustomAvailabilitySlot(id);
+    const rows = await removeCustomAvailabilitySlot(auth.tenantId!, id);
     return NextResponse.json(rows);
   } catch (error) {
     console.error("DELETE /api/custom-availability error:", error);

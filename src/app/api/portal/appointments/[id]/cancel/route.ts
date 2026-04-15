@@ -19,10 +19,12 @@ export async function POST(
     return NextResponse.json({ error: "Sessão inválida." }, { status: 401 });
   }
 
+  const tenantId = auth.tenantId!;
+
   const [patient] = await db
     .select({ id: patients.id })
     .from(patients)
-    .where(eq(patients.userId, userId))
+    .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
     .limit(1);
 
   if (!patient) {
@@ -128,6 +130,7 @@ export async function POST(
     .join(", ");
 
   await createNotification({
+    tenantId,
     type: "status_change",
     title: "Sessão cancelada pelo paciente",
     message: `Paciente cancelou a sessão de ${appointment.date} às ${appointment.startTime}.${paymentSummary ? ` ${paymentSummary}.` : ""}`,
@@ -139,6 +142,7 @@ export async function POST(
 
   if (manualReviewCharges > 0) {
     await createNotification({
+      tenantId,
       type: "payment",
       title: "Revisar pagamento de sessão cancelada",
       message: `A sessão cancelada de ${appointment.date} às ${appointment.startTime} possui ${manualReviewCharges} pagamento${manualReviewCharges > 1 ? "s" : ""} que exige${manualReviewCharges > 1 ? "m" : ""} conferência manual da equipe.`,

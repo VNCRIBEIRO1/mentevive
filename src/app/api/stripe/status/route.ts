@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const access = await getAuthorizedPayment(paymentId, auth.session!.user);
+    const access = await getAuthorizedPayment(paymentId, auth.session!.user, auth.tenantId!);
     if (access.reason === "not_found") {
       return NextResponse.json({ error: "Pagamento não encontrado." }, { status: 404 });
     }

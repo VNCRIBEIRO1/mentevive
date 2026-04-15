@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { clinicalRecords } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -10,7 +10,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const [record] = await db.select().from(clinicalRecords).where(eq(clinicalRecords.id, id));
+    const tenantId = auth.tenantId!;
+    const [record] = await db.select().from(clinicalRecords).where(and(eq(clinicalRecords.tenantId, tenantId), eq(clinicalRecords.id, id)));
     if (!record) {
       return NextResponse.json({ error: "Registro não encontrado." }, { status: 404 });
     }
@@ -44,7 +45,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(riskAssessment !== undefined && { riskAssessment }),
       ...(nextSessionPlan !== undefined && { nextSessionPlan }),
       updatedAt: new Date(),
-    }).where(eq(clinicalRecords.id, id)).returning();
+    }).where(and(eq(clinicalRecords.tenantId, auth.tenantId!), eq(clinicalRecords.id, id))).returning();
 
     if (!updated) {
       return NextResponse.json({ error: "Registro não encontrado." }, { status: 404 });
@@ -62,7 +63,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const [deleted] = await db.delete(clinicalRecords).where(eq(clinicalRecords.id, id)).returning();
+    const [deleted] = await db.delete(clinicalRecords).where(and(eq(clinicalRecords.tenantId, auth.tenantId!), eq(clinicalRecords.id, id))).returning();
     if (!deleted) {
       return NextResponse.json({ error: "Registro não encontrado." }, { status: 404 });
     }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm";
 import { requireAuth } from "@/lib/api-auth";
 import { db } from "@/lib/db";
 import { documents, patients } from "@/db/schema";
@@ -10,11 +10,12 @@ export async function GET() {
     if (auth.error) return auth.response;
 
     const userId = auth.session!.user.id;
+    const tenantId = auth.tenantId!;
 
     const [patient] = await db
       .select({ id: patients.id })
       .from(patients)
-      .where(eq(patients.userId, userId))
+      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     if (!patient) {

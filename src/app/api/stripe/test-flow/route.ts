@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 import { db } from "@/lib/db";
 import { patients, payments } from "@/db/schema";
@@ -57,16 +57,18 @@ export async function POST(req: NextRequest) {
 
     const { patientId, amount, dueDate } = parsed.data;
 
+    const tenantId = auth.tenantId!;
+
     const [patient] = patientId
       ? await db
           .select()
           .from(patients)
-          .where(eq(patients.id, patientId))
+          .where(and(eq(patients.id, patientId), eq(patients.tenantId, tenantId)))
           .limit(1)
       : await db
           .select()
           .from(patients)
-          .where(sql`${patients.email} is not null`)
+          .where(and(eq(patients.tenantId, tenantId), sql`${patients.email} is not null`))
           .orderBy(desc(patients.createdAt))
           .limit(1);
 
@@ -80,6 +82,7 @@ export async function POST(req: NextRequest) {
     const [payment] = await db
       .insert(payments)
       .values({
+        tenantId,
         patientId: patient.id,
         amount: amount.toFixed(2),
         method: "stripe",
@@ -160,6 +163,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const tenantId = auth.tenantId!;
+
     const [payment] = await db
       .select({
         payment: payments,
@@ -168,7 +173,7 @@ export async function GET(req: NextRequest) {
       })
       .from(payments)
       .leftJoin(patients, eq(payments.patientId, patients.id))
-      .where(eq(payments.id, paymentId))
+      .where(and(eq(payments.id, paymentId), eq(payments.tenantId, tenantId)))
       .limit(1);
 
     if (!payment) {

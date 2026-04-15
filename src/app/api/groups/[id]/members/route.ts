@@ -20,7 +20,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       })
       .from(groupMembers)
       .leftJoin(patients, eq(groupMembers.patientId, patients.id))
-      .where(eq(groupMembers.groupId, id));
+      .where(and(eq(groupMembers.tenantId, auth.tenantId!), eq(groupMembers.groupId, id)));
 
     return NextResponse.json(members);
   } catch (error) {
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     // Check group exists and get max participants
-    const [group] = await db.select().from(groups).where(eq(groups.id, id));
+    const [group] = await db.select().from(groups).where(and(eq(groups.tenantId, auth.tenantId!), eq(groups.id, id)));
     if (!group) {
       return NextResponse.json({ error: "Grupo não encontrado." }, { status: 404 });
     }
@@ -73,6 +73,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const [member] = await db.insert(groupMembers).values({
       groupId: id,
       patientId,
+      tenantId: auth.tenantId!,
     }).returning();
 
     return NextResponse.json(member, { status: 201 });
@@ -97,7 +98,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const [deleted] = await db
       .delete(groupMembers)
-      .where(and(eq(groupMembers.id, memberId), eq(groupMembers.groupId, id)))
+      .where(and(eq(groupMembers.tenantId, auth.tenantId!), eq(groupMembers.id, memberId), eq(groupMembers.groupId, id)))
       .returning();
 
     if (!deleted) {
