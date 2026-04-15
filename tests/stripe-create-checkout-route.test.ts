@@ -91,6 +91,7 @@ vi.mock("@/lib/payment-access", () => ({
 vi.mock("@/lib/stripe", () => ({
   isStripeConfigured: vi.fn(() => true),
   createCheckoutSession: mocks.createCheckoutSession,
+  createConnectedCheckoutSession: mocks.createCheckoutSession,
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -111,6 +112,7 @@ vi.mock("drizzle-orm", () => ({
 vi.mock("@/db/schema", () => ({
   payments: {},
   patients: {},
+  tenants: {},
 }));
 
 type RouteModule = {

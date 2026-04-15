@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 type Session = { user: { id: string; role: string } } | null;

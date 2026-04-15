@@ -119,6 +119,7 @@ vi.mock("@/db/schema", () => ({
 }));
 vi.mock("drizzle-orm", () => ({
   eq: vi.fn(),
+  and: vi.fn(),
 }));
 
 // Dynamic import for [id] route — resolves bracket path issue

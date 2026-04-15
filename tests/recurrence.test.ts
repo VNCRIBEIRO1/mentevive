@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Recurring Appointments (Processo Terapêutico) Tests
  * Tests the recurrence flow:

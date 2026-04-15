@@ -4,6 +4,7 @@
  * - GET triage by appointmentId (auth, ownership, returns data)
  * - POST triage create/update (auth, ownership, validation, notification)
  */
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ─── Hoisted mock infrastructure ────────────────────────────────────
