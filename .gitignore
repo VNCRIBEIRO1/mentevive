@@ -1,0 +1,43 @@
+# Dependências
+node_modules/
+
+# Build
+.next/
+out/
+
+# Vercel
+.vercel/
+
+# Env
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# Debug
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Drizzle
+drizzle/meta/
+.env*.local
+
+# Neon CLI
+.neon
+.vercel
+.logs/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Homologation reports (contain credentials)
+homolog-report.json

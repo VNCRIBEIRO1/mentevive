@@ -1,0 +1,1993 @@
+{
+  "timestamp": "2026-04-15T16:07:42.424Z",
+  "totalFiles": 158,
+  "totalFindings": 246,
+  "bySeverity": {
+    "critical": 75,
+    "high": 113,
+    "medium": 29,
+    "low": 29
+  },
+  "byType": {
+    "insert-no-tenant": 35,
+    "db-query-no-tenant": 31,
+    "public-route-no-tenant": 18,
+    "stripe-no-account": 1,
+    "session-no-tenant": 66,
+    "notification-no-tenant": 16,
+    "update-no-tenant": 19,
+    "delete-no-tenant": 15,
+    "hardcoded-url": 32,
+    "jitsi-no-tenant-prefix": 13
+  },
+  "findings": [
+    {
+      "file": "src/app/api/appointments/route.ts",
+      "line": 87,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [createdAppointment] = await db.insert(appointments).values({"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 19,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [appointment] = await db.select().from(appointments).where(eq(appointments.id, id));"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 66,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [current] = await db.select().from(appointments).where(eq(appointments.id, id));"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 190,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newPayment] = await db.insert(payments).values({"
+    },
+    {
+      "file": "src/app/api/auth/forgot-password/route.ts",
+      "line": 44,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(passwordResetTokens).values({"
+    },
+    {
+      "file": "src/app/api/auth/register/route.ts",
+      "line": 40,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);"
+    },
+    {
+      "file": "src/app/api/auth/register/route.ts",
+      "line": 47,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newUser] = await db.insert(users).values({"
+    },
+    {
+      "file": "src/app/api/auth/register/route.ts",
+      "line": 74,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newPatient] = await db.insert(patients).values({"
+    },
+    {
+      "file": "src/app/api/availability/route.ts",
+      "line": 12,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const result = await db.select().from(availability).orderBy(desc(availability.dayOfWeek));"
+    },
+    {
+      "file": "src/app/api/availability/route.ts",
+      "line": 67,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newSlot] = await db.insert(availability).values({"
+    },
+    {
+      "file": "src/app/api/blog/route.ts",
+      "line": 57,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const existing = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));"
+    },
+    {
+      "file": "src/app/api/blog/route.ts",
+      "line": 62,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newPost] = await db.insert(blogPosts).values({"
+    },
+    {
+      "file": "src/app/api/blog/[id]/route.ts",
+      "line": 14,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));"
+    },
+    {
+      "file": "src/app/api/clinical-records/route.ts",
+      "line": 49,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newRecord] = await db.insert(clinicalRecords).values({"
+    },
+    {
+      "file": "src/app/api/clinical-records/[id]/route.ts",
+      "line": 13,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [record] = await db.select().from(clinicalRecords).where(eq(clinicalRecords.id, id));"
+    },
+    {
+      "file": "src/app/api/groups/route.ts",
+      "line": 13,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const result = await db.select().from(groups).orderBy(desc(groups.createdAt));"
+    },
+    {
+      "file": "src/app/api/groups/route.ts",
+      "line": 34,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newGroup] = await db.insert(groups).values({"
+    },
+    {
+      "file": "src/app/api/groups/[id]/members/route.ts",
+      "line": 45,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [group] = await db.select().from(groups).where(eq(groups.id, id));"
+    },
+    {
+      "file": "src/app/api/groups/[id]/members/route.ts",
+      "line": 73,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [member] = await db.insert(groupMembers).values({"
+    },
+    {
+      "file": "src/app/api/groups/[id]/route.ts",
+      "line": 13,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [group] = await db.select().from(groups).where(eq(groups.id, id));"
+    },
+    {
+      "file": "src/app/api/patients/route.ts",
+      "line": 16,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "let query = db.select().from(patients).orderBy(desc(patients.createdAt));"
+    },
+    {
+      "file": "src/app/api/patients/route.ts",
+      "line": 56,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);"
+    },
+    {
+      "file": "src/app/api/patients/route.ts",
+      "line": 62,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newUser] = await db.insert(users).values({"
+    },
+    {
+      "file": "src/app/api/patients/route.ts",
+      "line": 72,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newPatient] = await db.insert(patients).values({"
+    },
+    {
+      "file": "src/app/api/patients/[id]/create-account/route.ts",
+      "line": 17,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [patient] = await db.select().from(patients).where(eq(patients.id, id));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/create-account/route.ts",
+      "line": 32,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [existingUser] = await db.select().from(users).where(eq(users.email, accountEmail)).limit(1);"
+    },
+    {
+      "file": "src/app/api/patients/[id]/create-account/route.ts",
+      "line": 85,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newUser] = await db.insert(users).values({"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 39,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [target] = await db.select().from(patients).where(eq(patients.id, targetId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 40,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [source] = await db.select().from(patients).where(eq(patients.id, sourcePatientId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 141,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [updated] = await db.select().from(patients).where(eq(patients.id, targetId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 13,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [patient] = await db.select().from(patients).where(eq(patients.id, id));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 77,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [patient] = await db.select().from(patients).where(eq(patients.id, id));"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 105,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [existing] = await db.select().from(payments).where(eq(payments.id, id)).limit(1);"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 55,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [newPayment] = await db.insert(payments).values({"
+    },
+    {
+      "file": "src/app/api/portal/appointments/recurrence/route.ts",
+      "line": 176,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(payments).values({"
+    },
+    {
+      "file": "src/app/api/portal/availability/route.ts",
+      "line": 24,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "console.error(\"GET /api/portal/availability error:\", error);"
+    },
+    {
+      "file": "src/app/api/portal/blocked-dates/route.ts",
+      "line": 20,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "console.error(\"GET /api/portal/blocked-dates error:\", error);"
+    },
+    {
+      "file": "src/app/api/portal/booked-slots/route.ts",
+      "line": 33,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "console.error(\"GET /api/portal/booked-slots error:\", error);"
+    },
+    {
+      "file": "src/app/api/portal/consent/route.ts",
+      "line": 11,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "Drizzle relational query — needs tenantId filter",
+      "code": "const patient = await db.query.patients.findFirst({"
+    },
+    {
+      "file": "src/app/api/portal/consent/route.ts",
+      "line": 27,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "Drizzle relational query — needs tenantId filter",
+      "code": "const patient = await db.query.patients.findFirst({"
+    },
+    {
+      "file": "src/app/api/portal/settings/route.ts",
+      "line": 19,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [row] = await db.select().from(settings).where(eq(settings.key, key));"
+    },
+    {
+      "file": "src/app/api/portal/settings/route.ts",
+      "line": 29,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const rows = await db.select().from(settings).where("
+    },
+    {
+      "file": "src/app/api/portal/settings/route.ts",
+      "line": 42,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "console.error(\"GET /api/portal/settings error:\", error);"
+    },
+    {
+      "file": "src/app/api/portal/triagem/route.ts",
+      "line": 134,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [aptForNotif] = await db.select().from(appointments).where(eq(appointments.id, appointmentId));"
+    },
+    {
+      "file": "src/app/api/portal/triagem/route.ts",
+      "line": 166,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [aptForNotif2] = await db.select().from(appointments).where(eq(appointments.id, appointmentId));"
+    },
+    {
+      "file": "src/app/api/settings/route.ts",
+      "line": 17,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [row] = await db.select().from(settings).where(eq(settings.key, key));"
+    },
+    {
+      "file": "src/app/api/settings/route.ts",
+      "line": 27,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const rows = await db.select().from(settings);"
+    },
+    {
+      "file": "src/app/api/setup/route.ts",
+      "line": 46,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const existing = await db.select().from(users).where(eq(users.email, email));"
+    },
+    {
+      "file": "src/app/api/setup/route.ts",
+      "line": 52,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [admin] = await db.insert(users).values({"
+    },
+    {
+      "file": "src/app/blog/[slug]/page.tsx",
+      "line": 19,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));"
+    },
+    {
+      "file": "src/app/blog/[slug]/page.tsx",
+      "line": 64,
+      "type": "db-query-no-tenant",
+      "severity": "critical",
+      "description": "SELECT query — needs tenantId filter",
+      "code": "const [found] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));"
+    },
+    {
+      "file": "src/app/portal/agendar/page.tsx",
+      "line": 120,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/availability\"),"
+    },
+    {
+      "file": "src/app/portal/agendar/page.tsx",
+      "line": 121,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/settings\"),"
+    },
+    {
+      "file": "src/app/portal/agendar/page.tsx",
+      "line": 123,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/blocked-dates\").catch(() => null),"
+    },
+    {
+      "file": "src/app/portal/agendar/page.tsx",
+      "line": 124,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/booked-slots\").catch(() => null),"
+    },
+    {
+      "file": "src/app/portal/processo/page.tsx",
+      "line": 66,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/availability\"),"
+    },
+    {
+      "file": "src/app/portal/processo/page.tsx",
+      "line": 68,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/blocked-dates\").catch(() => null),"
+    },
+    {
+      "file": "src/app/portal/processo/page.tsx",
+      "line": 69,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/booked-slots\").catch(() => null),"
+    },
+    {
+      "file": "src/components/landing/Scheduling.tsx",
+      "line": 55,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/availability\")"
+    },
+    {
+      "file": "src/components/landing/Scheduling.tsx",
+      "line": 62,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/settings?key=pricing\")"
+    },
+    {
+      "file": "src/components/landing/Scheduling.tsx",
+      "line": 70,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "fetch(\"/api/portal/booked-slots\")"
+    },
+    {
+      "file": "src/lib/notifications.ts",
+      "line": 21,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(notifications).values({"
+    },
+    {
+      "file": "src/lib/stripe.ts",
+      "line": 174,
+      "type": "stripe-no-account",
+      "severity": "critical",
+      "description": "Webhook signature — needs to handle connected account events",
+      "code": "return stripe.webhooks.constructEvent(payload, signature, secret);"
+    },
+    {
+      "file": "src/proxy.ts",
+      "line": 27,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "pathname.startsWith(\"/api/portal/availability\") ||"
+    },
+    {
+      "file": "src/proxy.ts",
+      "line": 28,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "pathname.startsWith(\"/api/portal/booked-slots\") ||"
+    },
+    {
+      "file": "src/proxy.ts",
+      "line": 29,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "pathname.startsWith(\"/api/portal/settings\") ||"
+    },
+    {
+      "file": "src/proxy.ts",
+      "line": 30,
+      "type": "public-route-no-tenant",
+      "severity": "critical",
+      "description": "Public route — needs tenant context from x-tenant-id header",
+      "code": "pathname.startsWith(\"/api/portal/blocked-dates\") ||"
+    },
+    {
+      "file": "scripts/reset-and-seed-homolog.ts",
+      "line": 308,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(settings).values(["
+    },
+    {
+      "file": "scripts/reset-and-seed-homolog.ts",
+      "line": 327,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(availability).values("
+    },
+    {
+      "file": "scripts/reset-and-seed-homolog.ts",
+      "line": 415,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(triages).values({"
+    },
+    {
+      "file": "scripts/reset-and-seed-homolog.ts",
+      "line": 427,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(clinicalRecords).values(["
+    },
+    {
+      "file": "scripts/reset-and-seed-homolog.ts",
+      "line": 495,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(payments).values(["
+    },
+    {
+      "file": "scripts/reset-and-seed-homolog.ts",
+      "line": 568,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(documents).values(["
+    },
+    {
+      "file": "scripts/reset-and-seed-homolog.ts",
+      "line": 613,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(notifications).values(["
+    },
+    {
+      "file": "scripts/seed.ts",
+      "line": 34,
+      "type": "insert-no-tenant",
+      "severity": "critical",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(users).values({"
+    },
+    {
+      "file": "src/app/api/appointments/route.ts",
+      "line": 14,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/appointments/route.ts",
+      "line": 49,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/appointments/route.ts",
+      "line": 135,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/appointments/route.ts",
+      "line": 145,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 124,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "const [updated] = await db.update(appointments).set({"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 251,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "const [deleted] = await db.delete(appointments).where(eq(appointments.id, id)).returning();"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 51,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 228,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 15,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 147,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/appointments/[id]/route.ts",
+      "line": 201,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/auth/register/route.ts",
+      "line": 66,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(patients).set({"
+    },
+    {
+      "file": "src/app/api/auth/register/route.ts",
+      "line": 84,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/availability/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/availability/route.ts",
+      "line": 22,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/blocked-dates/route.ts",
+      "line": 83,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "const deleted = await db.delete(blockedDates).where(eq(blockedDates.id, id)).returning();"
+    },
+    {
+      "file": "src/app/api/blocked-dates/route.ts",
+      "line": 88,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "const deleted = await db.delete(blockedDates).where(eq(blockedDates.date, date)).returning();"
+    },
+    {
+      "file": "src/app/api/blocked-dates/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/blocked-dates/route.ts",
+      "line": 26,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/blocked-dates/route.ts",
+      "line": 75,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/blog/route.ts",
+      "line": 44,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/blog/[id]/route.ts",
+      "line": 65,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "const [updated] = await db.update(blogPosts).set(updateData).where(eq(blogPosts.id, id)).returning();"
+    },
+    {
+      "file": "src/app/api/blog/[id]/route.ts",
+      "line": 82,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "const [deleted] = await db.delete(blogPosts).where(eq(blogPosts.id, id)).returning();"
+    },
+    {
+      "file": "src/app/api/blog/[id]/route.ts",
+      "line": 37,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/blog/[id]/route.ts",
+      "line": 78,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/clinical-records/route.ts",
+      "line": 10,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/clinical-records/route.ts",
+      "line": 38,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/clinical-records/[id]/route.ts",
+      "line": 36,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "const [updated] = await db.update(clinicalRecords).set({"
+    },
+    {
+      "file": "src/app/api/clinical-records/[id]/route.ts",
+      "line": 65,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "const [deleted] = await db.delete(clinicalRecords).where(eq(clinicalRecords.id, id)).returning();"
+    },
+    {
+      "file": "src/app/api/clinical-records/[id]/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/clinical-records/[id]/route.ts",
+      "line": 26,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/clinical-records/[id]/route.ts",
+      "line": 61,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/contact/route.ts",
+      "line": 35,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/custom-availability/route.ts",
+      "line": 18,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/custom-availability/route.ts",
+      "line": 38,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/custom-availability/route.ts",
+      "line": 66,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/dashboard/route.ts",
+      "line": 13,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/route.ts",
+      "line": 10,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/route.ts",
+      "line": 23,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/members/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/members/route.ts",
+      "line": 34,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/members/route.ts",
+      "line": 87,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/route.ts",
+      "line": 43,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "const [updated] = await db.update(groups).set(updateData).where(eq(groups.id, id)).returning();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/route.ts",
+      "line": 60,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "const [deleted] = await db.delete(groups).where(eq(groups.id, id)).returning();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/route.ts",
+      "line": 26,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/groups/[id]/route.ts",
+      "line": 56,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/notifications/route.ts",
+      "line": 54,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(notifications).set({ read: true }).where(eq(notifications.read, false));"
+    },
+    {
+      "file": "src/app/api/notifications/route.ts",
+      "line": 90,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(notifications).where(eq(notifications.id, id));"
+    },
+    {
+      "file": "src/app/api/notifications/route.ts",
+      "line": 10,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/notifications/route.ts",
+      "line": 47,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/notifications/route.ts",
+      "line": 82,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/patients/route.ts",
+      "line": 10,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/patients/route.ts",
+      "line": 38,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/patients/[id]/create-account/route.ts",
+      "line": 57,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(patients).set({"
+    },
+    {
+      "file": "src/app/api/patients/[id]/create-account/route.ts",
+      "line": 94,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(patients).set({"
+    },
+    {
+      "file": "src/app/api/patients/[id]/create-account/route.ts",
+      "line": 10,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 103,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(groupMembers).set({ patientId: targetId }).where(eq(groupMembers.id, sg.id));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 127,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(patients).set(updateData).where(eq(patients.id, targetId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 134,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(users).set({ active: false }).where(eq(users.id, source.userId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 100,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(groupMembers).where(eq(groupMembers.id, sg.id));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 138,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(patients).where(eq(patients.id, sourcePatientId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/merge/route.ts",
+      "line": 24,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 33,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "const [updated] = await db.update(patients).set({"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 59,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(users).set(userUpdates).where(eq(users.id, updated.userId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 87,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(users).set({ active: false, updatedAt: new Date() }).where(eq(users.id, patient.userId));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 83,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(patients).where(eq(patients.id, id));"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 26,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/patients/[id]/route.ts",
+      "line": 71,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 114,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "const [updated] = await db.update(payments).set({"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 12,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 42,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 85,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 67,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "line": 131,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/portal/appointments/recurrence/route.ts",
+      "line": 31,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/appointments/recurrence/route.ts",
+      "line": 192,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/portal/appointments/route.ts",
+      "line": 22,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/appointments/route.ts",
+      "line": 57,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/appointments/route.ts",
+      "line": 243,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/portal/appointments/[id]/cancel/route.ts",
+      "line": 13,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/appointments/[id]/cancel/route.ts",
+      "line": 130,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/portal/appointments/[id]/cancel/route.ts",
+      "line": 141,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/portal/appointments/[id]/notes/route.ts",
+      "line": 12,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/appointments/[id]/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/consent/route.ts",
+      "line": 36,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(patients).set({ consentAcceptedAt: new Date() }).where(eq(patients.id, patient.id));"
+    },
+    {
+      "file": "src/app/api/portal/consent/route.ts",
+      "line": 8,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/consent/route.ts",
+      "line": 24,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/documents/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/evolution/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/payments/route.ts",
+      "line": 9,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/profile/password/route.ts",
+      "line": 10,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/triagem/route.ts",
+      "line": 11,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/triagem/route.ts",
+      "line": 65,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/portal/triagem/route.ts",
+      "line": 137,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/portal/triagem/route.ts",
+      "line": 169,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/app/api/profile/route.ts",
+      "line": 13,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/settings/route.ts",
+      "line": 10,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/settings/route.ts",
+      "line": 45,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/stripe/create-checkout/route.ts",
+      "line": 21,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/stripe/status/route.ts",
+      "line": 91,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(payments).set(updateData).where(eq(payments.id, paymentId));"
+    },
+    {
+      "file": "src/app/api/stripe/status/route.ts",
+      "line": 110,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(appointments).set(confirmData).where(eq(appointments.id, apt.id));"
+    },
+    {
+      "file": "src/app/api/stripe/status/route.ts",
+      "line": 19,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "const auth = await requireAuth();"
+    },
+    {
+      "file": "src/app/api/stripe/webhook/route.ts",
+      "line": 119,
+      "type": "update-no-tenant",
+      "severity": "high",
+      "description": "UPDATE — needs tenantId in WHERE clause",
+      "code": "await db.update(appointments).set(confirmData).where(eq(appointments.id, apt.id));"
+    },
+    {
+      "file": "src/app/api/stripe/webhook/route.ts",
+      "line": 134,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "await createNotification({"
+    },
+    {
+      "file": "src/lib/api-auth.ts",
+      "line": 5,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "export async function requireAdmin() {"
+    },
+    {
+      "file": "src/lib/api-auth.ts",
+      "line": 16,
+      "type": "session-no-tenant",
+      "severity": "high",
+      "description": "requireAuth() — needs to return tenantId",
+      "code": "export async function requireAuth() {"
+    },
+    {
+      "file": "src/lib/notifications.ts",
+      "line": 19,
+      "type": "notification-no-tenant",
+      "severity": "high",
+      "description": "Notification — needs tenantId parameter",
+      "code": "export async function createNotification(data: CreateNotification) {"
+    },
+    {
+      "file": "scripts/validate-local-flow.ts",
+      "line": 64,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(notifications).where(eq(notifications.paymentId, paymentId));"
+    },
+    {
+      "file": "scripts/validate-local-flow.ts",
+      "line": 65,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(payments).where(eq(payments.id, paymentId));"
+    },
+    {
+      "file": "scripts/validate-local-flow.ts",
+      "line": 71,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(notifications).where(eq(notifications.appointmentId, id));"
+    },
+    {
+      "file": "scripts/validate-local-flow.ts",
+      "line": 72,
+      "type": "delete-no-tenant",
+      "severity": "high",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(appointments).where(eq(appointments.id, id));"
+    },
+    {
+      "file": "src/app/api/stripe/create-checkout/route.ts",
+      "line": 77,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "const baseUrl = process.env.NEXTAUTH_URL || \"https://psicolobia.vercel.app\";"
+    },
+    {
+      "file": "src/app/blog/page.tsx",
+      "line": 14,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "alternates: { canonical: \"https://psicolobia.vercel.app/blog\" },"
+    },
+    {
+      "file": "src/app/blog/page.tsx",
+      "line": 20,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "url: \"https://psicolobia.vercel.app/blog\","
+    },
+    {
+      "file": "src/app/blog/[slug]/page.tsx",
+      "line": 17,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "const baseUrl = \"https://psicolobia.vercel.app\";"
+    },
+    {
+      "file": "src/app/blog/[slug]/page.tsx",
+      "line": 72,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "const baseUrl = \"https://psicolobia.vercel.app\";"
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "line": 20,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "metadataBase: new URL(\"https://psicolobia.vercel.app\"),"
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "line": 44,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "authors: [{ name: \"Beatriz Ribeiro\", url: \"https://psicolobia.vercel.app\" }],"
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "line": 56,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "url: \"https://psicolobia.vercel.app\","
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "line": 90,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "canonical: \"https://psicolobia.vercel.app\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 25,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "\"@id\": \"https://psicolobia.vercel.app/#organization\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 30,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "url: \"https://psicolobia.vercel.app\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 44,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "image: \"https://psicolobia.vercel.app/bia.png\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 45,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "logo: \"https://psicolobia.vercel.app/icon.svg\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 53,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "\"@id\": \"https://psicolobia.vercel.app/#beatriz\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 60,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "image: \"https://psicolobia.vercel.app/bia.png\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 61,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "url: \"https://psicolobia.vercel.app\","
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 113,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "item: \"https://psicolobia.vercel.app\","
+    },
+    {
+      "file": "src/app/robots.ts",
+      "line": 4,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "const baseUrl = \"https://psicolobia.vercel.app\";"
+    },
+    {
+      "file": "src/app/sitemap.ts",
+      "line": 7,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "const baseUrl = \"https://psicolobia.vercel.app\";"
+    },
+    {
+      "file": "src/components/admin/agenda-messages.ts",
+      "line": 22,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "const salaUrl = `https://psicolobia.vercel.app/portal/sala-espera/${apt.id}`;"
+    },
+    {
+      "file": "src/components/landing/PortalScreenCarousel.tsx",
+      "line": 529,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "psicolobia.vercel.app{screen.url}"
+    },
+    {
+      "file": "src/components/portal/PortalIllustrations.tsx",
+      "line": 138,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "psicolobia.vercel.app/portal"
+    },
+    {
+      "file": "src/lib/jitsi-config.ts",
+      "line": 9,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "medium",
+      "description": "Jitsi room prefix — should include tenant slug",
+      "code": "export const ROOM_PREFIX = \"psicolobia\";"
+    },
+    {
+      "file": "src/lib/jitsi.ts",
+      "line": 21,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "medium",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "export function buildRoomName(appointmentId: string): string {"
+    },
+    {
+      "file": "src/lib/jitsi.ts",
+      "line": 35,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "medium",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "return `https://${JITSI_DOMAIN}/${buildRoomName(appointmentId)}`;"
+    },
+    {
+      "file": "src/lib/jitsi.ts",
+      "line": 14,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "medium",
+      "description": "Jitsi room prefix — should include tenant slug",
+      "code": "import { JITSI_DOMAIN, ROOM_PREFIX } from \"./jitsi-config\";"
+    },
+    {
+      "file": "src/lib/jitsi.ts",
+      "line": 18,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "medium",
+      "description": "Jitsi room prefix — should include tenant slug",
+      "code": "export { JITSI_DOMAIN, ROOM_PREFIX, jitsiConfig, jitsiInterfaceConfig } from \"./jitsi-config\";"
+    },
+    {
+      "file": "src/lib/jitsi.ts",
+      "line": 30,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "medium",
+      "description": "Jitsi room prefix — should include tenant slug",
+      "code": "return `${ROOM_PREFIX}-${hash}`;"
+    },
+    {
+      "file": "src/lib/stripe.ts",
+      "line": 62,
+      "type": "hardcoded-url",
+      "severity": "medium",
+      "description": "Hardcoded domain — should be dynamic per tenant",
+      "code": "const baseUrl = process.env.NEXTAUTH_URL || \"https://psicolobia.vercel.app\";"
+    },
+    {
+      "file": "src/app/api/stripe/test-flow/route.ts",
+      "line": 102,
+      "type": "delete-no-tenant",
+      "severity": "low",
+      "description": "DELETE — needs tenantId in WHERE clause",
+      "code": "await db.delete(payments).where(eq(payments.id, payment.id));"
+    },
+    {
+      "file": "src/app/api/stripe/test-flow/route.ts",
+      "line": 32,
+      "type": "session-no-tenant",
+      "severity": "low",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/api/stripe/test-flow/route.ts",
+      "line": 152,
+      "type": "session-no-tenant",
+      "severity": "low",
+      "description": "requireAdmin() — needs to return tenantId",
+      "code": "const auth = await requireAdmin();"
+    },
+    {
+      "file": "src/app/portal/page.tsx",
+      "line": 5,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "import { WHATSAPP_LINK } from \"@/lib/utils\";"
+    },
+    {
+      "file": "src/app/portal/page.tsx",
+      "line": 223,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "<QuickAction href={WHATSAPP_LINK} icon={<MessageCircle className=\"w-5 h-5\" />} title=\"Falar com a Bea\" description=\"What"
+    },
+    {
+      "file": "src/components/landing/Contact.tsx",
+      "line": 5,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "import { WHATSAPP_LINK, INSTAGRAM_URL, TIKTOK_URL } from \"@/lib/utils\";"
+    },
+    {
+      "file": "src/components/landing/Contact.tsx",
+      "line": 49,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "{ icon: <Smartphone className=\"w-5 h-5 text-teal\" />, title: \"WhatsApp\", content: \"(11) 98884-0525\", href: WHATSAPP_LINK"
+    },
+    {
+      "file": "src/components/landing/Footer.tsx",
+      "line": 3,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "import { WHATSAPP_LINK, INSTAGRAM_URL, TIKTOK_URL } from \"@/lib/utils\";"
+    },
+    {
+      "file": "src/components/landing/Footer.tsx",
+      "line": 39,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "<li><a href={WHATSAPP_LINK} target=\"_blank\" rel=\"noopener\" className=\"text-sm hover:text-primary-light transition-colors"
+    },
+    {
+      "file": "src/components/landing/WhatsAppFloat.tsx",
+      "line": 4,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "import { WHATSAPP_LINK } from \"@/lib/utils\";"
+    },
+    {
+      "file": "src/components/landing/WhatsAppFloat.tsx",
+      "line": 9,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "href={WHATSAPP_LINK}"
+    },
+    {
+      "file": "src/lib/utils.ts",
+      "line": 94,
+      "type": "hardcoded-url",
+      "severity": "low",
+      "description": "WhatsApp link — should be per-tenant",
+      "code": "export const WHATSAPP_LINK = \"https://wa.me/5511988840525\";"
+    },
+    {
+      "file": "src/__tests__/jitsi.test.ts",
+      "line": 18,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "low",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "const name = buildRoomName(\"550e8400-e29b-41d4-a716-446655440000\");"
+    },
+    {
+      "file": "src/__tests__/jitsi.test.ts",
+      "line": 25,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "low",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "const a = buildRoomName(id);"
+    },
+    {
+      "file": "src/__tests__/jitsi.test.ts",
+      "line": 26,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "low",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "const b = buildRoomName(id);"
+    },
+    {
+      "file": "src/__tests__/jitsi.test.ts",
+      "line": 32,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "low",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "const a = buildRoomName(\"id-aaa\");"
+    },
+    {
+      "file": "src/__tests__/jitsi.test.ts",
+      "line": 33,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "low",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "const b = buildRoomName(\"id-bbb\");"
+    },
+    {
+      "file": "src/__tests__/jitsi.test.ts",
+      "line": 51,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "low",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "const name = buildRoomName(\"any-uuid\");"
+    },
+    {
+      "file": "src/__tests__/jitsi.test.ts",
+      "line": 64,
+      "type": "jitsi-no-tenant-prefix",
+      "severity": "low",
+      "description": "Jitsi room — needs tenant slug prefix",
+      "code": "const name = buildRoomName(\"appointment-auth-secret\");"
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 126,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(users).values({"
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 138,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [liaUser] = await db.insert(users).values({"
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 147,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [liaPatient] = await db.insert(patients).values({"
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 159,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(settings).values(["
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 173,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(availability).values("
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 187,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [completedSession] = await db.insert(appointments).values({"
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 209,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "const [liveSession] = await db.insert(appointments).values({"
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 226,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(clinicalRecords).values({"
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 242,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(payments).values(["
+    },
+    {
+      "file": "scripts/seed-lia-test.ts",
+      "line": 267,
+      "type": "insert-no-tenant",
+      "severity": "low",
+      "description": "INSERT — needs tenantId in values",
+      "code": "await db.insert(notifications).values(["
+    }
+  ]
+}

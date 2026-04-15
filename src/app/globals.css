@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #D4A574;
+    --primary-dark: #B8895C;
+    --primary-light: #E8C9A8;
+    --accent: #E8A0BF;
+    --accent-light: #F5C8DE;
+    --teal: #0f766e;
+    --teal-dark: #0a6158;
+    --sage: #e6f0eb;
+    --bg: #FFF5EE;
+    --bg-white: #FFFFFF;
+    --bg-soft: #FDE8D8;
+    --bg-warm: #F9EDE3;
+    --text: #3D2B1F;
+    --text-light: #6B5445;
+    --text-muted: #7D6E62;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body), 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* ── Buttons ── */
+  .btn-brand {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm cursor-pointer transition-all duration-300;
+  }
+  .btn-brand-primary {
+    @apply btn-brand bg-primary-dark text-white shadow-warm-md hover:bg-primary hover:text-white hover:-translate-y-0.5 hover:shadow-warm-lg;
+  }
+  .btn-brand-outline {
+    @apply btn-brand bg-transparent text-primary-dark border-2 border-primary hover:bg-primary hover:text-white hover:shadow-warm-md;
+  }
+  .btn-brand-accent {
+    @apply btn-brand bg-accent text-white shadow-warm-md hover:opacity-90 hover:-translate-y-0.5;
+  }
+
+  /* ── Shimmer button overlay ── */
+  .shimmer-btn {
+    @apply relative overflow-hidden;
+  }
+  .shimmer-btn::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  /* ── Section helpers ── */
+  .section-label {
+    @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-2;
+    color: var(--teal);
+  }
+  .section-label::before {
+    content: '';
+    @apply w-8 h-0.5 rounded-full;
+    background: linear-gradient(90deg, var(--primary), var(--teal));
+  }
+  .section-title {
+    @apply font-heading text-2xl md:text-3xl lg:text-4xl font-semibold text-txt leading-tight mb-3;
+  }
+
+  /* ── Card ── */
+  .card {
+    @apply bg-white rounded-brand p-6 shadow-warm-md transition-all duration-300 hover:shadow-warm-lg hover:-translate-y-1;
+  }
+
+  /* ── Liquid Glass 2.0 ── */
+  .glass {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(40px) saturate(1.4);
+    -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow:
+      0 4px 12px -2px rgba(212, 165, 116, 0.12),
+      inset 0 0 25px -5px rgba(212, 165, 116, 0.06);
+  }
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(50px) saturate(1.5);
+    -webkit-backdrop-filter: blur(50px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow:
+      0 8px 20px -4px rgba(212, 165, 116, 0.16),
+      inset 0 0 30px -5px rgba(212, 165, 116, 0.08);
+  }
+  .glass-glow {
+    background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25));
+    backdrop-filter: blur(40px) saturate(1.4);
+    -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+      0 0 30px -10px rgba(232, 160, 191, 0.25),
+      inset 0 0 20px -5px rgba(212, 165, 116, 0.08);
+  }
+
+  /* ── Gradient mesh background ── */
+  .gradient-mesh {
+    background: linear-gradient(
+      -45deg,
+      var(--bg),
+      var(--bg-soft),
+      var(--sage),
+      var(--bg-warm)
+    );
+    background-size: 400% 400%;
+    animation: mesh-shift 15s ease infinite;
+  }
+}
+
+@layer utilities {
+  .animate-reveal {
+    animation: reveal 0.6s ease forwards;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Reduced motion: disable ALL custom animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

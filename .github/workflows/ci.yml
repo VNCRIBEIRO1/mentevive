@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "22"
+  # Stub env vars for build (not real credentials)
+  DATABASE_URL: "postgresql://stub:stub@stub/stub?sslmode=require"
+  NEXTAUTH_SECRET: "ci-test-secret-do-not-use-in-production"
+  NEXTAUTH_URL: "http://localhost:3000"
+
+jobs:
+  ci:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests
+        run: npm run test:run
+
+      - name: Build
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"

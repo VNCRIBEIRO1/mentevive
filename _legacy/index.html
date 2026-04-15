@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psicolobia — Beatriz | Psicóloga Clínica Online</title>
+<meta name="description" content="Beatriz (Bea) — Psicóloga Clínica. Especialista no emocional de quem vive da internet. +3500 atendimentos. Terapia online acolhedora, escuta sensível e autoconhecimento.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='36' height='36' rx='8' fill='%23D4A574'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='white' font-family='serif'%3EΨ%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Psicolobia — Beatriz | Psicóloga Clínica Online">
+<meta property="og:description" content="Beatriz (Bea) — Especialista no emocional de quem vive da internet. +3500 atendimentos. Terapia online acolhedora e escuta sensível.">
+<meta property="og:url" content="https://psicolobia.vercel.app">
+<link rel="canonical" href="https://psicolobia.vercel.app">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Commissioner:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#D4A574;--primary-dark:#B8895C;--primary-light:#E8C9A8;
+  --accent:#E8A0BF;--accent-light:#F5C8DE;
+  --bg:#FFF5EE;--bg-white:#FFFFFF;--bg-soft:#FDE8D8;--bg-warm:#F9EDE3;
+  --text:#3D2B1F;--text-light:#6B5445;--text-muted:#A08E82;
+  --heading:'Fraunces',Georgia,serif;
+  --body:'Commissioner',system-ui,sans-serif;
+  --radius:18px;--radius-sm:10px;--radius-full:50px;
+  --shadow:0 4px 20px rgba(212,165,116,0.1);
+  --shadow-lg:0 12px 40px rgba(212,165,116,0.15);
+  --transition:0.3s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{text-decoration:none;color:inherit}img{max-width:100%;display:block}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.section-label{display:inline-flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem}
+.section-label::before{content:'';width:24px;height:2px;background:var(--primary);border-radius:2px}
+.section-title{font-family:var(--heading);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:600;color:var(--text);line-height:1.25;margin-bottom:.75rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.65rem;border-radius:var(--radius-full);font-family:var(--body);font-size:.88rem;font-weight:700;cursor:pointer;transition:var(--transition);border:none}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 15px rgba(212,165,116,0.25)}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-2px);box-shadow:0 8px 25px rgba(212,165,116,0.3)}
+.btn-outline{background:transparent;color:var(--primary-dark);border:2px solid var(--primary)}
+.btn-outline:hover{background:var(--primary);color:#fff}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 4px 15px rgba(232,160,191,0.2)}
+.btn-accent:hover{background:#D08AAB;transform:translateY(-2px)}
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--primary);color:#fff;padding:.75rem 1.5rem;border-radius:0 0 8px 8px;z-index:200}.skip-link:focus{top:0}
+
+/* HEADER */
+.header{position:fixed;top:0;left:0;right:0;z-index:100;padding:.85rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(255,245,238,0.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,165,116,0.08);transition:var(--transition)}
+.header.scrolled{background:rgba(255,255,255,0.95);box-shadow:var(--shadow)}
+.logo{display:flex;align-items:center;gap:.65rem}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--heading);font-size:1.3rem;font-weight:700}
+.logo-text{font-family:var(--heading);font-size:1.15rem;font-weight:600;color:var(--text)}
+.logo-sub{font-size:.6rem;color:var(--text-muted);display:block}
+nav{display:flex;align-items:center;gap:1.5rem}
+nav a{font-size:.82rem;font-weight:600;color:var(--text-light);transition:var(--transition)}
+nav a:hover{color:var(--primary-dark)}
+.hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:5px}
+.hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px}
+.mobile-nav{position:fixed;inset:0;background:rgba(255,245,238,0.98);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;opacity:0;pointer-events:none;transition:var(--transition)}
+.mobile-nav.open{opacity:1;pointer-events:all}
+.mobile-nav a{font-family:var(--heading);font-size:1.2rem}
+.mobile-close{position:absolute;top:1.5rem;right:1.5rem;background:none;border:none;font-size:1.8rem;cursor:pointer}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem 4rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0;opacity:.12}
+.hero-bg::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:var(--primary);filter:blur(100px);top:-100px;right:-100px}
+.hero-bg::after{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:var(--accent);filter:blur(100px);bottom:-80px;left:-80px}
+.hero-content{position:relative;z-index:1;max-width:650px}
+.hero-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem 1rem;background:rgba(212,165,116,0.1);border:1px solid rgba(212,165,116,0.15);border-radius:var(--radius-full);font-size:.72rem;font-weight:700;color:var(--primary-dark);margin-bottom:1.5rem}
+.hero h1{font-family:var(--heading);font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1rem}
+.hero h1 .warm{color:var(--primary-dark)}
+.hero h1 .pink{color:var(--accent)}
+.hero p{font-size:1rem;color:var(--text-light);max-width:500px;margin:0 auto 2rem;line-height:1.85}
+.hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.hero-img{margin-top:2.5rem;display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.hero-img img{width:140px;height:180px;object-fit:cover;border-radius:20px;box-shadow:var(--shadow-lg)}
+.hero-img img:nth-child(2){margin-top:1.5rem}
+
+/* JOURNEY */
+.journey{padding:5rem 2rem;background:var(--bg-white)}
+.journey-timeline{display:flex;gap:0;margin-top:2.5rem;position:relative;overflow-x:auto;padding:1rem 0}
+.jt-step{flex:1;min-width:200px;text-align:center;padding:0 1rem;position:relative}
+.jt-step::before{content:'';position:absolute;top:26px;left:50%;right:-50%;height:2px;background:var(--bg-soft);z-index:0}
+.jt-step:last-child::before{display:none}
+.jt-num{width:52px;height:52px;border-radius:50%;background:var(--bg);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-family:var(--heading);font-weight:700;font-size:1.1rem;color:var(--primary-dark);margin:0 auto .75rem;position:relative;z-index:1;transition:var(--transition)}
+.jt-step:hover .jt-num{background:var(--primary);color:#fff}
+.jt-step h3{font-family:var(--heading);font-size:.95rem;font-weight:600;margin-bottom:.25rem}
+.jt-step p{font-size:.78rem;color:var(--text-light);line-height:1.7}
+
+/* ABOUT */
+.about{padding:5rem 2rem}
+.about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:3rem;align-items:center;max-width:1100px;margin:0 auto}
+.about-img{position:relative}
+.about-img img{border-radius:24px 24px 24px 80px;box-shadow:var(--shadow-lg);height:450px;object-fit:cover;width:100%}
+.about-badge{position:absolute;bottom:20px;right:20px;background:var(--bg-white);padding:1rem 1.5rem;border-radius:var(--radius);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:.75rem}
+.about-badge .ab-icon{width:40px;height:40px;background:var(--bg-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.about-badge .ab-text{font-size:.85rem;font-weight:700}
+.about-badge .ab-sub{font-size:.68rem;color:var(--text-muted)}
+.about-text p{font-size:.92rem;color:var(--text-light);line-height:1.85;margin-bottom:1rem}
+
+/* SERVICES */
+.services{padding:5rem 2rem;background:var(--bg-warm)}
+.serv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:2.5rem}
+.serv-card{background:var(--bg-white);border-radius:var(--radius);padding:1.75rem;box-shadow:var(--shadow);transition:var(--transition);border-top:3px solid transparent}
+.serv-card:hover{transform:translateY(-5px);border-top-color:var(--primary);box-shadow:var(--shadow-lg)}
+.serv-card .sc-icon{font-size:2rem;margin-bottom:.75rem}
+.serv-card h3{font-family:var(--heading);font-size:1rem;font-weight:600;margin-bottom:.4rem}
+.serv-card .sc-price{font-size:.82rem;font-weight:700;color:var(--primary-dark);margin-bottom:.5rem}
+.serv-card p{font-size:.8rem;color:var(--text-light);line-height:1.7}
+
+/* WAITING ROOM */
+.waiting-room{padding:5rem 2rem;background:var(--bg-white)}
+.wr-card{max-width:650px;margin:2rem auto 0;background:var(--bg);border-radius:var(--radius);padding:2.5rem;box-shadow:var(--shadow);text-align:center}
+.wr-status{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:var(--radius-full);font-size:.78rem;font-weight:700;margin-bottom:1rem}
+.wr-status.waiting{background:rgba(241,196,15,0.1);color:#D4A017;border:1px solid rgba(241,196,15,0.2)}
+.wr-status.ready{background:rgba(46,204,113,0.1);color:#27AE60;border:1px solid rgba(46,204,113,0.2)}
+.wr-timer{font-family:var(--heading);font-size:3rem;font-weight:700;color:var(--primary-dark);margin:1rem 0}
+.wr-message{font-size:.9rem;color:var(--text-light);margin-bottom:1.5rem;line-height:1.8}
+.wr-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.wr-tips{margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(212,165,116,0.15)}
+.wr-tips h4{font-family:var(--heading);font-size:.95rem;font-weight:600;margin-bottom:.75rem}
+.wr-tip{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text-light);margin-bottom:.4rem}
+
+/* GROUPS */
+.groups{padding:5rem 2rem}
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:2.5rem}
+.group-card{background:var(--bg-white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:var(--transition)}
+.group-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.group-card img{width:100%;height:160px;object-fit:cover}
+.gc-body{padding:1.25rem}
+.gc-tag{display:inline-block;padding:.2rem .55rem;border-radius:var(--radius-full);font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.gc-tag.online{background:rgba(46,204,113,0.1);color:#27AE60}
+.gc-tag.presencial{background:rgba(212,165,116,0.15);color:var(--primary-dark)}
+.group-card h3{font-family:var(--heading);font-size:1rem;font-weight:600;margin-bottom:.3rem}
+.gc-info{font-size:.75rem;color:var(--text-muted);margin-bottom:.5rem}
+.group-card p{font-size:.8rem;color:var(--text-light);line-height:1.7}
+
+/* TESTIMONIALS */
+.testimonials{padding:5rem 2rem;background:var(--bg-warm)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:2.5rem}
+.test-card{background:var(--bg-white);padding:1.75rem;border-radius:var(--radius);box-shadow:var(--shadow);transition:var(--transition);border-left:3px solid var(--accent)}
+.test-card:hover{box-shadow:var(--shadow-lg)}
+.tc-stars{color:#F9CA24;font-size:.8rem;margin-bottom:.5rem;letter-spacing:2px}
+.tc-quote{font-size:.85rem;color:var(--text-light);line-height:1.8;font-style:italic;margin-bottom:.75rem}
+.tc-author{font-size:.82rem;font-weight:700;color:var(--primary-dark)}
+.tc-since{font-size:.68rem;color:var(--text-muted)}
+
+/* SCHEDULING */
+.scheduling{padding:5rem 2rem;background:var(--bg-white)}
+.sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:2.5rem;max-width:1100px;margin-left:auto;margin-right:auto}
+.sched-calendar{background:var(--bg);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow)}
+.sched-cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.sched-cal-header h3{font-family:var(--heading);font-size:1rem;font-weight:600}
+.sched-cal-nav{display:flex;gap:.5rem}
+.sched-cal-nav button{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--primary);background:transparent;color:var(--primary-dark);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.sched-cal-nav button:hover{background:var(--primary);color:#fff}
+.sched-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.sched-cal-grid .day-label{font-size:.65rem;font-weight:700;color:var(--text-muted);padding:.25rem 0}
+.sched-cal-grid .day{font-size:.78rem;padding:.4rem;border-radius:8px;cursor:pointer;transition:var(--transition);border:none;background:transparent;color:var(--text);font-family:var(--body)}
+.sched-cal-grid .day:hover:not(.disabled):not(.empty){background:var(--bg-soft)}
+.sched-cal-grid .day.today{border:2px solid var(--primary);font-weight:700}
+.sched-cal-grid .day.selected{background:var(--primary);color:#fff;font-weight:700}
+.sched-cal-grid .day.disabled{color:var(--text-muted);opacity:.4;cursor:default}
+.sched-cal-grid .day.empty{cursor:default}
+.sched-slots{margin-top:1.25rem}
+.sched-slots h4{font-family:var(--heading);font-size:.9rem;font-weight:600;margin-bottom:.75rem}
+.sched-slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem}
+.sched-slot{padding:.4rem .5rem;border-radius:var(--radius-sm);border:1.5px solid rgba(212,165,116,0.2);background:var(--bg-white);font-size:.75rem;font-weight:600;cursor:pointer;text-align:center;transition:var(--transition);font-family:var(--body);color:var(--text)}
+.sched-slot:hover:not(.taken){border-color:var(--primary);background:rgba(212,165,116,0.05)}
+.sched-slot.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
+.sched-slot.taken{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.sched-form{background:var(--bg);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow)}
+.sched-form h3{font-family:var(--heading);font-size:1rem;font-weight:600;margin-bottom:1.25rem}
+.sched-type{display:flex;gap:.75rem;margin-bottom:1.25rem}
+.sched-type-btn{flex:1;padding:.65rem;border-radius:var(--radius-sm);border:1.5px solid rgba(212,165,116,0.2);background:var(--bg-white);font-size:.8rem;font-weight:600;cursor:pointer;text-align:center;transition:var(--transition);font-family:var(--body);color:var(--text)}
+.sched-type-btn:hover{border-color:var(--primary)}
+.sched-type-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.sched-summary{background:var(--bg-soft);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem;font-size:.8rem;line-height:1.8;color:var(--text-light)}
+.sched-summary strong{color:var(--primary-dark)}
+
+/* BLOG */
+.blog{padding:5rem 2rem;background:var(--bg-warm)}
+.blog-carousel{position:relative;margin-top:2.5rem;overflow:hidden}
+.blog-track{display:flex;gap:1.25rem;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.blog-slide{min-width:calc(33.333% - .84rem);background:var(--bg-white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:var(--transition);flex-shrink:0}
+.blog-slide:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.blog-slide img{width:100%;height:180px;object-fit:cover}
+.blog-body{padding:1.25rem}
+.blog-tag{display:inline-block;padding:.2rem .55rem;border-radius:var(--radius-full);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(212,165,116,0.12);color:var(--primary-dark);margin-bottom:.5rem}
+.blog-slide h3{font-family:var(--heading);font-size:.95rem;font-weight:600;margin-bottom:.35rem;line-height:1.35}
+.blog-slide p{font-size:.78rem;color:var(--text-light);line-height:1.7;margin-bottom:.75rem}
+.blog-date{font-size:.68rem;color:var(--text-muted)}
+.blog-nav{display:flex;justify-content:center;gap:.75rem;margin-top:1.5rem}
+.blog-nav button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--primary);background:transparent;color:var(--primary-dark);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.blog-nav button:hover{background:var(--primary);color:#fff}
+.blog-dots{display:flex;gap:.4rem;justify-content:center;margin-top:1rem}
+.blog-dot{width:8px;height:8px;border-radius:50%;background:var(--primary-light);border:none;cursor:pointer;transition:var(--transition)}
+.blog-dot.active{background:var(--primary);width:24px;border-radius:4px}
+
+/* CONTACT */
+.contact{padding:5rem 2rem;background:var(--bg-white)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2.5rem}
+.ci-card{display:flex;gap:.85rem;padding:1.15rem;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:.75rem;transition:var(--transition)}
+.ci-card:hover{box-shadow:var(--shadow)}
+.ci-icon{width:42px;height:42px;background:var(--bg-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ci-card h4{font-size:.82rem;font-weight:700}
+.ci-card p{font-size:.78rem;color:var(--text-light)}
+.form-card{background:var(--bg);border-radius:var(--radius);padding:2rem}
+.form-card h3{font-family:var(--heading);font-size:1.1rem;font-weight:600;margin-bottom:1.25rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.78rem;font-weight:700;margin-bottom:.3rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.65rem .85rem;border:1.5px solid rgba(212,165,116,0.15);border-radius:var(--radius-sm);font-family:var(--body);font-size:.85rem;background:var(--bg-white);color:var(--text);transition:var(--transition)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(212,165,116,0.1)}
+.form-group textarea{resize:vertical;min-height:75px}
+
+/* FOOTER */
+.footer{background:var(--text);color:rgba(255,255,255,0.6);padding:3.5rem 2rem 1.5rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:2.5rem;max-width:1100px;margin:0 auto}
+.footer h4{color:#fff;font-family:var(--heading);font-size:1rem;margin-bottom:.75rem}
+.footer p,.footer a{font-size:.8rem;line-height:1.8}
+.footer a:hover{color:var(--primary-light)}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.06);margin-top:2rem;padding-top:1rem;text-align:center;max-width:1100px;margin-left:auto;margin-right:auto}
+.footer-bottom p{font-size:.66rem;color:rgba(255,255,255,0.3);line-height:1.8}
+
+/* CHATBOT */
+.chat-toggle{position:fixed;bottom:2rem;right:2rem;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:90;box-shadow:0 4px 20px rgba(212,165,116,0.3);transition:var(--transition)}
+.chat-toggle:hover{transform:scale(1.08)}
+.chat-toggle svg{width:24px;height:24px;fill:#fff}
+.chat-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:var(--accent);border-radius:50%;font-size:.6rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center}
+.chatbox{position:fixed;bottom:6rem;right:2rem;width:350px;max-height:480px;background:var(--bg-white);border:1px solid rgba(212,165,116,0.15);border-radius:var(--radius);display:flex;flex-direction:column;z-index:91;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(20px) scale(.95);pointer-events:none;transition:.3s ease}
+.chatbox.open{opacity:1;transform:none;pointer-events:all}
+.cb-header{background:linear-gradient(135deg,var(--primary),var(--accent));padding:1rem 1.25rem;border-radius:var(--radius) var(--radius) 0 0;display:flex;justify-content:space-between;align-items:center}
+.cb-header h4{color:#fff;font-family:var(--heading);font-size:.88rem}
+.cb-header button{background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:1.2rem}
+.cb-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem;max-height:310px}
+.cb-msg{max-width:85%;padding:.55rem .85rem;border-radius:12px;font-size:.78rem;line-height:1.6;animation:msgIn .3s ease}
+.cb-bot{background:var(--bg);align-self:flex-start;border-bottom-left-radius:4px;color:var(--text)}
+.cb-user{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.cb-options{display:flex;flex-wrap:wrap;gap:.35rem;padding:0 1rem .75rem}
+.cb-opt{padding:.3rem .65rem;background:var(--bg);border:1px solid rgba(212,165,116,0.15);border-radius:var(--radius-full);font-size:.7rem;cursor:pointer;transition:var(--transition);font-family:var(--body);color:var(--text)}
+.cb-opt:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* FLOAT */
+.back-top{position:fixed;bottom:5.5rem;right:2rem;width:42px;height:42px;background:var(--primary);color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:89;opacity:0;transition:var(--transition)}
+.back-top.visible{opacity:1}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--primary);color:#fff;padding:1rem 2rem;border-radius:var(--radius-sm);font-weight:600;z-index:300;transition:.4s ease;opacity:0;font-size:.85rem}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.reveal{opacity:0;transform:translateY(25px);transition:.6s ease}.reveal.active{opacity:1;transform:none}
+
+/* WHATSAPP FLOAT */
+.whatsapp-float{position:fixed;bottom:2rem;left:2rem;display:flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;background:#25D366;color:#fff;border-radius:var(--radius-full);font-size:.8rem;font-weight:700;z-index:90;box-shadow:0 4px 15px rgba(37,211,102,0.3);transition:var(--transition)}
+.whatsapp-float:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(37,211,102,0.4)}
+.whatsapp-float svg{width:20px;height:20px;fill:#fff}
+
+@media(max-width:1024px){
+  nav{display:none}.hamburger{display:flex}
+  .about-grid{grid-template-columns:1fr}
+  .about-img{max-width:420px;margin:0 auto}
+  .contact-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .journey-timeline{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .sched-grid{grid-template-columns:1fr}
+  .blog-slide{min-width:calc(50% - .625rem)}
+}
+@media(max-width:768px){
+  .hero-img img{width:110px;height:140px}
+  .chatbox{width:calc(100vw - 2rem);right:1rem;bottom:5.5rem}
+  .jt-step{min-width:160px}
+  .blog-slide{min-width:100%}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reveal{opacity:1!important;transform:none!important}}
+@media print{.header,.whatsapp-float,.back-top,.chat-toggle,.chatbox,.mobile-nav{display:none!important}body{background:#fff!important;color:#000!important}}
+*:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Pular para o conteúdo</a>
+
+<header class="header" id="header">
+  <a href="#" class="logo">
+    <div class="logo-icon">Ψ</div>
+    <div><span class="logo-text">Psicolobia</span><span class="logo-sub">Beatriz · Psicóloga Clínica</span></div>
+  </a>
+  <nav>
+    <a href="#jornada">Jornada</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#servicos">Serviços</a>
+    <a href="#agendamento">Agendar</a>
+    <a href="#sala-espera">Sala de Espera</a>
+    <a href="#grupos">Grupos</a>
+    <a href="#blog">Blog</a>
+    <a href="#contato">Contato</a>
+    <a href="#agendamento" class="btn btn-primary" style="padding:.45rem 1.15rem;font-size:.78rem">🌿 Agendar</a>
+  </nav>
+  <button class="hamburger" onclick="document.getElementById('mobileNav').classList.add('open')" aria-label="Menu"><span></span><span></span><span></span></button>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" onclick="this.parentElement.classList.remove('open')">✕</button>
+  <a href="#jornada" onclick="this.parentElement.classList.remove('open')">Jornada</a>
+  <a href="#sobre" onclick="this.parentElement.classList.remove('open')">Sobre</a>
+  <a href="#servicos" onclick="this.parentElement.classList.remove('open')">Serviços</a>
+  <a href="#agendamento" onclick="this.parentElement.classList.remove('open')">Agendar</a>
+  <a href="#sala-espera" onclick="this.parentElement.classList.remove('open')">Sala de Espera</a>
+  <a href="#blog" onclick="this.parentElement.classList.remove('open')">Blog</a>
+  <a href="#contato" onclick="this.parentElement.classList.remove('open')">Contato</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="main">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🌿 Beatriz (Bea) · Psicóloga Clínica — +3500 atendimentos</div>
+    <h1>Especialista no <span class="warm">emocional</span> de quem vive da <span class="pink">internet</span></h1>
+    <p>Terapia online acolhedora com escuta sensível. Sem pressa, sem moldes, sem máscaras. Cada história merece ser acolhida de verdade.</p>
+    <div class="hero-buttons">
+      <a href="#agendamento" class="btn btn-primary">🌿 Agendar Sessão</a>
+      <a href="#sobre" class="btn btn-outline">Conheça a Profissional</a>
+    </div>
+    <div class="hero-img">
+      <img src="bia.png" alt="Beatriz — Psicóloga Clínica Psicolobia" loading="lazy">
+      <img src="bia2.png" alt="Beatriz — Atendimento Online" loading="lazy">
+      <img src="d8c8b95a-66b4-4772-9b12-585389398176_IMG-4019.webp" alt="Beatriz — Consultório Psicolobia" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- PATIENT JOURNEY -->
+<section class="journey" id="jornada">
+  <div class="container" style="text-align:center">
+    <div class="section-label" style="justify-content:center;display:flex">Sua Jornada</div>
+    <h2 class="section-title">Como Funciona o Processo Terapêutico</h2>
+    <p style="color:var(--text-light);max-width:550px;margin:0 auto">Cada etapa é pensada para que você se sinta seguro e acolhido do primeiro contato ao acompanhamento contínuo.</p>
+    <div class="journey-timeline reveal">
+      <div class="jt-step"><div class="jt-num">1</div><h3>Primeiro Contato</h3><p>Envie uma mensagem ou entre em contato por WhatsApp. Respondo em até 2h.</p></div>
+      <div class="jt-step"><div class="jt-num">2</div><h3>Triagem Inicial</h3><p>Uma conversa breve para entender sua demanda e definir o melhor caminho.</p></div>
+      <div class="jt-step"><div class="jt-num">3</div><h3>Sessão de Acolhimento</h3><p>Primeira sessão sem compromisso. Conhecemos juntos o espaço terapêutico.</p></div>
+      <div class="jt-step"><div class="jt-num">4</div><h3>Processo Contínuo</h3><p>Sessões semanais ou quinzenais. Plano terapêutico personalizado.</p></div>
+      <div class="jt-step"><div class="jt-num">5</div><h3>Alta Terapêutica</h3><p>Quando estiver pronto, encerramos juntos com carinho e autonomia.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="sobre">
+  <div class="about-grid">
+    <div class="about-img reveal">
+      <img src="bia.png" alt="Beatriz — Psicóloga Clínica Psicolobia">
+      <div class="about-badge">
+        <div class="ab-icon">🌸</div>
+        <div><div class="ab-text">+3500 Atendimentos</div><div class="ab-sub">Escuta sensível e acolhimento</div></div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="section-label">Sobre Mim</div>
+      <h2 class="section-title">Beatriz (Bea)</h2>
+      <p>Psicóloga Clínica especialista no emocional de quem vive da internet. Já realizei mais de 3500 atendimentos e construí uma metodologia própria, baseada na escuta sensível, na ética e na profundidade de quem acredita que cada história merece ser acolhida.</p>
+      <p>Meu trabalho nasce do compromisso com a vida real. Já atravessei madrugadas em ligação, porque cuidar, para mim, nunca foi um horário — é uma vocação. Sem pressa, sem moldes, sem máscaras.</p>
+      <p>Atendo online, mas o vínculo é vivo, humano e presente. Se você sente que é hora de ser escutado de verdade, talvez seja hora de me encontrar.</p>
+      <!-- PREENCHER: adicionar formação acadêmica, universidade, CRP e especializações quando disponíveis -->
+      <p><strong style="color:var(--primary-dark)">Psicóloga Clínica</strong> • Terapia Online • Especialista em Saúde Mental Digital • +3500 Atendimentos</p>
+      <p style="margin-top:.5rem"><a href="https://www.instagram.com/psicolobiaa" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">📸 @psicolobiaa</a> &nbsp; <a href="https://www.tiktok.com/@psicolobiaa" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">🎵 TikTok</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="servicos">
+  <div class="container">
+    <div class="section-label">Serviços</div>
+    <h2 class="section-title">Modalidades de Atendimento</h2>
+    <div class="serv-grid reveal">
+      <div class="serv-card"><div class="sc-icon">🌿</div><h3>Terapia Individual</h3><div class="sc-price">50 min</div><p>Sessões presenciais ou online. Acolhimento, escuta e autoconhecimento em um espaço seguro.</p></div>
+      <div class="serv-card"><div class="sc-icon">🧒</div><h3>Terapia Infantil</h3><div class="sc-price">45 min</div><p>Através do brincar, a criança expressa e elabora suas emoções de forma lúdica e acolhedora.</p></div>
+      <div class="serv-card"><div class="sc-icon">👩‍💻</div><h3>Terapia Online</h3><div class="sc-price">50 min</div><p>Atendimento por videochamada com a mesma qualidade. Ideal para quem busca flexibilidade.</p></div>
+      <div class="serv-card"><div class="sc-icon">👥</div><h3>Grupo Terapêutico</h3><div class="sc-price">90 min</div><p>Grupos de 6 a 8 pessoas. Encontros semanais com temas como autoestima, ansiedade e empoderamento.</p></div>
+      <div class="serv-card"><div class="sc-icon">💑</div><h3>Terapia de Casal</h3><div class="sc-price">60 min</div><p>Espaço para diálogo e reconexão. Comunicação assertiva e reconstrução de vínculos afetivos.</p></div>
+      <div class="serv-card"><div class="sc-icon">🏢</div><h3>Palestras & Workshops</h3><div class="sc-price">Consultar</div><p>Temas como saúde mental no trabalho, gestão emocional, parentalidade consciente.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULING -->
+<section class="scheduling" id="agendamento">
+  <div class="container" style="text-align:center">
+    <div class="section-label" style="justify-content:center;display:flex">Agendamento</div>
+    <h2 class="section-title">Agende sua Sessão</h2>
+    <p style="color:var(--text-light);max-width:520px;margin:0 auto">Escolha a data, horário e modalidade que melhor funciona para você. Retornaremos a confirmação por e-mail.</p>
+  </div>
+  <div class="sched-grid reveal">
+    <div>
+      <div class="sched-calendar">
+        <div class="sched-cal-header">
+          <h3 id="schedMonthYear"></h3>
+          <div class="sched-cal-nav">
+            <button onclick="schedChangeMonth(-1)" aria-label="Mês anterior">‹</button>
+            <button onclick="schedChangeMonth(1)" aria-label="Próximo mês">›</button>
+          </div>
+        </div>
+        <div class="sched-cal-grid" id="schedCalGrid"></div>
+      </div>
+      <div class="sched-slots">
+        <h4>🕐 Horários Disponíveis — <span id="schedSelectedDate">Selecione uma data</span></h4>
+        <div class="sched-slots-grid" id="schedSlotsGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:1rem;font-size:.82rem;color:var(--text-muted)">Selecione uma data no calendário acima</div>
+        </div>
+      </div>
+    </div>
+    <div class="sched-form">
+      <h3>📋 Dados do Agendamento</h3>
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-size:.78rem;font-weight:700;margin-bottom:.5rem">Modalidade</label>
+        <div class="sched-type">
+          <button class="sched-type-btn active" onclick="selectSchedType(this,'Presencial')" type="button">🏢 Presencial</button>
+          <button class="sched-type-btn" onclick="selectSchedType(this,'Videochamada')" type="button">📹 Videochamada</button>
+        </div>
+      </div>
+      <div class="sched-summary" id="schedSummary">
+        <strong>Resumo:</strong> Nenhum horário selecionado ainda.
+      </div>
+      <form onsubmit="submitScheduling(event)">
+        <div class="form-group"><label>Nome completo *</label><input type="text" id="schedName" required placeholder="Seu nome completo"></div>
+        <div class="form-group"><label>E-mail *</label><input type="email" id="schedEmail" required placeholder="seu@email.com"></div>
+        <div class="form-group"><label>Telefone *</label><input type="tel" id="schedPhone" required placeholder="(00) 99999-9999"></div>
+        <div class="form-group"><label>Observações</label><textarea id="schedNotes" placeholder="Algo que gostaria de compartilhar antes da sessão?" rows="3"></textarea></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Solicitar Agendamento 🌿</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- VIRTUAL WAITING ROOM -->
+<section class="waiting-room" id="sala-espera">
+  <div class="container" style="text-align:center">
+    <div class="section-label" style="justify-content:center;display:flex">Sala de Espera Virtual</div>
+    <h2 class="section-title">Prepare-se para sua Sessão</h2>
+    <p style="color:var(--text-light);max-width:520px;margin:0 auto">Um espaço virtual para você se preparar emocionalmente antes de iniciar sua sessão online.</p>
+  </div>
+  <div class="wr-card reveal" id="wrCard">
+    <div class="wr-status waiting" id="wrStatus">⏳ Aguardando sua sessão</div>
+    <div class="wr-timer" id="wrTimer">--:--</div>
+    <div class="wr-message" id="wrMessage">Clique em "Iniciar Espera" quando estiver a 15 minutos da sua sessão. Enquanto aguarda, respire fundo e se prepare para o momento.</div>
+    <div class="wr-actions">
+      <button class="btn btn-primary" id="wrStart" onclick="startWaiting()">🌿 Iniciar Espera</button>
+      <button class="btn btn-accent" id="wrJoin" onclick="joinSession()" style="display:none">📹 Entrar na Sessão</button>
+    </div>
+    <div class="wr-tips">
+      <h4>🧘 Enquanto Espera...</h4>
+      <div class="wr-tip">🌬️ Faça 3 respirações profundas — inspire em 4s, expire em 6s</div>
+      <div class="wr-tip">📱 Coloque seu celular no silencioso</div>
+      <div class="wr-tip">💧 Tenha um copo de água ao alcance</div>
+      <div class="wr-tip">🪑 Acomode-se em um lugar tranquilo e confortável</div>
+      <div class="wr-tip">📝 Se quiser, anote o que gostaria de compartilhar hoje</div>
+    </div>
+  </div>
+</section>
+
+<!-- GROUPS -->
+<section class="groups" id="grupos">
+  <div class="container">
+    <div class="section-label">Grupos Terapêuticos</div>
+    <h2 class="section-title">Crescer Junto é Mais Leve</h2>
+    <div class="groups-grid reveal">
+      <div class="group-card">
+        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&q=80&auto=format&fit=crop" alt="Grupo mulheres" loading="lazy">
+        <div class="gc-body">
+          <span class="gc-tag presencial">Presencial</span>
+          <h3>Círculo de Mulheres</h3>
+          <div class="gc-info">Quartas, 19h • 8 vagas</div>
+          <p>Espaço de acolhimento, partilha e empoderamento feminino. Autoestima, limites e autocuidado.</p>
+        </div>
+      </div>
+      <div class="group-card">
+        <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=500&q=80&auto=format&fit=crop" alt="Grupo ansiedade" loading="lazy">
+        <div class="gc-body">
+          <span class="gc-tag online">Online</span>
+          <h3>Manejo da Ansiedade</h3>
+          <div class="gc-info">Terças, 20h • 6 vagas</div>
+          <p>Técnicas de respiração, mindfulness e estratégias para lidar com a ansiedade no dia a dia.</p>
+        </div>
+      </div>
+      <div class="group-card">
+        <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=500&q=80&auto=format&fit=crop" alt="Grupo autoestima" loading="lazy">
+        <div class="gc-body">
+          <span class="gc-tag presencial">Presencial</span>
+          <h3>Autoestima & Autoconhecimento</h3>
+          <div class="gc-info">Sextas, 14h • 8 vagas</div>
+          <p>Jornada de 8 encontros para fortalecer a relação consigo mesmo e descobrir seu valor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="container">
+    <div class="section-label">Depoimentos</div>
+    <h2 class="section-title">Histórias de Transformação</h2>
+    <div class="test-grid reveal">
+      <div class="test-card"><div class="tc-stars">★★★★★</div><div class="tc-quote">"Encontrei um espaço onde posso ser eu mesma sem julgamento. O acolhimento e a escuta fazem toda a diferença no meu processo."</div><div class="tc-author">Carolina P.</div><div class="tc-since">Paciente há 1 ano</div></div>
+      <div class="test-card"><div class="tc-stars">★★★★★</div><div class="tc-quote">"A terapia transformou meu filho. Ele era muito ansioso e agora está mais seguro e feliz. Profissional incrível com crianças."</div><div class="tc-author">Renata M.</div><div class="tc-since">Mãe de paciente</div></div>
+      <div class="test-card"><div class="tc-stars">★★★★★</div><div class="tc-quote">"O grupo terapêutico mudou minha vida. Encontrei acolhimento, aprendi a colocar limites e hoje me respeito muito mais."</div><div class="tc-author">Sandra L.</div><div class="tc-since">Participante do grupo há 6 meses</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="blog" id="blog">
+  <div class="container">
+    <div class="section-label">Blog</div>
+    <h2 class="section-title">Reflexões & Bem-estar</h2>
+    <div class="blog-carousel">
+      <div class="blog-track" id="blogTrack">
+        <div class="blog-slide">
+          <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80&auto=format&fit=crop" alt="Mindfulness" loading="lazy">
+          <div class="blog-body">
+            <span class="blog-tag">Mindfulness</span>
+            <h3>5 Exercícios de Respiração para Acalmar a Ansiedade</h3>
+            <p>Técnicas simples de respiração que você pode praticar em qualquer momento para reduzir o estresse e trazer mais presença ao seu dia.</p>
+            <span class="blog-date">22 Mar 2026</span>
+          </div>
+        </div>
+        <div class="blog-slide">
+          <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=500&q=80&auto=format&fit=crop" alt="Autoconhecimento" loading="lazy">
+          <div class="blog-body">
+            <span class="blog-tag">Autoconhecimento</span>
+            <h3>O que é Psicologia Humanista e como ela pode te ajudar</h3>
+            <p>Entenda a abordagem centrada na pessoa e como ela valoriza sua singularidade no processo terapêutico.</p>
+            <span class="blog-date">15 Mar 2026</span>
+          </div>
+        </div>
+        <div class="blog-slide">
+          <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=500&q=80&auto=format&fit=crop" alt="Autoestima" loading="lazy">
+          <div class="blog-body">
+            <span class="blog-tag">Autoestima</span>
+            <h3>Como Fortalecer a Autoestima: 7 Práticas Diárias</h3>
+            <p>Pequenos hábitos que transformam a forma como você se enxerga e se relaciona consigo mesmo.</p>
+            <span class="blog-date">08 Mar 2026</span>
+          </div>
+        </div>
+        <div class="blog-slide">
+          <img src="https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=500&q=80&auto=format&fit=crop" alt="Relacionamentos" loading="lazy">
+          <div class="blog-body">
+            <span class="blog-tag">Relacionamentos</span>
+            <h3>Comunicação Não-Violenta nos Relacionamentos</h3>
+            <p>Aprenda a se expressar com empatia e escuta ativa para construir vínculos mais saudáveis e autênticos.</p>
+            <span class="blog-date">01 Mar 2026</span>
+          </div>
+        </div>
+        <div class="blog-slide">
+          <img src="https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=500&q=80&auto=format&fit=crop" alt="Saúde mental infantil" loading="lazy">
+          <div class="blog-body">
+            <span class="blog-tag">Infantil</span>
+            <h3>Sinais de que seu Filho pode Precisar de Terapia</h3>
+            <p>Mudanças de comportamento, dificuldade escolar e isolamento podem ser sinais. Saiba quando buscar ajuda profissional.</p>
+            <span class="blog-date">22 Fev 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="blog-nav">
+      <button onclick="blogPrev()" aria-label="Anterior">‹</button>
+      <button onclick="blogNext()" aria-label="Próximo">›</button>
+    </div>
+    <div class="blog-dots" id="blogDots"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contato">
+  <div class="container">
+    <div class="section-label">Contato</div>
+    <h2 class="section-title">Vamos Conversar?</h2>
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="ci-card"><div class="ci-icon">�</div><div><h4>WhatsApp</h4><p><a href="https://wa.me/5511988840525" target="_blank" rel="noopener" style="color:var(--primary-dark)">(11) 98884-0525</a></p></div></div>
+        <div class="ci-card"><div class="ci-icon">📸</div><div><h4>Instagram</h4><p><a href="https://www.instagram.com/psicolobiaa" target="_blank" rel="noopener" style="color:var(--primary-dark)">@psicolobiaa</a></p></div></div>
+        <div class="ci-card"><div class="ci-icon">🎵</div><div><h4>TikTok</h4><p><a href="https://www.tiktok.com/@psicolobiaa" target="_blank" rel="noopener" style="color:var(--primary-dark)">@psicolobiaa</a></p></div></div>
+        <div class="ci-card"><div class="ci-icon">💻</div><div><h4>Atendimento Online</h4><p>Terapia por videochamada em todo o Brasil</p></div></div>
+      </div>
+      <div class="form-card reveal">
+        <h3>💌 Mensagem</h3>
+        <form onsubmit="submitContact(event)">
+          <div class="form-group"><label>Nome *</label><input type="text" required placeholder="Seu nome"></div>
+          <div class="form-group"><label>E-mail *</label><input type="email" required placeholder="seu@email.com"></div>
+          <div class="form-group"><label>Assunto</label><select><option>Agendar sessão</option><option>Grupo terapêutico</option><option>Terapia infantil</option><option>Dúvida</option><option>Outro</option></select></div>
+          <div class="form-group"><label>Mensagem *</label><textarea required placeholder="Como posso te acolher?"></textarea></div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Enviar com Carinho 🌿</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <h4>Psicolobia · Beatriz</h4>
+      <p>Psicóloga Clínica • Especialista em Saúde Mental Digital</p>
+      <p style="margin-top:.75rem;font-size:.7rem;opacity:.4">Especialista no emocional de quem vive da internet. +3500 atendimentos realizados. Escuta sensível, ética e profundidade — sem pressa, sem moldes, sem máscaras.</p>
+    </div>
+    <div>
+      <h4>Links</h4>
+      <ul class="footer-links">
+        <li><a href="#jornada">Jornada</a></li><li><a href="#sobre">Sobre</a></li><li><a href="#servicos">Serviços</a></li><li><a href="#agendamento">Agendar</a></li><li><a href="#sala-espera">Sala de Espera</a></li><li><a href="#grupos">Grupos</a></li><li><a href="#blog">Blog</a></li><li><a href="#contato">Contato</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contato</h4>
+      <ul class="footer-links">
+        <li><a href="https://wa.me/5511988840525" target="_blank" rel="noopener">📱 (11) 98884-0525</a></li>
+        <li><a href="https://www.instagram.com/psicolobiaa" target="_blank" rel="noopener">📸 @psicolobiaa</a></li>
+        <li><a href="https://www.tiktok.com/@psicolobiaa" target="_blank" rel="noopener">🎵 TikTok @psicolobiaa</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>Psicolobia · Beatriz © 2026 — Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/5511988840525" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  WhatsApp
+</a>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">↑</button>
+
+<!-- CHATBOT -->
+<button class="chat-toggle" id="chatToggle" aria-label="Assistente virtual"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg><div class="chat-badge">1</div></button>
+<div class="chatbox" id="chatbox">
+  <div class="cb-header"><h4>🌿 Assistente Psicolobia</h4><button onclick="toggleChat()">✕</button></div>
+  <div class="cb-messages" id="chatMessages"></div>
+  <div id="chatOpts"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// HEADER
+window.addEventListener('scroll',()=>{document.getElementById('header').classList.toggle('scrolled',scrollY>60);document.getElementById('backTop').classList.toggle('visible',scrollY>500)});
+
+// REVEAL
+const revealObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('active');revealObs.unobserve(e.target)}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+// VIRTUAL WAITING ROOM
+let wrInterval=null;let wrSeconds=900;
+function startWaiting(){
+  document.getElementById('wrStart').style.display='none';
+  document.getElementById('wrStatus').textContent='⏳ Aguardando... Respire fundo';
+  document.getElementById('wrMessage').textContent='Sua sessão começará em breve. Aproveite este momento para se acalmar e se preparar.';
+  wrInterval=setInterval(()=>{
+    wrSeconds--;
+    if(wrSeconds<=0){
+      clearInterval(wrInterval);
+      document.getElementById('wrTimer').textContent='00:00';
+      document.getElementById('wrStatus').className='wr-status ready';
+      document.getElementById('wrStatus').textContent='✅ Pronto! Pode entrar na sessão.';
+      document.getElementById('wrMessage').textContent='Sua psicóloga está te esperando. Clique no botão abaixo para entrar na sessão.';
+      document.getElementById('wrJoin').style.display='inline-flex';
+      return;
+    }
+    const m=Math.floor(wrSeconds/60);
+    const s=wrSeconds%60;
+    document.getElementById('wrTimer').textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  },1000);
+  updateTimer();
+}
+
+function updateTimer(){
+  const m=Math.floor(wrSeconds/60);const s=wrSeconds%60;
+  document.getElementById('wrTimer').textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+
+function joinSession(){showToast('📹 Redirecionando para a sala de videochamada...')}
+
+// CHATBOT
+const botResponses={
+  'agendar':{msg:'Para agendar com a Bea, role até a seção "Agendar" no site ou chame no WhatsApp (11) 98884-0525. Ela responde rápido! 💚',opts:['serviços','online','infantil','grupos']},
+  'serviços':{msg:'🌿 Serviços da Bea:\n\n• Terapia Individual (50 min)\n• Terapia Infantil (45 min)\n• Terapia Online (50 min)\n• Terapia de Casal (60 min)\n• Grupo Terapêutico (90 min)\n• Palestras & Workshops\n\n+3500 atendimentos realizados!',opts:['agendar','sala de espera','contato']},
+  'online':{msg:'💻 A Bea é especialista em atendimento online — o vínculo é vivo, humano e presente mesmo pela tela. Você pode usar a Sala de Espera Virtual para se preparar antes da sessão.',opts:['sala de espera','agendar','serviços']},
+  'infantil':{msg:'🧒 A terapia infantil é feita através de brincadeiras, desenhos e histórias. Crianças de 4 a 12 anos. Os pais participam das sessões de orientação mensais.',opts:['agendar','serviços','como funciona']},
+  'grupos':{msg:'👥 Grupos terapêuticos ativos com a Bea:\n\n• Círculo de Mulheres (Qua 19h)\n• Manejo da Ansiedade (Ter 20h, online)\n• Autoestima (Sex 14h)\n\nGrupos de 6-8 pessoas.',opts:['agendar','serviços','contato']},
+  'sala de espera':{msg:'🌿 A Sala de Espera Virtual é um espaço para você se preparar antes da sessão online. Tem dicas de respiração e um timer. Role até a seção "Sala de Espera" na página!',opts:['online','agendar','como funciona']},
+  'como funciona':{msg:'O processo terapêutico com a Bea tem 5 etapas:\n\n1️⃣ Primeiro contato\n2️⃣ Triagem inicial\n3️⃣ Sessão de acolhimento (sem compromisso)\n4️⃣ Processo contínuo (semanal/quinzenal)\n5️⃣ Alta terapêutica\n\nSem pressa, no seu ritmo. 💚',opts:['agendar','serviços','contato']},
+  'contato':{msg:'📱 WhatsApp: (11) 98884-0525\n📸 Instagram: @psicolobiaa\n🎵 TikTok: @psicolobiaa\n\nA Bea responde rápido! Entre em contato sem compromisso 🌿',opts:['agendar','serviços','como funciona']}
+};
+let chatOpen=false;
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatbox').classList.toggle('open',chatOpen);
+  if(chatOpen&&document.getElementById('chatMessages').children.length===0)initChat();
+  document.querySelector('.chat-badge').style.display=chatOpen?'none':'flex';
+}
+document.getElementById('chatToggle').addEventListener('click',toggleChat);
+
+function initChat(){
+  addBotMsg('Olá! 🌿 Bem-vindo(a)! Sou a assistente virtual da Bea (Psicolobia). Como posso te ajudar?');
+  showOpts(['agendar','serviços','online','infantil','grupos','como funciona']);
+}
+function addBotMsg(t){const m=document.createElement('div');m.className='cb-msg cb-bot';m.textContent=t;document.getElementById('chatMessages').appendChild(m);scrollChat()}
+function addUserMsg(t){const m=document.createElement('div');m.className='cb-msg cb-user';m.textContent=t;document.getElementById('chatMessages').appendChild(m);scrollChat()}
+function showOpts(opts){const c=document.getElementById('chatOpts');c.innerHTML='';const w=document.createElement('div');w.className='cb-options';opts.forEach(o=>{const b=document.createElement('button');b.className='cb-opt';b.textContent=o.charAt(0).toUpperCase()+o.slice(1);b.onclick=()=>handleOpt(o);w.appendChild(b)});c.appendChild(w)}
+function handleOpt(key){document.getElementById('chatOpts').innerHTML='';addUserMsg(key.charAt(0).toUpperCase()+key.slice(1));const r=botResponses[key];if(r){setTimeout(()=>{addBotMsg(r.msg);showOpts(r.opts)},500)}}
+function scrollChat(){const m=document.getElementById('chatMessages');m.scrollTop=m.scrollHeight}
+
+// FORMS
+function submitContact(e){e.preventDefault();showToast('✅ Mensagem enviada! Retornaremos com carinho em breve 🌿');e.target.reset()}
+function submitScheduling(e){
+  e.preventDefault();
+  if(!schedSelDateStr||!schedSelSlot){showToast('⚠️ Selecione data e horário.');return}
+  showToast('✅ Agendamento solicitado com sucesso! Retornaremos a confirmação por e-mail 🌿');
+  e.target.reset();
+  schedSelDate=null;schedSelSlot=null;schedSelDateStr='';
+  renderSchedCalendar();
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000)}
+
+// SCHEDULING
+function selectSchedType(el,type){
+  document.querySelectorAll('.sched-type-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  updateSchedSummary();
+}
+
+let schedMonth=new Date().getMonth(), schedYear=new Date().getFullYear();
+let schedSelDate=null, schedSelSlot=null, schedSelDateStr='';
+const schedMonths=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const defaultSlots=['08:00','09:00','10:00','11:00','14:00','15:00','16:00','17:00','18:00','19:00'];
+
+function renderSchedCalendar(){
+  document.getElementById('schedMonthYear').textContent=schedMonths[schedMonth]+' '+schedYear;
+  const fd=new Date(schedYear,schedMonth,1).getDay();
+  const dim=new Date(schedYear,schedMonth+1,0).getDate();
+  const today=new Date();
+  const grid=document.getElementById('schedCalGrid');
+  grid.innerHTML='';
+  ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d=>{const l=document.createElement('div');l.className='day-label';l.textContent=d;grid.appendChild(l)});
+  for(let i=0;i<fd;i++){const e=document.createElement('div');e.className='day empty';grid.appendChild(e)}
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(schedYear,schedMonth,d);
+    const past=dt<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const sun=dt.getDay()===0;
+    const sel=schedSelDate&&d===schedSelDate.getDate()&&schedMonth===schedSelDate.getMonth()&&schedYear===schedSelDate.getFullYear();
+    const el=document.createElement('button');
+    el.className='day'+(past||sun?' disabled':'')+(sel?' selected':'');
+    el.textContent=d;
+    if(!past&&!sun) el.onclick=(()=>{const dd=d;return()=>selectSchedDate(dd)})();
+    grid.appendChild(el);
+  }
+}
+
+function schedChangeMonth(dir){schedMonth+=dir;if(schedMonth>11){schedMonth=0;schedYear++}if(schedMonth<0){schedMonth=11;schedYear--}renderSchedCalendar()}
+
+function selectSchedDate(d){
+  schedSelDate=new Date(schedYear,schedMonth,d);
+  schedSelSlot=null;
+  schedSelDateStr=`${schedYear}-${String(schedMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  document.getElementById('schedSelectedDate').textContent=`${String(d).padStart(2,'0')}/${String(schedMonth+1).padStart(2,'0')}/${schedYear}`;
+  renderSchedCalendar();
+  renderSchedSlots();
+}
+
+function renderSchedSlots(){
+  const grid=document.getElementById('schedSlotsGrid');
+  grid.innerHTML='';
+  if(!schedSelDate){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:1rem;font-size:.82rem;color:var(--text-muted)">Selecione uma data no calendário acima</div>';return}
+  defaultSlots.forEach(time=>{
+    const btn=document.createElement('button');
+    btn.className='sched-slot'+(schedSelSlot===time?' selected':'');
+    btn.textContent=time;
+    btn.onclick=()=>{schedSelSlot=time;renderSchedSlots();updateSchedSummary()};
+    grid.appendChild(btn);
+  });
+}
+
+function updateSchedSummary(){
+  const type=document.querySelector('.sched-type-btn.active')?.textContent?.trim()||'Presencial';
+  const date=schedSelDate?`${String(schedSelDate.getDate()).padStart(2,'0')}/${String(schedSelDate.getMonth()+1).padStart(2,'0')}/${schedSelDate.getFullYear()}`:'--';
+  const time=schedSelSlot||'--';
+  document.getElementById('schedSummary').innerHTML=`<strong>Resumo:</strong> ${type} • ${date} às ${time}`;
+}
+
+renderSchedCalendar();
+
+// BLOG CAROUSEL
+let blogPos=0;
+const blogTrack=document.getElementById('blogTrack');
+const blogSlides=blogTrack?blogTrack.children.length:0;
+function getBlogVisible(){return window.innerWidth<=768?1:window.innerWidth<=1024?2:3}
+function getBlogMax(){return Math.max(0,blogSlides-getBlogVisible())}
+function updateBlog(){
+  if(!blogTrack)return;
+  const slide=blogTrack.children[0];
+  const gap=20;
+  const w=slide.offsetWidth+gap;
+  blogTrack.style.transform=`translateX(-${blogPos*w}px)`;
+  updateBlogDots();
+}
+function blogPrev(){blogPos=Math.max(0,blogPos-1);updateBlog()}
+function blogNext(){blogPos=Math.min(getBlogMax(),blogPos+1);updateBlog()}
+function updateBlogDots(){
+  const d=document.getElementById('blogDots');if(!d)return;
+  const max=getBlogMax()+1;
+  d.innerHTML='';
+  for(let i=0;i<max;i++){const dot=document.createElement('button');dot.className='blog-dot'+(i===blogPos?' active':'');dot.setAttribute('aria-label','Slide '+(i+1));dot.onclick=()=>{blogPos=i;updateBlog()};d.appendChild(dot)}
+}
+window.addEventListener('resize',()=>{blogPos=Math.min(blogPos,getBlogMax());updateBlog()});
+setTimeout(updateBlog,100);
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Psychologist","name":"Beatriz — Psicolobia","alternateName":"Bea","description":"Psicóloga Clínica. Especialista no emocional de quem vive da internet. +3500 atendimentos. Terapia online acolhedora.","url":"https://psicolobia.vercel.app","telephone":"+5511988840525","priceRange":"Consultar","sameAs":["https://www.instagram.com/psicolobiaa","https://www.tiktok.com/@psicolobiaa","https://linktr.ee/psicolobiaa"],"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"08:00","closes":"12:00"}]}
+</script>
+</body>
+</html>
