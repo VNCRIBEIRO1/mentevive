@@ -7,12 +7,67 @@ import { getAuthSecret } from "@/lib/auth-secret";
  * Edge Proxy — auth guard for /admin/*, /portal/*, and /select-tenant routes.
  *
  * Multi-tenant aware: checks JWT + tenant cookies.
+ * Subdomain detection: extracts tenant slug from hostname (e.g. psicolobia.mentevive.com.br).
  * Redirects unauthenticated users to /login.
  * Redirects users without a selected tenant to /select-tenant.
  * Checks role-based access for admin routes.
  */
+
+/** Known platform domains (no tenant slug extraction) */
+const PLATFORM_HOSTS = new Set([
+  "mentevive.vercel.app",
+  "localhost",
+  "127.0.0.1",
+]);
+
+/**
+ * Extract tenant slug from subdomain.
+ * e.g. "psicolobia.mentevive.com.br" → "psicolobia"
+ * Returns empty string for platform-only hosts (no subdomain).
+ */
+function extractTenantFromHost(hostname: string): string {
+  // Strip port if present
+  const host = hostname.split(":")[0];
+
+  // Skip known platform hosts
+  if (PLATFORM_HOSTS.has(host)) return "";
+
+  // localhost with subdomain: e.g. psicolobia.localhost → psicolobia
+  if (host.endsWith(".localhost")) {
+    return host.replace(".localhost", "");
+  }
+
+  // Custom domain: slug.mentevive.com.br → slug
+  // Also handles slug.mentevive.vercel.app (Vercel preview)
+  const parts = host.split(".");
+  if (parts.length >= 3) {
+    // e.g. ["psicolobia", "mentevive", "com", "br"] → slug = "psicolobia"
+    // e.g. ["psicolobia", "mentevive", "vercel", "app"] → slug = "psicolobia"
+    const slug = parts[0];
+    // Avoid extracting "www" or "app" as tenant slug
+    if (slug !== "www" && slug !== "app") {
+      return slug;
+    }
+  }
+
+  return "";
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // ── Subdomain tenant detection ──
+  // If the hostname has a tenant subdomain AND the URL doesn't have ?tenant= yet,
+  // inject it into the URL for login/registro pages so client components can read it.
+  const subdomainSlug = extractTenantFromHost(request.nextUrl.hostname);
+  if (subdomainSlug && (pathname === "/login" || pathname === "/registro")) {
+    const existingTenant = request.nextUrl.searchParams.get("tenant");
+    if (!existingTenant) {
+      const url = request.nextUrl.clone();
+      url.searchParams.set("tenant", subdomainSlug);
+      return NextResponse.redirect(url);
+    }
+  }
 
   // Skip public paths
   if (
@@ -33,6 +88,12 @@ export async function proxy(request: NextRequest) {
     pathname === "/registro" ||
     pathname.startsWith("/blog")
   ) {
+    // Even for public paths, set tenant header from subdomain if available
+    if (subdomainSlug) {
+      const response = NextResponse.next();
+      response.headers.set("x-tenant-slug", subdomainSlug);
+      return response;
+    }
     return NextResponse.next();
   }
 
@@ -94,6 +155,9 @@ export async function proxy(request: NextRequest) {
   response.headers.set("x-tenant-id", activeTenantId);
   if (membershipRole) {
     response.headers.set("x-membership-role", membershipRole);
+  }
+  if (subdomainSlug) {
+    response.headers.set("x-tenant-slug", subdomainSlug);
   }
 
   return response;

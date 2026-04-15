@@ -38,6 +38,7 @@ function RegistroForm() {
   const bookingTime = searchParams.get("time") || "";
   const bookingModality = searchParams.get("modality") || "";
   const hasBookingParam = searchParams.get("booking") === "1";
+  const tenantSlug = searchParams.get("tenant") || "";
 
   const hasBooking = !!(bookingDate && bookingTime);
 
@@ -95,6 +96,7 @@ function RegistroForm() {
           phone,
           turnstileToken: formData.get("turnstileToken"),
           website: formData.get("website"),
+          ...(tenantSlug ? { tenantSlug } : {}),
         }),
       });
 
@@ -116,10 +118,16 @@ function RegistroForm() {
           time: bookingTime,
           modality: bookingModality,
           ...(bookingNotes ? { notes: bookingNotes } : {}),
+          ...(tenantSlug ? { tenant: tenantSlug } : {}),
         });
         router.push(`/login?${params.toString()}`);
       } else {
-        router.push(`/login?registered=true&email=${encodeURIComponent(email)}`);
+        const params = new URLSearchParams({
+          registered: "true",
+          email: email,
+          ...(tenantSlug ? { tenant: tenantSlug } : {}),
+        });
+        router.push(`/login?${params.toString()}`);
       }
     } catch {
       setError("Erro de conexão. Tente novamente.");
