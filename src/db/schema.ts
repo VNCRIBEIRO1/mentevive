@@ -13,6 +13,7 @@ import {
   uniqueIndex,
   index,
   jsonb,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -131,6 +132,7 @@ export const patients = pgTable("patients", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
   uniqueIndex("patients_tenant_user_unique").on(table.tenantId, table.userId),
+  uniqueIndex("patients_tenant_id_unique").on(table.tenantId, table.id),
   index("idx_patients_tenant").on(table.tenantId),
 ]);
 
@@ -138,9 +140,7 @@ export const patients = pgTable("patients", {
 export const clinicalRecords = pgTable("clinical_records", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  patientId: uuid("patient_id")
-    .references(() => patients.id, { onDelete: "cascade" })
-    .notNull(),
+  patientId: uuid("patient_id").notNull(),
   therapistId: uuid("therapist_id").references(() => users.id),
   sessionDate: timestamp("session_date").notNull(),
   sessionNumber: integer("session_number"),
@@ -154,15 +154,20 @@ export const clinicalRecords = pgTable("clinical_records", {
   private: boolean("private").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_clinical_records_tenant").on(table.tenantId),
+  foreignKey({
+    columns: [table.tenantId, table.patientId],
+    foreignColumns: [patients.tenantId, patients.id],
+    name: "clinical_records_tenant_patient_fk",
+  }).onDelete("cascade"),
+]);
 
 /* ========== APPOINTMENTS ========== */
 export const appointments = pgTable("appointments", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  patientId: uuid("patient_id")
-    .references(() => patients.id, { onDelete: "cascade" })
-    .notNull(),
+  patientId: uuid("patient_id").notNull(),
   date: date("date").notNull(),
   startTime: time("start_time").notNull(),
   endTime: time("end_time").notNull(),
@@ -177,7 +182,15 @@ export const appointments = pgTable("appointments", {
   recurrenceGroupId: uuid("recurrence_group_id"), // groups related recurring sessions
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  uniqueIndex("appointments_tenant_id_unique").on(table.tenantId, table.id),
+  index("idx_appointments_tenant").on(table.tenantId),
+  foreignKey({
+    columns: [table.tenantId, table.patientId],
+    foreignColumns: [patients.tenantId, patients.id],
+    name: "appointments_tenant_patient_fk",
+  }).onDelete("cascade"),
+]);
 
 /* ========== AVAILABILITY ========== */
 export const availability = pgTable("availability", {
@@ -193,10 +206,8 @@ export const availability = pgTable("availability", {
 export const payments = pgTable("payments", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  patientId: uuid("patient_id")
-    .references(() => patients.id, { onDelete: "cascade" })
-    .notNull(),
-  appointmentId: uuid("appointment_id").references(() => appointments.id, { onDelete: "set null" }),
+  patientId: uuid("patient_id").notNull(),
+  appointmentId: uuid("appointment_id"),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   method: paymentMethodEnum("method"),
   status: paymentStatusEnum("status").default("pending").notNull(),
@@ -211,21 +222,39 @@ export const payments = pgTable("payments", {
   stripeStatus: varchar("stripe_status", { length: 50 }),                       // Raw Stripe status string
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  uniqueIndex("payments_tenant_id_unique").on(table.tenantId, table.id),
+  index("idx_payments_tenant").on(table.tenantId),
+  foreignKey({
+    columns: [table.tenantId, table.patientId],
+    foreignColumns: [patients.tenantId, patients.id],
+    name: "payments_tenant_patient_fk",
+  }).onDelete("cascade"),
+  foreignKey({
+    columns: [table.tenantId, table.appointmentId],
+    foreignColumns: [appointments.tenantId, appointments.id],
+    name: "payments_tenant_appointment_fk",
+  }),
+]);
 
 /* ========== DOCUMENTS ========== */
 export const documents = pgTable("documents", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  patientId: uuid("patient_id")
-    .references(() => patients.id, { onDelete: "cascade" })
-    .notNull(),
+  patientId: uuid("patient_id").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   type: varchar("type", { length: 50 }).notNull(),
   content: text("content"),
   fileUrl: text("file_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_documents_tenant").on(table.tenantId),
+  foreignKey({
+    columns: [table.tenantId, table.patientId],
+    foreignColumns: [patients.tenantId, patients.id],
+    name: "documents_tenant_patient_fk",
+  }).onDelete("cascade"),
+]);
 
 /* ========== BLOG POSTS ========== */
 export const blogPosts = pgTable("blog_posts", {
@@ -261,29 +290,37 @@ export const groups = pgTable("groups", {
   price: decimal("price", { precision: 10, scale: 2 }),
   active: boolean("active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => [
+  uniqueIndex("groups_tenant_id_unique").on(table.tenantId, table.id),
+  index("idx_groups_tenant").on(table.tenantId),
+]);
 
 export const groupMembers = pgTable("group_members", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  groupId: uuid("group_id")
-    .references(() => groups.id, { onDelete: "cascade" })
-    .notNull(),
-  patientId: uuid("patient_id")
-    .references(() => patients.id, { onDelete: "cascade" })
-    .notNull(),
+  groupId: uuid("group_id").notNull(),
+  patientId: uuid("patient_id").notNull(),
   joinedAt: timestamp("joined_at").defaultNow().notNull(),
   active: boolean("active").default(true).notNull(),
-});
+}, (table) => [
+  index("idx_group_members_tenant").on(table.tenantId),
+  foreignKey({
+    columns: [table.tenantId, table.groupId],
+    foreignColumns: [groups.tenantId, groups.id],
+    name: "group_members_tenant_group_fk",
+  }).onDelete("cascade"),
+  foreignKey({
+    columns: [table.tenantId, table.patientId],
+    foreignColumns: [patients.tenantId, patients.id],
+    name: "group_members_tenant_patient_fk",
+  }).onDelete("cascade"),
+]);
 
 /* ========== TRIAGES (pre-session intake) ========== */
 export const triages = pgTable("triages", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  appointmentId: uuid("appointment_id")
-    .references(() => appointments.id, { onDelete: "cascade" })
-    .notNull()
-    .unique(),
+  appointmentId: uuid("appointment_id").notNull().unique(),
   mood: varchar("mood", { length: 50 }),
   sleepQuality: varchar("sleep_quality", { length: 50 }),
   anxietyLevel: integer("anxiety_level"),
@@ -294,7 +331,14 @@ export const triages = pgTable("triages", {
   completed: boolean("completed").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_triages_tenant").on(table.tenantId),
+  foreignKey({
+    columns: [table.tenantId, table.appointmentId],
+    foreignColumns: [appointments.tenantId, appointments.id],
+    name: "triages_tenant_appointment_fk",
+  }).onDelete("cascade"),
+]);
 
 /* ========== BLOCKED DATES (admin blocks specific dates) ========== */
 export const blockedDates = pgTable("blocked_dates", {
@@ -329,12 +373,29 @@ export const notifications = pgTable("notifications", {
   message: text("message").notNull(),
   icon: varchar("icon", { length: 10 }),
   linkUrl: varchar("link_url", { length: 500 }),
-  patientId: uuid("patient_id").references(() => patients.id, { onDelete: "cascade" }),
-  appointmentId: uuid("appointment_id").references(() => appointments.id, { onDelete: "set null" }),
-  paymentId: uuid("payment_id").references(() => payments.id, { onDelete: "set null" }),
+  patientId: uuid("patient_id"),
+  appointmentId: uuid("appointment_id"),
+  paymentId: uuid("payment_id"),
   read: boolean("read").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_notifications_tenant").on(table.tenantId),
+  foreignKey({
+    columns: [table.tenantId, table.patientId],
+    foreignColumns: [patients.tenantId, patients.id],
+    name: "notifications_tenant_patient_fk",
+  }).onDelete("cascade"),
+  foreignKey({
+    columns: [table.tenantId, table.appointmentId],
+    foreignColumns: [appointments.tenantId, appointments.id],
+    name: "notifications_tenant_appointment_fk",
+  }).onDelete("cascade"),
+  foreignKey({
+    columns: [table.tenantId, table.paymentId],
+    foreignColumns: [payments.tenantId, payments.id],
+    name: "notifications_tenant_payment_fk",
+  }).onDelete("cascade"),
+]);
 
 /* ========== RELATIONS ========== */
 
@@ -383,25 +444,25 @@ export const patientsRelations = relations(patients, ({ one, many }) => ({
 
 export const appointmentsRelations = relations(appointments, ({ one, many }) => ({
   tenant: one(tenants, { fields: [appointments.tenantId], references: [tenants.id] }),
-  patient: one(patients, { fields: [appointments.patientId], references: [patients.id] }),
+  patient: one(patients, { fields: [appointments.tenantId, appointments.patientId], references: [patients.tenantId, patients.id] }),
   payments: many(payments),
 }));
 
 export const clinicalRecordsRelations = relations(clinicalRecords, ({ one }) => ({
   tenant: one(tenants, { fields: [clinicalRecords.tenantId], references: [tenants.id] }),
-  patient: one(patients, { fields: [clinicalRecords.patientId], references: [patients.id] }),
+  patient: one(patients, { fields: [clinicalRecords.tenantId, clinicalRecords.patientId], references: [patients.tenantId, patients.id] }),
   therapist: one(users, { fields: [clinicalRecords.therapistId], references: [users.id] }),
 }));
 
 export const paymentsRelations = relations(payments, ({ one }) => ({
   tenant: one(tenants, { fields: [payments.tenantId], references: [tenants.id] }),
-  patient: one(patients, { fields: [payments.patientId], references: [patients.id] }),
-  appointment: one(appointments, { fields: [payments.appointmentId], references: [appointments.id] }),
+  patient: one(patients, { fields: [payments.tenantId, payments.patientId], references: [patients.tenantId, patients.id] }),
+  appointment: one(appointments, { fields: [payments.tenantId, payments.appointmentId], references: [appointments.tenantId, appointments.id] }),
 }));
 
 export const documentsRelations = relations(documents, ({ one }) => ({
   tenant: one(tenants, { fields: [documents.tenantId], references: [tenants.id] }),
-  patient: one(patients, { fields: [documents.patientId], references: [patients.id] }),
+  patient: one(patients, { fields: [documents.tenantId, documents.patientId], references: [patients.tenantId, patients.id] }),
 }));
 
 export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
@@ -416,13 +477,13 @@ export const groupsRelations = relations(groups, ({ one, many }) => ({
 
 export const groupMembersRelations = relations(groupMembers, ({ one }) => ({
   tenant: one(tenants, { fields: [groupMembers.tenantId], references: [tenants.id] }),
-  group: one(groups, { fields: [groupMembers.groupId], references: [groups.id] }),
-  patient: one(patients, { fields: [groupMembers.patientId], references: [patients.id] }),
+  group: one(groups, { fields: [groupMembers.tenantId, groupMembers.groupId], references: [groups.tenantId, groups.id] }),
+  patient: one(patients, { fields: [groupMembers.tenantId, groupMembers.patientId], references: [patients.tenantId, patients.id] }),
 }));
 
 export const triagesRelations = relations(triages, ({ one }) => ({
   tenant: one(tenants, { fields: [triages.tenantId], references: [tenants.id] }),
-  appointment: one(appointments, { fields: [triages.appointmentId], references: [appointments.id] }),
+  appointment: one(appointments, { fields: [triages.tenantId, triages.appointmentId], references: [appointments.tenantId, appointments.id] }),
 }));
 
 export const blockedDatesRelations = relations(blockedDates, ({ one }) => ({
@@ -435,7 +496,7 @@ export const settingsRelations = relations(settings, ({ one }) => ({
 
 export const notificationsRelations = relations(notifications, ({ one }) => ({
   tenant: one(tenants, { fields: [notifications.tenantId], references: [tenants.id] }),
-  patient: one(patients, { fields: [notifications.patientId], references: [patients.id] }),
-  appointment: one(appointments, { fields: [notifications.appointmentId], references: [appointments.id] }),
-  payment: one(payments, { fields: [notifications.paymentId], references: [payments.id] }),
+  patient: one(patients, { fields: [notifications.tenantId, notifications.patientId], references: [patients.tenantId, patients.id] }),
+  appointment: one(appointments, { fields: [notifications.tenantId, notifications.appointmentId], references: [appointments.tenantId, appointments.id] }),
+  payment: one(payments, { fields: [notifications.tenantId, notifications.paymentId], references: [payments.tenantId, payments.id] }),
 }));
