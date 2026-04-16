@@ -5,7 +5,7 @@ import * as schema from "@/db/schema";
 function normalizeDatabaseUrl(raw: string | undefined): string {
   if (!raw) return "";
   // Handle common env formatting issues (quoted strings or escaped newlines from env pull/copy).
-  return raw
+  const cleaned = raw
     .trim()
     .replace(/^"+|"+$/g, "")
     .replace(/^'+|'+$/g, "")
@@ -13,6 +13,15 @@ function normalizeDatabaseUrl(raw: string | undefined): string {
     .replace(/\\n/g, "")
     .replace(/\\r/g, "")
     .trim();
+
+  try {
+    const u = new URL(cleaned);
+    // `channel_binding` appears in some libpq strings and can break neon() URL parsing in some runtimes.
+    u.searchParams.delete("channel_binding");
+    return u.toString();
+  } catch {
+    return cleaned;
+  }
 }
 
 function createDb() {
