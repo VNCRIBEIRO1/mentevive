@@ -39,20 +39,28 @@ function RegistroForm() {
   const bookingModality = searchParams.get("modality") || "";
   const hasBookingParam = searchParams.get("booking") === "1";
   const tenantSlug = searchParams.get("tenant") || "";
+  const typeParam = searchParams.get("type") || "";
 
   const hasBooking = !!(bookingDate && bookingTime);
 
   // Read PII from sessionStorage once (secure — never exposed in URL)
   const prefill = useMemo(() => hasBookingParam ? readBookingFromStorage() : { name: "", email: "", phone: "", notes: "" }, [hasBookingParam]);
 
+  const [accountType, setAccountType] = useState<"patient" | "therapist">(
+    typeParam === "therapist" ? "therapist" : "patient"
+  );
   const [name, setName] = useState(prefill.name);
   const [email, setEmail] = useState(prefill.email);
   const [phone, setPhone] = useState(prefill.phone);
   const [bookingNotes] = useState(prefill.notes);
+  const [clinicName, setClinicName] = useState("");
+  const [crp, setCrp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isTherapist = accountType === "therapist";
 
   // Sync prefill if it arrives after initial render (SSR → client hydration)
   useEffect(() => {
@@ -68,6 +76,11 @@ function RegistroForm() {
 
     if (!name.trim()) {
       setError("Nome é obrigatório.");
+      return;
+    }
+
+    if (isTherapist && !clinicName.trim()) {
+      setError("Nome do consultório é obrigatório.");
       return;
     }
 
@@ -94,9 +107,12 @@ function RegistroForm() {
           email,
           password,
           phone,
+          accountType,
+          ...(isTherapist ? { clinicName: clinicName.trim() } : {}),
+          ...(isTherapist && crp ? { crp: crp.trim() } : {}),
           turnstileToken: formData.get("turnstileToken"),
           website: formData.get("website"),
-          ...(tenantSlug ? { tenantSlug } : {}),
+          ...(tenantSlug && !isTherapist ? { tenantSlug } : {}),
         }),
       });
 
@@ -105,6 +121,17 @@ function RegistroForm() {
       if (!res.ok) {
         setError(data.error || "Erro ao criar conta.");
         setLoading(false);
+        return;
+      }
+
+      // Therapist: redirect to login with their new tenant slug
+      if (isTherapist && data.tenantSlug) {
+        const params = new URLSearchParams({
+          registered: "true",
+          email: email,
+          tenant: data.tenantSlug,
+        });
+        router.push(`/login?${params.toString()}`);
         return;
       }
 
@@ -147,9 +174,41 @@ function RegistroForm() {
         <p className="text-sm text-txt-light mt-1">
           {hasBooking
             ? "Crie sua conta para finalizar o agendamento"
+            : isTherapist
+            ? "Crie sua conta profissional no MenteVive"
             : "Registre-se para acessar o portal do paciente"}
         </p>
       </div>
+
+      {/* Account type selector */}
+      {!hasBooking && !tenantSlug && (
+        <div className="flex gap-3 mb-5">
+          <button
+            type="button"
+            onClick={() => setAccountType("patient")}
+            className={`flex-1 py-3 px-4 rounded-brand-sm border-2 text-sm font-bold transition-all ${
+              !isTherapist
+                ? "border-primary bg-primary/10 text-primary-dark"
+                : "border-primary/15 bg-white text-txt-light hover:border-primary/30"
+            }`}
+          >
+            <span className="block text-lg mb-0.5">🧠</span>
+            Sou Paciente
+          </button>
+          <button
+            type="button"
+            onClick={() => setAccountType("therapist")}
+            className={`flex-1 py-3 px-4 rounded-brand-sm border-2 text-sm font-bold transition-all ${
+              isTherapist
+                ? "border-teal bg-teal/10 text-teal-800"
+                : "border-primary/15 bg-white text-txt-light hover:border-primary/30"
+            }`}
+          >
+            <span className="block text-lg mb-0.5">🩺</span>
+            Sou Psicólogo(a)
+          </button>
+        </div>
+      )}
 
       {hasBooking && (
         <div className="bg-green-50 border border-green-200 rounded-brand p-4 mb-5 text-sm">
@@ -199,6 +258,24 @@ function RegistroForm() {
             className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </div>
 
+        {isTherapist && (
+          <>
+            <div>
+              <label className="block text-xs font-bold mb-1.5">Nome do Consultório / Clínica</label>
+              <input type="text" required value={clinicName} onChange={(e) => setClinicName(e.target.value)}
+                placeholder="Ex: Espaço Mente Viva"
+                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              <p className="text-xs text-txt-muted mt-1">Será usado para criar seu espaço exclusivo na plataforma.</p>
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1.5">CRP <span className="font-normal text-txt-muted">(opcional)</span></label>
+              <input type="text" value={crp} onChange={(e) => setCrp(e.target.value)}
+                placeholder="Ex: 06/173961"
+                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+            </div>
+          </>
+        )}
+
         <div>
           <label className="block text-xs font-bold mb-1.5">Senha</label>
           <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
@@ -217,7 +294,7 @@ function RegistroForm() {
 
         <button type="submit" disabled={loading}
           className="btn-brand-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-          {loading ? "Criando conta…" : hasBooking ? "Criar Conta e Agendar 🌿" : "Criar Conta 🌿"}
+          {loading ? "Criando conta…" : hasBooking ? "Criar Conta e Agendar 🌿" : isTherapist ? "Criar Conta Profissional 🩺" : "Criar Conta 🌿"}
         </button>
 
         <p className="text-center text-sm text-txt-light">

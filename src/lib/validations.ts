@@ -45,9 +45,15 @@ export const registerSchema = z.object({
     },
     z.string().min(10, "Telefone inválido").optional()
   ),
+  accountType: z.enum(["patient", "therapist"]).default("patient"),
+  clinicName: z.string().min(2, "Nome do consultório deve ter pelo menos 2 caracteres").max(100).optional(),
+  crp: z.string().min(5, "CRP inválido").max(20).optional(),
   turnstileToken: optionalFormString,
   website: honeypotField,
-});
+}).refine(
+  (data) => data.accountType !== "therapist" || (data.clinicName && data.clinicName.trim().length >= 2),
+  { message: "Nome do consultório é obrigatório para psicólogos.", path: ["clinicName"] }
+);
 
 /* ── Password Recovery ── */
 export const forgotPasswordSchema = z.object({

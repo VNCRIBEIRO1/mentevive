@@ -9,6 +9,20 @@ import { registerSchema, formatZodError } from "@/lib/validations";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { ensureTenantMembership } from "@/lib/tenant-guards";
 
+/**
+ * Generate a URL-safe slug from a clinic name.
+ * E.g. "Consultório da Bia" → "consultorio-da-bia"
+ */
+function slugify(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove accents
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 63);
+}
+
 export async function POST(request: Request) {
   try {
     // Rate limit: 5 registrations per minute per IP
@@ -27,8 +41,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
     }
 
-    const { name, email, password, phone, turnstileToken } = parsed.data;
+    const { name, email, password, phone, turnstileToken, accountType, clinicName, crp } = parsed.data;
     const tenantSlug = body.tenantSlug as string | undefined;
+    const isTherapist = accountType === "therapist";
 
     const captchaOk = await verifyTurnstileToken(turnstileToken, ip);
     if (!captchaOk) {
@@ -38,7 +53,57 @@ export async function POST(request: Request) {
       );
     }
 
-    // Resolve tenant
+    // ── Therapist flow: create new tenant ──
+    if (isTherapist) {
+      // Check if user already exists
+      const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+      if (existing.length > 0) {
+        return NextResponse.json({ error: "E-mail já cadastrado. Faça login." }, { status: 409 });
+      }
+
+      // Generate unique slug
+      let baseSlug = slugify(clinicName!);
+      if (!baseSlug) baseSlug = slugify(name);
+      let slug = baseSlug;
+      let attempt = 0;
+      while (true) {
+        const [dup] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1);
+        if (!dup) break;
+        attempt++;
+        slug = `${baseSlug}-${attempt}`;
+      }
+
+      // Create user
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const [newUser] = await db.insert(users).values({
+        name,
+        email,
+        password: hashedPassword,
+        role: "therapist",
+        phone: phone || null,
+      }).returning();
+
+      // Create tenant
+      const [newTenant] = await db.insert(tenants).values({
+        slug,
+        name: clinicName!,
+        ownerUserId: newUser.id,
+        plan: "free",
+        maxPatients: 50,
+        maxAppointmentsPerMonth: 200,
+      }).returning();
+
+      // Create admin membership
+      await ensureTenantMembership(newTenant.id, newUser.id, "admin");
+
+      return NextResponse.json({
+        message: "Conta profissional criada com sucesso!",
+        tenantSlug: slug,
+        crp: crp || undefined,
+      }, { status: 201 });
+    }
+
+    // ── Patient flow: join existing tenant ──
     let tenantId: string;
     if (tenantSlug) {
       const [tenant] = await db.select({ id: tenants.id }).from(tenants)
