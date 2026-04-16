@@ -140,7 +140,7 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session: updateData }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -151,6 +151,14 @@ export const authOptions: NextAuthOptions = {
         token.tenantName = user.tenantName;
         token.membershipRole = user.membershipRole;
         token.needsTenantSelection = user.needsTenantSelection;
+      }
+      // Handle session update (e.g. after selecting a tenant)
+      if (trigger === "update" && updateData) {
+        if (updateData.activeTenantId !== undefined) token.activeTenantId = updateData.activeTenantId;
+        if (updateData.tenantSlug !== undefined) token.tenantSlug = updateData.tenantSlug;
+        if (updateData.tenantName !== undefined) token.tenantName = updateData.tenantName;
+        if (updateData.membershipRole !== undefined) token.membershipRole = updateData.membershipRole;
+        if (updateData.needsTenantSelection !== undefined) token.needsTenantSelection = updateData.needsTenantSelection;
       }
       return token;
     },

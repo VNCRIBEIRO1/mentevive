@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 
 interface Membership {
   tenantId: string;
@@ -18,6 +18,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 export default function SelectTenantPage() {
   const router = useRouter();
+  const { update } = useSession();
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
   const [selecting, setSelecting] = useState<string | null>(null);
@@ -67,6 +68,15 @@ export default function SelectTenantPage() {
       }
 
       const data = await res.json();
+
+      // Update the JWT session with the selected tenant claims
+      await update({
+        activeTenantId: data.tenantId,
+        tenantSlug: data.slug,
+        membershipRole: data.role,
+        needsTenantSelection: false,
+      });
+
       const dest = data.role === "patient" ? "/portal" : "/admin";
       router.push(dest);
       router.refresh();

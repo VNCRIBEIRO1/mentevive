@@ -39,6 +39,7 @@ function LoginForm() {
   const isRegistered = searchParams.get("registered") === "true";
   const hasBooking = !!(bookingDate && bookingTime && redirectTo);
   const tenantSlug = searchParams.get("tenant") || "";
+  const callbackUrl = searchParams.get("callbackUrl") || "";
 
   // Check for existing session on mount
   useEffect(() => {
@@ -97,6 +98,9 @@ function LoginForm() {
         ...(bookingNotes ? { notes: bookingNotes } : {}),
       });
       router.push(`${redirectTo}?${params.toString()}`);
+    } else if (callbackUrl && callbackUrl.startsWith("/")) {
+      // Return to the page they were trying to access before auth redirect
+      router.push(callbackUrl);
     } else if (effectiveRole === "patient") {
       router.push("/portal");
     } else {
