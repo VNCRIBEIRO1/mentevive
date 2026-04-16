@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatedSection } from "@/components/landing";
+import { motion } from "framer-motion";
 import { FloatingOrbs } from "@/components/landing";
 import { Globe, LayoutDashboard, HeadphonesIcon } from "lucide-react";
 import { WHATSAPP_LINK } from "@/lib/utils";
@@ -25,7 +25,11 @@ export function PlatformHero() {
       <div className="absolute inset-0 opacity-[0.02] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20viewBox%3D%220%200%20256%20256%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22noise%22%3E%3CfeTurbulence%20baseFrequency%3D%220.65%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url(%23noise)%22%2F%3E%3C%2Fsvg%3E')] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-        <AnimatedSection direction="up" staggerType="premium" staggerChildren={0.15}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 80, damping: 20, staggerChildren: 0.15 }}
+        >
           <span className="section-label inline-block mb-4">
             Plataforma para psicólogos
           </span>
@@ -72,7 +76,7 @@ export function PlatformHero() {
               </div>
             ))}
           </div>
-        </AnimatedSection>
+        </motion.div>
       </div>
     </section>
   );

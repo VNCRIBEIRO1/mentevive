@@ -75,7 +75,7 @@ export function AnimatedSection({
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, margin: "-60px" }}
+      viewport={{ once, amount: 0.05 }}
     >
       {children}
     </motion.div>
