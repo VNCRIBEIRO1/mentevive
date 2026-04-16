@@ -1,30 +1,32 @@
  # Copilot Instructions
 
 ## Project shape
-- This is a **Next.js 16 (App Router) SaaS** for psychologists, built with **TypeScript + Tailwind CSS v3**.
-- The original landing page was migrated from a single `index.html` (preserved at repo root) to `src/app/page.tsx`.
-- Architecture: Landing page (public), Admin panel (`/admin`), Patient portal (`/portal`), Blog (`/blog`), Auth (`/login`, `/registro`).
-- Database: **Neon** (serverless Postgres, project `neon-fuchsia-queen`) via **Drizzle ORM v0.45**.
-- Auth: **NextAuth.js v4** with credentials provider, JWT strategy, role-based access (admin/therapist/patient).
-- Hosting: **Vercel** (auto-deploy from `main` branch) at `https://psicolobia.vercel.app`.
+- This is **MenteVive** — a **multi-tenant SaaS platform** for psychologists, built with **Next.js 16 (App Router) + TypeScript + Tailwind CSS v3**.
+- **Multi-tenant architecture**: each clinic (consultório) is a tenant with isolated data, users, and billing.
+- Architecture: Admin panel (`/admin`), Patient portal (`/portal`), Super admin (`/super`), Blog (`/blog`), Auth (`/login`, `/registro`, `/select-tenant`).
+- Database: **Neon** (serverless Postgres) via **Drizzle ORM v0.45** — all data tables scoped by `tenantId`.
+- Auth: **NextAuth.js v4** with credentials provider, JWT strategy, tenant-aware role-based access.
+- Hosting: **Vercel** (auto-deploy from `master` branch) at `https://mentevive.vercel.app`.
 - Video calls: **Jitsi Meet** (meet.jit.si External API) — no backend needed.
-- The page sections (`#jornada`, `#sobre`, `#servicos`, `#agendamento`, `#sala-espera`, `#grupos`, `#blog`, `#contato`) are preserved in the landing page component.
+- Payments/Billing: **Stripe** for platform subscriptions (per-tenant) and session payments.
+- **3 repos**: `mentevive` (main platform), `mentevive-psicolobia` (branded landing), `psicolobia` (legacy, being sunset).
 
 ## Tech stack summary
 | Layer | Technology | Version |
 |-------|-----------|---------|
-| Framework | Next.js (App Router, Turbopack) | 16.2.2 |
-| Language | TypeScript | 6.x |
-| Styling | Tailwind CSS | 3.4.x |
-| Animations | Framer Motion | 12.x |
+| Framework | Next.js (App Router, Turbopack) | ^16.2.2 |
+| Language | TypeScript | ^6.0.2 |
+| Styling | Tailwind CSS | ^3.4.19 |
+| Animations | Framer Motion | ^12.38.0 |
 | Icons | Lucide React | latest |
 | Database | Neon (serverless Postgres) | — |
-| ORM | Drizzle ORM + drizzle-kit | 0.45.x |
-| Auth | NextAuth.js (credentials) | 4.24.x |
-| Hosting | Vercel | — |
+| ORM | Drizzle ORM + drizzle-kit | ^0.45.2 |
+| Auth | NextAuth.js (credentials, JWT) | ^4.24.13 |
+| Hosting | Vercel (Hobby plan) | — |
 | Video | Jitsi Meet External API | — |
-| Payments | Stripe SDK | ^21.x |
+| Payments | Stripe SDK | ^21.0.1 |
 | Fonts | Fraunces + Inter (next/font/google) | — |
+| Testing | Vitest | latest |
 
 ## Project structure
 ```
@@ -33,71 +35,158 @@ src/
 │   ├── page.tsx              # Landing page (14 sections)
 │   ├── layout.tsx            # Root layout (fonts, metadata)
 │   ├── globals.css           # Tailwind + custom design tokens
-│   ├── login/page.tsx        # Auth login (role-based redirect)
-│   ├── registro/page.tsx     # Patient registration
+│   ├── login/page.tsx        # Auth login (tenant-aware redirect)
+│   ├── registro/page.tsx     # Registration (role selection: therapist/patient)
+│   ├── redefinir-senha/      # Password recovery flow
 │   ├── blog/
 │   │   ├── page.tsx          # Blog listing (public)
 │   │   └── [slug]/page.tsx   # Blog post detail
-│   ├── admin/
-│   │   ├── layout.tsx        # Admin layout (sidebar + auth guard)
-│   │   ├── page.tsx          # Dashboard (stats from DB)
+│   ├── admin/                # Therapist/Admin panel (13 pages)
+│   │   ├── layout.tsx        # Auth guard (membershipRole: admin|therapist)
+│   │   ├── page.tsx          # Dashboard (tenant-scoped stats)
 │   │   ├── pacientes/        # Patient CRUD
-│   │   ├── agenda/           # Appointments + availability
-│   │   ├── financeiro/       # Payments
+│   │   ├── agenda/           # Appointments + availability + blocked dates
+│   │   ├── financeiro/       # Payments (Stripe integration)
 │   │   ├── prontuarios/      # Clinical records
+│   │   ├── triagem/          # Triage management
 │   │   ├── blog/             # Blog CRUD
 │   │   ├── grupos/           # Group therapy
+│   │   ├── notificacoes/     # Notifications
+│   │   ├── assinatura/       # Subscription management (Stripe)
 │   │   └── configuracoes/    # Settings
-│   ├── portal/
-│   │   ├── layout.tsx        # Portal layout (patient auth)
+│   ├── portal/               # Patient portal (11 pages)
+│   │   ├── layout.tsx        # Auth guard (membershipRole: patient|admin|therapist)
 │   │   ├── page.tsx          # Patient dashboard
 │   │   ├── sessoes/          # Sessions view
 │   │   ├── pagamentos/       # Payments view
-│   │   └── documentos/       # Documents view
-│   └── api/
-│       ├── auth/[...nextauth]/ # NextAuth config
+│   │   ├── documentos/       # Documents view
+│   │   ├── triagem/          # Pre-session triage form
+│   │   ├── notificacoes/     # Patient notifications
+│   │   ├── sala-espera/      # Waiting room + Jitsi video
+│   │   └── perfil/           # Profile settings
+│   ├── super/                # Super admin panel (4 pages)
+│   │   ├── page.tsx          # Platform overview
+│   │   ├── tenants/          # Manage all tenants
+│   │   ├── users/            # Manage all platform users
+│   │   └── cdkeys/           # CDKey management
+│   └── api/                  # 56+ API routes (all tenant-scoped)
+│       ├── auth/[...nextauth]/ # NextAuth config (multi-tenant)
 │       ├── patients/         # CRUD patients
-│       ├── appointments/     # CRUD appointments
+│       ├── appointments/     # CRUD appointments (recurrence)
 │       ├── payments/         # CRUD payments
 │       ├── clinical-records/ # CRUD records
 │       ├── blog/             # CRUD blog posts
 │       ├── groups/           # CRUD groups
 │       ├── availability/     # Manage time slots
+│       ├── blocked-dates/    # Manage blocked dates
 │       ├── dashboard/        # Admin stats
+│       ├── triage/           # Triage CRUD
+│       ├── notifications/    # Notifications CRUD
 │       ├── contact/          # Contact form (POST)
-│       └── setup/            # Initial setup
+│       ├── settings/         # Tenant settings
+│       ├── stripe/           # Stripe checkout, webhook, status, subscription
+│       ├── subscription/     # CDKey redemption + plan management
+│       ├── super/            # Super admin endpoints
+│       ├── register/         # Multi-tenant registration
+│       └── select-tenant/    # Tenant switching
 ├── components/
-│   ├── AdminSidebar.tsx      # Admin nav (mobile hamburger)
-│   ├── Blog.tsx              # Blog section (landing)
-│   ├── Chatbot.tsx           # 12 intents + text input
-│   ├── Contact.tsx           # Contact form → POST /api/contact
 │   ├── JitsiMeet.tsx         # Jitsi video call component
-│   ├── Scheduling.tsx        # Appointment scheduling UI
 │   ├── ScrollReveal.tsx      # IntersectionObserver animations
-│   ├── WaitingRoom.tsx       # Pre-session waiting room + Jitsi
-│   └── ... (other sections)
+│   ├── TurnstileWidget.tsx   # Cloudflare Turnstile captcha
+│   ├── admin/                # Admin panel components
+│   ├── portal/               # Portal components
+│   ├── landing/              # Landing page sections
+│   └── waiting-room/         # Waiting room components
 ├── db/
-│   ├── index.ts              # Neon + Drizzle connection (lazy)
-│   └── schema.ts             # 10 tables, 6 enums, relations
-└── lib/
-    ├── auth.ts               # NextAuth config
-    └── api-auth.ts           # requireAdmin() / requireAuth() guards
+│   └── schema.ts             # 18 tables, 10 enums, relations
+├── lib/
+│   ├── auth.ts               # NextAuth config (multi-tenant JWT)
+│   ├── api-auth.ts           # requireAdmin(), requireAuth(), requireSuperAdmin()
+│   ├── stripe.ts             # Stripe SDK init + helpers
+│   ├── session-pricing.ts    # Session pricing logic
+│   ├── payment-access.ts     # Payment access control
+│   ├── availability-slots.ts # Availability slot logic
+│   ├── custom-availability.ts # Custom availability overrides
+│   ├── notifications.ts      # Notification helpers
+│   ├── turnstile.ts          # Turnstile verification
+│   ├── validations.ts        # Input validation utilities
+│   └── utils.ts              # General utilities
+└── types/
+    ├── global.d.ts           # Global type declarations
+    └── next-auth.d.ts        # NextAuth session type extensions
 scripts/
-└── seed.ts                   # Seed admin user
+├── seed.ts                   # Seed initial data
+├── seed-lia-test.ts          # Test tenant seed
+├── reset-and-seed-homolog.ts # Homolog reset script
+├── ensure-stripe-schema.ts   # Stripe schema validation
+└── validate-local-flow.ts    # Local flow validation
+tests/                        # Vitest test suite
 drizzle.config.ts             # Drizzle Kit config
+vitest.config.ts              # Vitest config
 ```
 
-## Database schema (10 tables, 6 enums)
-- **users**: id, name, email, password, role (admin/therapist/patient), phone, createdAt
-- **patients**: userId FK, birthDate, cpf, emergencyContact, notes, status, createdAt
-- **appointments**: patientId FK, therapistId FK, dateTime, duration, type (enum), status (enum), meetingUrl, notes
-- **availability**: therapistId FK, dayOfWeek, startTime, endTime, isActive
-- **clinicalRecords**: patientId FK, therapistId FK, sessionDate, content, type, isConfidential
-- **payments**: patientId FK, appointmentId FK, amount, status (enum), method (enum), dueDate, paidAt
-- **documents**: patientId FK, name, type, url, uploadedAt
-- **blogPosts**: authorId FK, title, slug, content, excerpt, coverImage, published, publishedAt
-- **groups**: name, description, therapistId FK, maxParticipants, schedule, isActive
-- **groupMembers**: groupId FK, patientId FK, joinedAt
+## Database schema (18 tables, 10 enums)
+
+### Core multi-tenant tables
+- **tenants**: id, slug, name, ownerUserId FK, stripeAccountId, plan (tenantPlanEnum), subscriptionStatus (subscriptionStatusEnum), isActive, createdAt
+- **tenantMemberships**: userId FK, tenantId FK, role (membershipRoleEnum: admin/therapist/patient), isActive — bridge table for user↔tenant access
+- **users**: id, email, password, name, role (legacy userRoleEnum), platformRole (platformRoleEnum: superadmin/user), isSuperAdmin (boolean), phone, createdAt
+- **cdkeys**: code, plan (tenantPlanEnum), durationDays, tenantId FK (nullable), redeemedAt — activation codes for plan upgrades
+
+### Clinical + business tables (all have tenantId FK)
+- **patients**: tenantId, userId FK (optional), name, email, cpf, phone, birthDate, status, emergencyContact, notes
+- **appointments**: tenantId, patientId FK, date, startTime, endTime, status (appointmentStatusEnum), recurrenceType, modality (sessionModalityEnum), meetingUrl, notes
+- **availability**: tenantId, dayOfWeek, startTime, endTime, isActive
+- **blockedDates**: tenantId, date, reason
+- **clinicalRecords**: tenantId, patientId FK, therapistId FK, sessionDate, chiefComplaint, clinicalNotes, type, isConfidential
+- **payments**: tenantId, patientId FK, appointmentId FK, amount, status (paymentStatusEnum), method (paymentMethodEnum), stripeSessionId, stripePaymentIntentId, stripeStatus, checkoutUrl
+- **documents**: tenantId, patientId FK, title, type, fileUrl
+- **blogPosts**: tenantId, authorId FK, title, slug, content, excerpt, coverImage, status (blogStatusEnum), publishedAt
+- **groups**: tenantId, name, modality, dayOfWeek, time, maxParticipants, therapistId FK, isActive
+- **groupMembers**: tenantId, groupId FK, patientId FK, joinedAt
+- **triages**: tenantId, appointmentId FK, mood, sleepQuality, anxietyLevel, mainConcern
+- **notifications**: tenantId, type (triage/appointment/payment/registration/status_change), title, message, patientId FK, appointmentId FK, paymentId FK
+- **settings**: tenantId, key, value — tenant-scoped key-value config
+- **passwordResetTokens**: userId FK, token, expiresAt, usedAt
+
+### Enums (10)
+`platformRoleEnum`, `membershipRoleEnum`, `userRoleEnum` (legacy), `appointmentStatusEnum`, `sessionModalityEnum`, `paymentStatusEnum`, `paymentMethodEnum`, `blogStatusEnum`, `tenantPlanEnum`, `subscriptionStatusEnum`
+
+### Multi-tenant rule — CRITICAL
+Every data table (except `users`, `passwordResetTokens`, `cdkeys`) has a `tenantId` FK. **All queries MUST filter by `tenantId`**. New routes/queries without `tenantId` filtering are a security vulnerability.
+
+## Auth system — Multi-tenant JWT
+
+### Role hierarchy
+| Level | Field | Values | Source |
+|-------|-------|--------|--------|
+| **Platform** | `isSuperAdmin` | `true/false` | `users` table |
+| **Platform** | `platformRole` | `superadmin`, `user` | `users` table |
+| **Tenant** | `membershipRole` | `admin`, `therapist`, `patient` | `tenantMemberships` table |
+| **Legacy** | `role` | `admin`, `therapist`, `patient` | `users` table (backward compat) |
+
+### Login flow
+1. User enters email+password → NextAuth `authorize()` validates globally against `users` table
+2. System fetches active `tenantMemberships` for that user
+3. **1 membership** → auto-selects tenant
+4. **2+ memberships** → sets `needsTenantSelection=true` → client redirects to `/select-tenant`
+5. **0 memberships** (non-superadmin) → login fails
+6. JWT stores: `activeTenantId`, `tenantSlug`, `tenantName`, `membershipRole`
+7. Tenant switching: trigger `session.update()` → updates JWT context
+
+### API auth guards (`src/lib/api-auth.ts`)
+- `requireAdmin()` → authenticated + active tenant + (admin OR therapist) membershipRole
+- `requireAuth()` → authenticated + active tenant (any role)
+- `requireSuperAdmin()` → authenticated + `isSuperAdmin === true`
+
+### Layout guards
+- `/admin/layout.tsx` → checks `membershipRole` is `admin` or `therapist` (with fallback to legacy `role`)
+- `/portal/layout.tsx` → checks `membershipRole` is `patient`, `admin`, or `therapist` (admins can also access portal)
+- `/super/` → checks `isSuperAdmin` flag
+
+### Registration flow
+- **Therapist** registers → creates new `tenant` + `tenantMembership(admin)` → auto-login
+- **Patient** registers → requires `tenantSlug` → creates `tenantMembership(patient)` in that tenant → auto-login
 
 ## Development workflow — OBRIGATÓRIO
 - **Sempre crie tudo via terminal CLI** (npm, npx, etc.).
@@ -106,14 +195,15 @@ drizzle.config.ts             # Drizzle Kit config
 - **Build com mais memória** (se necessário): `$env:NODE_OPTIONS="--max-old-space-size=8192"; npm run build`
 - **Integração WhatsApp**: NÃO implementar API de WhatsApp (nem oficial Meta Cloud API, nem não-oficial Evolution/Baileys) neste momento. Manter apenas links `wa.me/` estáticos.
 - Ao criar novos módulos, siga o padrão existente de organização em `src/app/`, `src/components/`, `src/lib/`, `src/db/`.
-- Testes E2E e unitários devem ser escritos para funcionalidades críticas (auth, CRUD pacientes, agendamentos).
+- **Multi-tenant**: Toda nova rota API DEVE usar `requireAuth()` ou `requireAdmin()` e filtrar por `tenantId`. Toda nova query DEVE incluir `where tenantId = ?`.
+- Testes unitários com **Vitest** — rodar `npm test` antes de commits em funcionalidades críticas.
 
 ## CLI setup guide (from scratch)
 
 ### 1. Clone e instalação
 ```bash
-git clone https://github.com/VNCRIBEIRO1/psicolobia.git
-cd psicolobia
+git clone https://github.com/VNCRIBEIRO1/mentevive.git
+cd mentevive
 npm install
 ```
 
@@ -129,7 +219,7 @@ git config user.email "VNCRIBEIRO1@users.noreply.github.com"
 npm install -g neonctl
 neonctl auth                    # Abre browser para login
 neonctl projects list           # Verifica projeto existente
-# Ou criar novo: neonctl projects create --name psicolobia
+# Ou criar novo: neonctl projects create --name mentevive
 neonctl connection-string       # Copia a connection string
 ```
 
@@ -147,9 +237,9 @@ Para gerar o secret: `node -e "console.log(require('crypto').randomBytes(32).toS
 npx drizzle-kit push            # Cria/atualiza tabelas no Neon
 ```
 
-### 5. Seed do admin
+### 5. Seed data
 ```bash
-npm run db:seed                  # Cria admin@psicolobia.com.br / Psicolobia@2026
+npm run db:seed                  # Cria admin + tenant de teste
 ```
 
 ### 6. Desenvolvimento local
@@ -167,12 +257,18 @@ npx vercel --prod --yes          # Deploy para produção
 ```bash
 npx vercel env add DATABASE_URL production    # Cola a connection string
 npx vercel env add NEXTAUTH_SECRET production # Cola o secret
-npx vercel env add NEXTAUTH_URL production    # https://psicolobia.vercel.app
+npx vercel env add NEXTAUTH_URL production    # https://mentevive.vercel.app
+npx vercel env add STRIPE_SECRET_KEY production
+npx vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production
+npx vercel env add STRIPE_WEBHOOK_SECRET production
+npx vercel env add STRIPE_PRICE_MONTHLY production
+npx vercel env add STRIPE_PRICE_ANNUAL production
 ```
 > **Nota**: Se o Neon foi integrado via Vercel Marketplace, `DATABASE_URL` é configurado automaticamente.
 
 ## Professional identity
-- The professional is **Beatriz (Bea)**, a clinical psychologist who brands as **Psicolobia** / **@psicolobiaa**.
+- **MenteVive** is the SaaS platform brand. Multiple clinics (tenants) can register.
+- The first tenant is **Psicolobia** — run by **Beatriz (Bea)**, clinical psychologist, brand `@psicolobiaa`.
 - **CRP 06/173961** — Conselho Regional de Psicologia de São Paulo.
 - **Formação**: Universidade do Oeste Paulista — UNOESTE.
 - **Certificação**: Transtorno Ansioso e Depressivo — Faculdade Israelita Albert Einstein (ago/2023).
@@ -196,11 +292,9 @@ npx vercel env add NEXTAUTH_URL production    # https://psicolobia.vercel.app
 
 ## React / Next.js patterns
 - **Server Components** by default; use `"use client"` only when needed (interactivity, hooks, browser APIs).
-- **Client components**: Chatbot, Scheduling, WaitingRoom, Contact, Blog, JitsiMeet, ScrollReveal, AdminSidebar.
-- **API routes** use `NextResponse.json()` and auth guards from `src/lib/api-auth.ts` (`requireAdmin()`, `requireAuth()`).
-- **DB queries** use Drizzle ORM query builder — `db.select()`, `db.insert()`, `db.query.table.findMany()`.
-- **Auth flow**: Login → NextAuth credentials → JWT → role check → redirect (admin→/admin, patient→/portal).
-- **Chatbot**: 12 intents with keyword matching + quick-reply buttons. New intents follow `botResponses` map pattern in `src/components/Chatbot.tsx`.
+- **API routes** use `NextResponse.json()` and auth guards from `src/lib/api-auth.ts` (`requireAdmin()`, `requireAuth()`, `requireSuperAdmin()`).
+- **DB queries** use Drizzle ORM query builder — `db.select()`, `db.insert()`, `db.query.table.findMany()`. **Always include `.where(eq(table.tenantId, tenantId))`**.
+- **Auth flow**: Login → NextAuth credentials → JWT (with tenant context) → membershipRole check → redirect (admin→/admin, patient→/portal, multi-tenant→/select-tenant).
 - **Scheduling**: Client-side calendar state (`schedMonth`, `schedYear`, `schedSelDate`, `schedSelSlot`).
 - **Waiting Room**: 15-min countdown → Jitsi video call via External API.
 
@@ -208,7 +302,7 @@ npx vercel env add NEXTAUTH_URL production    # https://psicolobia.vercel.app
 - Local images: `public/` directory (migrated from repo root).
 - Remote images: Unsplash (configured in `next.config.js` `images.remotePatterns`).
 - Typography: Fraunces + Inter loaded via `next/font/google` in `src/app/layout.tsx` (zero FOUT, no external CSS import).
-- `.vercel/` is gitignored. Canonical URL: `https://psicolobia.vercel.app`.
+- `.vercel/` is gitignored. Canonical URL: `https://mentevive.vercel.app`.
 
 ## Working in this repo
 - O projeto usa `npm` como gerenciador de pacotes.
@@ -216,20 +310,25 @@ npx vercel env add NEXTAUTH_URL production    # https://psicolobia.vercel.app
   - `npm run dev` — Servidor de desenvolvimento (http://localhost:3000)
   - `npm run build` — Build de produção (OBRIGATÓRIO antes de cada commit)
   - `npm run lint` — ESLint 9 (flat config em `eslint.config.mjs`)
-  - `npm run db:seed` — Seed do admin (`npx tsx scripts/seed.ts`)
+  - `npm test` — Vitest test suite
+  - `npm run db:seed` — Seed data (`npx tsx scripts/seed.ts`)
   - `npx drizzle-kit push` — Push schema para Neon
   - `npx drizzle-kit studio` — GUI para visualizar banco
   - `npx vercel --prod --yes` — Deploy para produção
 - Variáveis de ambiente ficam em `.env.local` (nunca commitar). Use `.env.local.example` como referência.
 - `README.md` contém instruções de setup e documentação da API.
-- `index.html` na raiz preserva a versão original do site estático para referência (_legacy_).
+- `_legacy/index.html` preserva a versão original do site estático para referência.
 
 ## Stripe integration
 - **SDK**: `stripe` ^21.x — server-side only (`src/lib/stripe.ts`).
+- **Stripe Account**: MenteVive Platform (acct_1TMsrUPO2zUrO8sv)
+- **Subscription Plans**: Monthly R$59.90 (`STRIPE_PRICE_MONTHLY`), Annual R$499.00 (`STRIPE_PRICE_ANNUAL`)
 - **Env vars** (all optional — app degrades gracefully when absent):
   - `STRIPE_SECRET_KEY` — `sk_test_...` (teste) ou `sk_live_...` (produção)
   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — `pk_test_...` ou `pk_live_...`
   - `STRIPE_WEBHOOK_SECRET` — `whsec_...` (do CLI para local, do Dashboard para produção)
+  - `STRIPE_PRICE_MONTHLY` — Price ID for monthly subscription plan
+  - `STRIPE_PRICE_ANNUAL` — Price ID for annual subscription plan
 - **Rotas API Stripe**:
   - `POST /api/stripe/create-checkout` — cria Checkout Session (auth: qualquer logado)
   - `GET  /api/stripe/status?paymentId=...` — consulta status no Stripe (auth: qualquer logado)
@@ -272,8 +371,8 @@ npx vercel --prod --yes
 | Ambiente | Endpoint | Signing Secret |
 |----------|---------|---------------|
 | **Local (teste)** | `stripe listen --forward-to http://localhost:3000/api/stripe/webhook` | `whsec_...` exibido pelo CLI |
-| **Vercel (teste)** | `https://psicolobia.vercel.app/api/stripe/webhook` (webhook teste no Dashboard) | `whsec_...` do endpoint teste |
-| **Vercel (produção)** | `https://psicolobia.vercel.app/api/stripe/webhook` (webhook live no Dashboard) | `whsec_...` do endpoint live |
+| **Vercel (teste)** | `https://mentevive.vercel.app/api/stripe/webhook` (webhook teste no Dashboard) | `whsec_...` do endpoint teste |
+| **Vercel (produção)** | `https://mentevive.vercel.app/api/stripe/webhook` (webhook live no Dashboard) | `whsec_...` do endpoint live |
 
 **Events para registrar**: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.expired`, `charge.refunded`
 
@@ -305,14 +404,13 @@ fetch("/api/stripe/test-flow", { method: "POST", headers: { "Content-Type": "app
 - Após trocar para live: **testar com valor real baixo** (R$ 1,00) antes de liberar para pacientes.
 
 ## Admin credentials (dev/staging)
-- **Email**: `admin@psicolobia.com.br`
-- **Senha**: `Psicolobia@2026`
 - Criado via `npm run db:seed`. Nunca expor em produção.
+- Credenciais variam por script de seed — verifique `scripts/seed.ts` para valores atuais.
 
 ## Commit & deploy — OBRIGATÓRIO após toda alteração
 - **SEMPRE faça git add, commit e push ao final de CADA tarefa, sem exceção. Nunca espere o usuário pedir.**
-- Sequência obrigatória: `npm run build` → `git add -A` → `git commit -m "<msg>"` → `git push origin main`.
-- O Vercel detecta o push em `main` e faz o redeploy automaticamente em `https://psicolobia.vercel.app`.
+- Sequência obrigatória: `npm run build` → `git add -A` → `git commit -m "<msg>"` → `git push origin master`.
+- O Vercel detecta o push em `master` e faz o redeploy automaticamente em `https://mentevive.vercel.app`.
 - Mensagem de commit deve seguir o padrão: `feat|fix|chore|style|content: descrição curta em pt-BR`.
 - Nunca encerre uma tarefa sem confirmar que o push foi bem-sucedido.
 - **Antes de cada commit**: rode `npm run build` (com `$env:NODE_OPTIONS="--max-old-space-size=8192"` se necessário) para validar que não há erros.
