@@ -59,7 +59,8 @@ export async function createCheckoutSession(
   const client = getClient();
   if (!client) return null;
 
-  const baseUrl = process.env.NEXTAUTH_URL || "";
+  const baseUrl = process.env.NEXTAUTH_URL;
+  if (!baseUrl) throw new Error("NEXTAUTH_URL is required for Stripe checkout");
 
   const session = await client.checkout.sessions.create({
     mode: "payment",

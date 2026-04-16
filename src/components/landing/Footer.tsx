@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Smartphone, Camera, Music } from "lucide-react";
-import { WHATSAPP_LINK, INSTAGRAM_URL, TIKTOK_URL } from "@/lib/utils";
+import { WHATSAPP_LINK, WHATSAPP_DISPLAY, INSTAGRAM_URL, TIKTOK_URL } from "@/lib/utils";
 
 const siteLinks = [
   { href: "#jornada", label: "Jornada" },
@@ -36,9 +36,9 @@ export function Footer() {
         <div>
           <h4 className="text-white font-heading text-base mb-3">Contato</h4>
           <ul className="space-y-2">
-            <li><a href={WHATSAPP_LINK} target="_blank" rel="noopener" className="text-sm hover:text-primary-light transition-colors flex items-center gap-2"><Smartphone className="w-3.5 h-3.5" /> (11) 98884-0525</a></li>
-            <li><a href={INSTAGRAM_URL} target="_blank" rel="noopener" className="text-sm hover:text-primary-light transition-colors flex items-center gap-2"><Camera className="w-3.5 h-3.5" /> Instagram</a></li>
-            <li><a href={TIKTOK_URL} target="_blank" rel="noopener" className="text-sm hover:text-primary-light transition-colors flex items-center gap-2"><Music className="w-3.5 h-3.5" /> TikTok</a></li>
+            {WHATSAPP_LINK && <li><a href={WHATSAPP_LINK} target="_blank" rel="noopener" className="text-sm hover:text-primary-light transition-colors flex items-center gap-2"><Smartphone className="w-3.5 h-3.5" /> {WHATSAPP_DISPLAY || "WhatsApp"}</a></li>}
+            {INSTAGRAM_URL && <li><a href={INSTAGRAM_URL} target="_blank" rel="noopener" className="text-sm hover:text-primary-light transition-colors flex items-center gap-2"><Camera className="w-3.5 h-3.5" /> Instagram</a></li>}
+            {TIKTOK_URL && <li><a href={TIKTOK_URL} target="_blank" rel="noopener" className="text-sm hover:text-primary-light transition-colors flex items-center gap-2"><Music className="w-3.5 h-3.5" /> TikTok</a></li>}
           </ul>
         </div>
       </div>

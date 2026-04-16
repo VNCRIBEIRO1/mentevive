@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react";
 import { WHATSAPP_LINK } from "@/lib/utils";
 
 export function WhatsAppFloat() {
+  if (!WHATSAPP_LINK) return null;
   return (
     <motion.a
       href={WHATSAPP_LINK}

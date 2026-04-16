@@ -73,7 +73,13 @@ export async function POST(req: NextRequest) {
         ? tenant.stripeAccountId
         : null;
 
-    const baseUrl = process.env.NEXTAUTH_URL || "";
+    const baseUrl = process.env.NEXTAUTH_URL;
+    if (!baseUrl) {
+      return NextResponse.json(
+        { error: "Server misconfiguration: NEXTAUTH_URL not set" },
+        { status: 500 }
+      );
+    }
     let successUrl: string | undefined;
     let cancelUrl: string | undefined;
 

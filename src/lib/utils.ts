@@ -91,6 +91,28 @@ export function buildWhatsAppUrl(phone: string, message?: string): string {
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }
 
-export const WHATSAPP_LINK = "";
-export const INSTAGRAM_URL = "";
-export const TIKTOK_URL = "";
+/** Tenant-level social / contact constants — driven by NEXT_PUBLIC env vars. */
+export const WHATSAPP_LINK = process.env.NEXT_PUBLIC_WHATSAPP_PHONE
+  ? `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE.replace(/\D/g, "")}`
+  : "";
+export const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "";
+export const TIKTOK_URL = process.env.NEXT_PUBLIC_TIKTOK_URL || "";
+
+export const TENANT_DISPLAY_NAME =
+  process.env.NEXT_PUBLIC_TENANT_NAME || "MenteVive";
+export const PROFESSIONAL_NAME =
+  process.env.NEXT_PUBLIC_PROFESSIONAL_NAME || "";
+
+export function formatPhoneDisplay(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  const local = digits.startsWith("55") ? digits.slice(2) : digits;
+  if (local.length === 11)
+    return `(${local.slice(0, 2)}) ${local.slice(2, 7)}-${local.slice(7)}`;
+  if (local.length === 10)
+    return `(${local.slice(0, 2)}) ${local.slice(2, 6)}-${local.slice(6)}`;
+  return phone;
+}
+
+export const WHATSAPP_DISPLAY = process.env.NEXT_PUBLIC_WHATSAPP_PHONE
+  ? formatPhoneDisplay(process.env.NEXT_PUBLIC_WHATSAPP_PHONE)
+  : "";

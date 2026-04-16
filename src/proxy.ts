@@ -6,7 +6,7 @@ import { getAuthSecret } from "@/lib/auth-secret";
 /**
  * Edge Proxy — auth guard for /admin/*, /portal/*, and /select-tenant routes.
  *
- * Multi-tenant aware: checks JWT + tenant cookies.
+ * Multi-tenant aware: checks JWT claims only (no cookie fallback).
  * Subdomain detection: extracts tenant slug from hostname (e.g. psicolobia.mentevive.com.br).
  * Redirects unauthenticated users to /login.
  * Redirects users without a selected tenant to /select-tenant.

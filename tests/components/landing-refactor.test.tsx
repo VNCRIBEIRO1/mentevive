@@ -82,8 +82,12 @@ vi.mock("next/image", () => ({
 /* ─── Mock @/lib/utils ─── */
 vi.mock("@/lib/utils", () => ({
   WHATSAPP_LINK: "https://wa.me/5511988840525",
+  WHATSAPP_DISPLAY: "(11) 98884-0525",
   INSTAGRAM_URL: "",
   TIKTOK_URL: "",
+  TENANT_DISPLAY_NAME: "MenteVive",
+  PROFESSIONAL_NAME: "Bea",
+  formatPhoneDisplay: (phone: string) => phone,
 }));
 
 /* ─── Mock fetch for Blog ─── */

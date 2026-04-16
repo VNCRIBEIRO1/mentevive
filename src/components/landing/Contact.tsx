@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Smartphone, Camera, Music, Monitor, Send, CheckCircle, Leaf } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { WHATSAPP_LINK, INSTAGRAM_URL, TIKTOK_URL } from "@/lib/utils";
+import { WHATSAPP_LINK, WHATSAPP_DISPLAY, INSTAGRAM_URL, TIKTOK_URL } from "@/lib/utils";
 import { AnimatedSection, AnimatedItem } from "./AnimatedSection";
 import { GlassCard } from "./GlassCard";
 import type { ReactNode } from "react";
@@ -46,9 +46,9 @@ export function Contact() {
   };
 
   const contacts: { icon: ReactNode; title: string; content: string; href?: string }[] = [
-    { icon: <Smartphone className="w-5 h-5 text-teal" />, title: "WhatsApp", content: "(11) 98884-0525", href: WHATSAPP_LINK },
-    { icon: <Camera className="w-5 h-5 text-teal" />, title: "Instagram", content: "Instagram", href: INSTAGRAM_URL },
-    { icon: <Music className="w-5 h-5 text-teal" />, title: "TikTok", content: "TikTok", href: TIKTOK_URL },
+    ...(WHATSAPP_LINK ? [{ icon: <Smartphone className="w-5 h-5 text-teal" />, title: "WhatsApp", content: WHATSAPP_DISPLAY || "WhatsApp", href: WHATSAPP_LINK }] : []),
+    ...(INSTAGRAM_URL ? [{ icon: <Camera className="w-5 h-5 text-teal" />, title: "Instagram", content: "Instagram", href: INSTAGRAM_URL }] : []),
+    ...(TIKTOK_URL ? [{ icon: <Music className="w-5 h-5 text-teal" />, title: "TikTok", content: "TikTok", href: TIKTOK_URL }] : []),
     { icon: <Monitor className="w-5 h-5 text-teal" />, title: "Atendimento Online", content: "Terapia por videochamada em todo o Brasil" },
   ];
 
