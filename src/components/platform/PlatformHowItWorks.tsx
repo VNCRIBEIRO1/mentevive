@@ -1,24 +1,27 @@
 import { AnimatedSection, AnimatedItem } from "@/components/landing";
-import { UserPlus, Settings, Sparkles } from "lucide-react";
+import { MessageCircle, PenTool, Sparkles } from "lucide-react";
 
 const steps = [
   {
-    icon: UserPlus,
+    icon: MessageCircle,
     number: "01",
-    title: "Crie sua conta",
-    description: "Cadastro em 2 minutos. Sem cartão de crédito.",
+    title: "Fale conosco",
+    description:
+      "Envie uma mensagem pelo WhatsApp e conte sobre seu consultório. Vamos entender suas necessidades.",
   },
   {
-    icon: Settings,
+    icon: PenTool,
     number: "02",
-    title: "Configure seu consultório",
-    description: "Defina horários, preços e especialidades.",
+    title: "Criamos seu site",
+    description:
+      "Desenvolvemos sua landing page profissional e integramos com a plataforma completa.",
   },
   {
     icon: Sparkles,
     number: "03",
     title: "Comece a atender",
-    description: "Compartilhe seu link e receba pacientes.",
+    description:
+      "Seu consultório online fica pronto para receber pacientes. Simples assim.",
   },
 ];
 

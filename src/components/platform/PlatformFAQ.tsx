@@ -7,28 +7,32 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    q: "Preciso de cartão de crédito para testar?",
-    a: "Não. O trial de 14 dias é totalmente gratuito e não exige cartão de crédito. Você só insere dados de pagamento quando decidir assinar.",
+    q: "Quanto tempo leva para criar meu site?",
+    a: "Em geral, seu site profissional fica pronto em até 5 dias úteis após a aprovação do layout. Trabalhamos junto com você para garantir que tudo reflita sua identidade.",
+  },
+  {
+    q: "O que está incluído no serviço?",
+    a: "Você recebe uma landing page profissional com sua identidade, integrada à plataforma completa: agenda, prontuários, portal do paciente, pagamentos via Stripe e videochamada. Tudo pronto para usar.",
+  },
+  {
+    q: "Qual a diferença entre o plano Basic e Pro?",
+    a: "A principal diferença é o período de teste gratuito. No Basic você tem 30 dias grátis e no Pro, 90 dias grátis para testar a plataforma sem custo adicional além do investimento inicial. Todas as funcionalidades são idênticas.",
   },
   {
     q: "Meus dados e dos pacientes estão seguros?",
     a: "Sim. Usamos criptografia em trânsito (HTTPS/TLS) e armazenamento seguro na nuvem. Prontuários são acessíveis apenas pelo profissional responsável, seguindo padrões de sigilo do CFP.",
   },
   {
-    q: "Funciona no celular?",
-    a: "Sim. A plataforma é 100% responsiva — funciona em computador, tablet e smartphone. Seus pacientes também acessam o portal pelo celular.",
-  },
-  {
-    q: "Posso migrar meus dados de outro sistema?",
-    a: "Ainda não temos importação automática, mas nossa equipe pode ajudar na migração manual durante o onboarding. Entre em contato pelo suporte.",
-  },
-  {
     q: "Como recebo os pagamentos dos pacientes?",
     a: "Via Stripe Connect. O valor das sessões vai direto para sua conta bancária, com cartão de crédito ou PIX. Você acompanha tudo pelo painel financeiro.",
   },
   {
-    q: "Posso cancelar a qualquer momento?",
-    a: "Sim. Sem multa, sem burocracia. Você pode cancelar direto pelo painel e continua com acesso até o fim do período pago.",
+    q: "Funciona no celular?",
+    a: "Sim. A plataforma e o site são 100% responsivos — funcionam em computador, tablet e smartphone. Seus pacientes também acessam o portal pelo celular.",
+  },
+  {
+    q: "Posso cancelar a assinatura a qualquer momento?",
+    a: "Sim. Sem multa, sem burocracia. Você pode cancelar pelo painel e continua com acesso até o fim do período pago.",
   },
 ];
 

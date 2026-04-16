@@ -13,6 +13,7 @@ const features = [
   {
     icon: CalendarDays,
     title: "Agenda Inteligente",
+    span: "md:col-span-2",
     bullets: [
       "Agendamento online pelo portal do paciente",
       "Bloqueio de horários e disponibilidade customizada",
@@ -23,6 +24,7 @@ const features = [
   {
     icon: ClipboardList,
     title: "Prontuário Digital",
+    span: "",
     bullets: [
       "Registro por sessão com notas clínicas",
       "Queixa principal e evolução documentadas",
@@ -33,6 +35,7 @@ const features = [
   {
     icon: Users,
     title: "Portal do Paciente",
+    span: "",
     bullets: [
       "Triagem pré-sessão automatizada",
       "Visualização de sessões e pagamentos",
@@ -43,6 +46,7 @@ const features = [
   {
     icon: CreditCard,
     title: "Pagamentos Integrados",
+    span: "",
     bullets: [
       "Stripe com cartão de crédito e PIX",
       "Recebimento direto na sua conta",
@@ -53,6 +57,7 @@ const features = [
   {
     icon: Video,
     title: "Videochamada Segura",
+    span: "md:col-span-2",
     bullets: [
       "Jitsi Meet integrado — sem instalar nada",
       "Sala de espera antes da sessão",
@@ -69,7 +74,7 @@ export function PlatformFeatures() {
         <AnimatedSection direction="up" className="text-center mb-14">
           <span className="section-label">Recursos</span>
           <h2 className="section-title mt-3">
-            Tudo que você precisa para atender online
+            Tudo incluído no seu consultório online
           </h2>
           <p className="mt-4 text-foreground/60 max-w-xl mx-auto">
             Ferramentas pensadas por profissionais de saúde mental, para
@@ -80,26 +85,32 @@ export function PlatformFeatures() {
         <AnimatedSection
           direction="up"
           staggerChildren={0.1}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {features.map((feat) => (
-            <AnimatedItem key={feat.title}>
-              <GlassCard className="h-full">
-                <feat.icon size={32} className="text-teal mb-4" />
-                <h3 className="text-lg font-heading font-semibold text-foreground mb-4">
-                  {feat.title}
-                </h3>
-                <ul className="space-y-2.5">
-                  {feat.bullets.map((bullet) => (
-                    <li
-                      key={bullet}
-                      className="flex items-start gap-2 text-sm text-foreground/70"
-                    >
-                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
+            <AnimatedItem key={feat.title} className={feat.span}>
+              <GlassCard className="h-full group hover:border-teal/20 transition-colors duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal/10 shrink-0 group-hover:bg-teal/15 transition-colors">
+                    <feat.icon size={24} className="text-teal" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-heading font-semibold text-foreground mb-3">
+                      {feat.title}
+                    </h3>
+                    <ul className="space-y-2.5">
+                      {feat.bullets.map((bullet) => (
+                        <li
+                          key={bullet}
+                          className="flex items-start gap-2 text-sm text-foreground/70"
+                        >
+                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                          {bullet}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </GlassCard>
             </AnimatedItem>
           ))}

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { WHATSAPP_LINK } from "@/lib/utils";
+import { WhatsAppIcon } from "./WhatsAppIcon";
 
 const productLinks = [
   { label: "Recursos", href: "#recursos" },
@@ -11,10 +13,14 @@ const legalLinks = [
   { label: "Privacidade", href: "/privacidade" },
 ];
 
+const whatsappHref = WHATSAPP_LINK
+  ? `${WHATSAPP_LINK}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre a MenteVive.")}`
+  : "";
+
 export function PlatformFooter() {
   return (
     <footer className="border-t border-foreground/5 py-12 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         {/* Brand */}
         <div>
           <Link href="/" className="flex items-center gap-2 mb-3">
@@ -26,9 +32,9 @@ export function PlatformFooter() {
             </span>
           </Link>
           <p className="text-sm text-foreground/50 leading-relaxed">
-            Tecnologia para saúde mental.
+            Criamos seu consultório online.
             <br />
-            Seu consultório online, completo e seguro.
+            Profissional, integrado e seguro.
           </p>
         </div>
 
@@ -63,6 +69,34 @@ export function PlatformFooter() {
                 </Link>
               </li>
             ))}
+          </ul>
+        </div>
+
+        {/* Contact */}
+        <div>
+          <h4 className="text-sm font-semibold text-foreground mb-3">Contato</h4>
+          <ul className="space-y-2">
+            {whatsappHref && (
+              <li>
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-foreground/50 hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+                >
+                  <WhatsAppIcon className="w-3.5 h-3.5" />
+                  WhatsApp
+                </a>
+              </li>
+            )}
+            <li>
+              <Link
+                href="/login"
+                className="text-sm text-foreground/50 hover:text-foreground transition-colors"
+              >
+                Área do profissional
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

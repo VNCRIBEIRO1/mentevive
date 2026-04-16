@@ -1,20 +1,28 @@
 "use client";
 
-import Link from "next/link";
 import { AnimatedSection } from "@/components/landing";
 import { FloatingOrbs } from "@/components/landing";
-import { Shield, CalendarCheck, Video } from "lucide-react";
+import { Globe, LayoutDashboard, HeadphonesIcon } from "lucide-react";
+import { WHATSAPP_LINK } from "@/lib/utils";
+import { WhatsAppIcon } from "./WhatsAppIcon";
 
 const pills = [
-  { icon: CalendarCheck, label: "Agenda online" },
-  { icon: Shield, label: "Dados protegidos" },
-  { icon: Video, label: "Videochamada integrada" },
+  { icon: Globe, label: "Site profissional" },
+  { icon: LayoutDashboard, label: "Plataforma completa" },
+  { icon: HeadphonesIcon, label: "Suporte dedicado" },
 ];
+
+const whatsappHref = WHATSAPP_LINK
+  ? `${WHATSAPP_LINK}?text=${encodeURIComponent("Olá! Quero criar meu consultório online com a MenteVive.")}`
+  : "#planos";
 
 export function PlatformHero() {
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-24 pb-16">
       <FloatingOrbs className="absolute inset-0 pointer-events-none" />
+
+      {/* noise overlay */}
+      <div className="absolute inset-0 opacity-[0.02] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20viewBox%3D%220%200%20256%20256%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22noise%22%3E%3CfeTurbulence%20baseFrequency%3D%220.65%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url(%23noise)%22%2F%3E%3C%2Fsvg%3E')] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
         <AnimatedSection direction="up" staggerType="premium" staggerChildren={0.15}>
@@ -23,28 +31,32 @@ export function PlatformHero() {
           </span>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-tight max-w-4xl mx-auto">
-            Seu consultório online.{" "}
+            Criamos seu consultório online.{" "}
             <span className="bg-gradient-to-r from-primary to-teal bg-clip-text text-transparent">
-              Completo. Seguro. Profissional.
+              Profissional. Integrado. Seguro.
             </span>
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed">
-            Agenda, prontuários, pagamentos e videochamadas — tudo em um só lugar.
+            Nós cuidamos da tecnologia — site, agenda, prontuários, pagamentos e
+            videochamada. Você cuida dos seus pacientes.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/registro"
-              className="btn-brand-primary text-base px-8 py-3.5 shadow-warm-lg"
-            >
-              Começar grátis
-            </Link>
             <a
-              href="#recursos"
+              href={whatsappHref}
+              target={WHATSAPP_LINK ? "_blank" : undefined}
+              rel={WHATSAPP_LINK ? "noopener noreferrer" : undefined}
+              className="btn-brand-primary text-base px-8 py-3.5 shadow-warm-lg inline-flex items-center gap-2.5"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              Quero meu consultório
+            </a>
+            <a
+              href="#planos"
               className="btn-brand-outline text-base px-8 py-3.5"
             >
-              Ver recursos
+              Ver planos
             </a>
           </div>
 

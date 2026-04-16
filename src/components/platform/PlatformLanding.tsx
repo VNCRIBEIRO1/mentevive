@@ -2,6 +2,7 @@ import { SectionDivider } from "@/components/landing";
 import { PlatformNav } from "./PlatformNav";
 import { PlatformHero } from "./PlatformHero";
 import { PlatformProblem } from "./PlatformProblem";
+import { PlatformSocialProof } from "./PlatformSocialProof";
 import { PlatformFeatures } from "./PlatformFeatures";
 import { PlatformHowItWorks } from "./PlatformHowItWorks";
 import { PlatformPricing } from "./PlatformPricing";
@@ -16,6 +17,7 @@ export function PlatformLanding() {
       <PlatformHero />
       <SectionDivider />
       <PlatformProblem />
+      <PlatformSocialProof />
       <PlatformFeatures />
       <SectionDivider variant="wave-up" />
       <PlatformHowItWorks />

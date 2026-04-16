@@ -1,138 +1,162 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { AnimatedSection } from "@/components/landing";
-import { Check } from "lucide-react";
+import { AnimatedSection, AnimatedItem } from "@/components/landing";
+import { Check, Sparkles } from "lucide-react";
+import { WHATSAPP_LINK } from "@/lib/utils";
+import { WhatsAppIcon } from "./WhatsAppIcon";
 
-const allFeatures = [
+const sharedFeatures = [
+  "Site / landing page profissional",
   "Agenda inteligente",
-  "Prontuário digital",
+  "Prontuário digital seguro",
   "Portal do paciente",
-  "Videochamada integrada",
-  "Pagamentos via Stripe",
+  "Videochamada integrada (Jitsi)",
+  "Pagamentos via Stripe (cartão + PIX)",
   "Sala de espera virtual",
   "Sessões recorrentes",
   "Relatórios financeiros",
-  "Suporte por e-mail",
+  "Suporte por e-mail e WhatsApp",
 ];
 
-const plans = {
-  monthly: {
-    price: "59,90",
-    period: "/mês",
-    badge: null,
+const plans = [
+  {
+    name: "Basic",
+    setup: "399",
+    trial: "30 dias grátis",
+    trialNote: "Teste a plataforma por 30 dias sem custo adicional",
+    popular: false,
+    whatsappMsg: "Olá! Tenho interesse no plano Basic da MenteVive.",
   },
-  annual: {
-    price: "499,00",
-    period: "/ano",
-    badge: "Economize 30%",
+  {
+    name: "Pro",
+    setup: "499",
+    trial: "90 dias grátis",
+    trialNote: "Teste a plataforma por 90 dias sem custo adicional",
+    popular: true,
+    whatsappMsg: "Olá! Tenho interesse no plano Pro da MenteVive.",
   },
-};
+];
 
 export function PlatformPricing() {
-  const [annual, setAnnual] = useState(true);
-  const plan = annual ? plans.annual : plans.monthly;
-
   return (
     <section id="planos" className="py-20 px-6">
-      <div className="max-w-3xl mx-auto">
-        <AnimatedSection direction="up" className="text-center mb-10">
+      <div className="max-w-5xl mx-auto">
+        <AnimatedSection direction="up" className="text-center mb-12">
           <span className="section-label">Planos</span>
           <h2 className="section-title mt-3">
-            Simples e transparente
+            Escolha o plano ideal para você
           </h2>
-          <p className="mt-4 text-foreground/60">
-            Um plano completo. Todas as funcionalidades. Teste grátis por 14 dias.
+          <p className="mt-4 text-foreground/60 max-w-xl mx-auto">
+            Criamos seu site profissional e integramos com toda a plataforma.
+            Após o período de teste, a assinatura é de{" "}
+            <strong className="text-foreground">R$&nbsp;59,00/mês</strong> ou{" "}
+            <strong className="text-foreground">R$&nbsp;499,00/ano</strong>.
           </p>
         </AnimatedSection>
 
-        {/* Toggle */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <span
-            className={`text-sm font-medium transition-colors ${
-              !annual ? "text-foreground" : "text-foreground/50"
-            }`}
-          >
-            Mensal
-          </span>
-          <button
-            onClick={() => setAnnual(!annual)}
-            className="relative w-14 h-7 rounded-full bg-foreground/10 transition-colors"
-            aria-label="Alternar entre plano mensal e anual"
-          >
-            <motion.div
-              className="absolute top-0.5 w-6 h-6 rounded-full bg-teal shadow-md"
-              animate={{ left: annual ? "calc(100% - 1.625rem)" : "0.125rem" }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            />
-          </button>
-          <span
-            className={`text-sm font-medium transition-colors ${
-              annual ? "text-foreground" : "text-foreground/50"
-            }`}
-          >
-            Anual
-          </span>
-        </div>
+        <AnimatedSection
+          direction="up"
+          staggerChildren={0.15}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch"
+        >
+          {plans.map((plan) => {
+            const href = WHATSAPP_LINK
+              ? `${WHATSAPP_LINK}?text=${encodeURIComponent(plan.whatsappMsg)}`
+              : "#";
 
-        {/* Pricing card */}
-        <AnimatedSection direction="scale">
-          <div className="glass-strong rounded-2xl p-8 sm:p-10 text-center relative overflow-hidden">
-            {plan.badge && (
-              <span className="absolute top-4 right-4 bg-teal text-white text-xs font-bold px-3 py-1 rounded-full">
-                {plan.badge}
-              </span>
-            )}
-
-            <h3 className="text-lg font-heading font-semibold text-foreground mb-2">
-              Plano Profissional
-            </h3>
-
-            <div className="flex items-baseline justify-center gap-1 mb-1">
-              <span className="text-sm text-foreground/60">R$</span>
-              <motion.span
-                key={plan.price}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-5xl font-heading font-bold text-foreground"
-              >
-                {plan.price}
-              </motion.span>
-              <span className="text-sm text-foreground/60">{plan.period}</span>
-            </div>
-
-            {annual && (
-              <p className="text-xs text-foreground/50 mb-6">
-                equivale a R$41,58/mês
-              </p>
-            )}
-            {!annual && <div className="mb-6" />}
-
-            <ul className="text-left max-w-xs mx-auto space-y-3 mb-8">
-              {allFeatures.map((feat) => (
-                <li
-                  key={feat}
-                  className="flex items-center gap-2.5 text-sm text-foreground/80"
+            return (
+              <AnimatedItem key={plan.name}>
+                <div
+                  className={`relative h-full rounded-2xl p-8 sm:p-10 flex flex-col transition-all duration-300 ${
+                    plan.popular
+                      ? "glass-glow border-2 border-teal/30 shadow-teal-glow"
+                      : "glass-strong border border-white/10"
+                  }`}
                 >
-                  <Check size={16} className="text-teal shrink-0" />
-                  {feat}
-                </li>
-              ))}
-            </ul>
+                  {/* Popular badge */}
+                  {plan.popular && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal text-white text-xs font-bold px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-md">
+                      <Sparkles size={12} />
+                      Mais popular
+                    </span>
+                  )}
 
-            <Link
-              href="/registro"
-              className="btn-brand-primary text-base px-8 py-3.5 inline-block shadow-warm-lg"
-            >
-              Começar grátis por 14 dias
-            </Link>
+                  {/* Plan name */}
+                  <h3 className="text-lg font-heading font-semibold text-foreground mb-1">
+                    Plano {plan.name}
+                  </h3>
 
-            <p className="mt-3 text-xs text-foreground/40">
-              Sem cartão de crédito. Cancele quando quiser.
-            </p>
-          </div>
+                  {/* Trial highlight */}
+                  <span className="inline-block text-sm font-medium text-teal bg-teal/10 rounded-full px-3 py-1 w-fit mb-6">
+                    {plan.trial}
+                  </span>
+
+                  {/* Setup price */}
+                  <div className="mb-2">
+                    <span className="text-sm text-foreground/50">Investimento único</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <span className="text-sm text-foreground/60">R$</span>
+                      <span className="text-5xl font-heading font-bold text-foreground">
+                        {plan.setup}
+                      </span>
+                      <span className="text-sm text-foreground/60">,00</span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-foreground/50 mb-6">
+                    {plan.trialNote}
+                  </p>
+
+                  {/* Recurring info */}
+                  <div className="glass rounded-xl px-4 py-3 mb-6 text-center">
+                    <p className="text-xs text-foreground/50 mb-1">
+                      Após o período grátis
+                    </p>
+                    <p className="text-sm font-medium text-foreground">
+                      R$ 59,00/mês{" "}
+                      <span className="text-foreground/40">ou</span>{" "}
+                      R$ 499,00/ano
+                    </p>
+                    <p className="text-xs text-teal mt-0.5">
+                      Economize 30% no plano anual
+                    </p>
+                  </div>
+
+                  {/* Features */}
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {sharedFeatures.map((feat) => (
+                      <li
+                        key={feat}
+                        className="flex items-center gap-2.5 text-sm text-foreground/80"
+                      >
+                        <Check size={16} className="text-teal shrink-0" />
+                        {feat}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA */}
+                  <a
+                    href={href}
+                    target={WHATSAPP_LINK ? "_blank" : undefined}
+                    rel={WHATSAPP_LINK ? "noopener noreferrer" : undefined}
+                    className={`inline-flex items-center justify-center gap-2.5 text-base font-semibold px-8 py-3.5 rounded-brand transition-all duration-300 ${
+                      plan.popular
+                        ? "btn-brand-primary shadow-warm-lg hover:shadow-warm-xl"
+                        : "btn-brand-outline"
+                    }`}
+                  >
+                    <WhatsAppIcon className="w-5 h-5" />
+                    Quero o plano {plan.name}
+                  </a>
+
+                  <p className="mt-3 text-xs text-foreground/40 text-center">
+                    Fale conosco pelo WhatsApp
+                  </p>
+                </div>
+              </AnimatedItem>
+            );
+          })}
         </AnimatedSection>
       </div>
     </section>

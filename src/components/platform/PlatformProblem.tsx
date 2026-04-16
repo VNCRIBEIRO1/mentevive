@@ -1,27 +1,27 @@
 import { AnimatedSection, AnimatedItem, GlassCard } from "@/components/landing";
-import { MessageSquareWarning, FileX, HandCoins } from "lucide-react";
+import { Globe, Puzzle, Clock } from "lucide-react";
 
 const problems = [
   {
-    icon: MessageSquareWarning,
-    before: "Agenda pelo WhatsApp",
-    after: "Agenda inteligente",
+    icon: Globe,
+    before: "Criar site sozinha",
+    after: "Site profissional pronto",
     description:
-      "Chega de perder mensagens. Seus pacientes agendam online e você recebe tudo organizado.",
+      "Sem dor de cabeça com tecnologia. Nós criamos seu site completo com sua identidade e integrado à plataforma.",
   },
   {
-    icon: FileX,
-    before: "Prontuários em papel",
-    after: "Prontuário digital",
+    icon: Puzzle,
+    before: "Juntar várias ferramentas",
+    after: "Tudo integrado",
     description:
-      "Registre sessões, notas clínicas e evolução — tudo criptografado e acessível de qualquer lugar.",
+      "Agenda, prontuários, pagamentos e videochamada — num só lugar, sem precisar de 5 apps diferentes.",
   },
   {
-    icon: HandCoins,
-    before: "Cobrança manual",
-    after: "Pagamento integrado",
+    icon: Clock,
+    before: "Perder tempo com burocracia",
+    after: "Foco nos pacientes",
     description:
-      "Stripe com cartão e PIX. O pagamento cai direto na sua conta, sem intermediários.",
+      "Automatize o operacional e dedique seu tempo ao que mais importa: o atendimento clínico.",
   },
 ];
 
@@ -32,7 +32,7 @@ export function PlatformProblem() {
         <AnimatedSection direction="up" className="text-center mb-14">
           <span className="section-label">Por que MenteVive?</span>
           <h2 className="section-title mt-3">
-            Chega de gerenciar seu consultório pelo WhatsApp
+            Nós resolvemos a parte técnica para você
           </h2>
         </AnimatedSection>
 
@@ -43,8 +43,13 @@ export function PlatformProblem() {
         >
           {problems.map((item) => (
             <AnimatedItem key={item.after}>
-              <GlassCard variant="strong" className="h-full text-center">
-                <item.icon size={36} className="mx-auto text-primary mb-4" />
+              <GlassCard
+                variant="strong"
+                className="h-full text-center group hover:border-primary/20 transition-colors duration-300"
+              >
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-4 group-hover:bg-primary/15 transition-colors">
+                  <item.icon size={28} className="text-primary" />
+                </div>
                 <p className="text-sm text-foreground/50 line-through mb-1">
                   {item.before}
                 </p>
