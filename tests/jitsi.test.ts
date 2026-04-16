@@ -10,7 +10,7 @@ describe("Jitsi Meet Utilities", () => {
     it("should generate a deterministic room name from appointment ID", () => {
       const id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
       const room = buildRoomName(id);
-      expect(room).toMatch(/^psicolobia-[0-9a-f]{16}$/);
+      expect(room).toMatch(/^mv-[0-9a-f]{16}$/);
     });
 
     it("should produce the same room name for the same appointment ID", () => {
@@ -27,20 +27,20 @@ describe("Jitsi Meet Utilities", () => {
     it("should produce a hex suffix without hyphens", () => {
       const id = "a-b-c-d-e-f-g";
       const room = buildRoomName(id);
-      const suffix = room.replace("psicolobia-", "");
+      const suffix = room.replace("mv-", "");
       expect(suffix).not.toContain("-");
       expect(suffix).toMatch(/^[0-9a-f]{16}$/);
     });
 
-    it("should use psicolobia prefix", () => {
+    it("should use mv prefix", () => {
       const room = buildRoomName("any-id");
-      expect(room).toMatch(/^psicolobia-/);
+      expect(room).toMatch(/^mv-/);
     });
 
     it("should limit room suffix to 16 hex chars", () => {
       const id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
       const room = buildRoomName(id);
-      const suffix = room.replace("psicolobia-", "");
+      const suffix = room.replace("mv-", "");
       expect(suffix.length).toBe(16);
     });
   });
@@ -49,7 +49,7 @@ describe("Jitsi Meet Utilities", () => {
     it("should build a valid meet.jit.si URL", () => {
       const id = "test-appointment-id";
       const url = buildMeetingUrl(id);
-      expect(url).toMatch(/^https:\/\/meet\.jit\.si\/psicolobia-/);
+      expect(url).toMatch(/^https:\/\/meet\.jit\.si\/mv-/);
     });
 
     it("should be deterministic — same ID = same URL", () => {
@@ -95,7 +95,7 @@ describe("Jitsi Meet Utilities", () => {
       expect(jitsiInterfaceConfig.TOOLBAR_BUTTONS).toContain("chat");
     });
 
-    it("should use Psicolobia brand background color", () => {
+    it("should use MenteVive brand background color", () => {
       expect(jitsiInterfaceConfig.DEFAULT_BACKGROUND).toBe("#FFF5EE");
     });
   });

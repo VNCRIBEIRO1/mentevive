@@ -39,7 +39,7 @@ async function getPublishedPostForTenant(slug: string, tenantSlug: string) {
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const baseUrl = "https://psicolobia.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "";
   const tenantSlug = await getPublicTenantSlug(searchParams);
 
   if (!tenantSlug) {
@@ -50,7 +50,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     const post = await getPublishedPostForTenant(slug, tenantSlug);
     if (!post) return { title: "Post não encontrado" };
 
-    const title = `${post.title} - Psicolobia Blog`;
+    const title = `${post.title} - Blog`;
     const description = post.excerpt || post.title;
     const ogImage = post.coverImage || `${baseUrl}/bia.png`;
     return {
@@ -62,7 +62,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         title,
         description,
         url: `${baseUrl}/blog/${slug}`,
-        siteName: "Psicolobia",
+        siteName: "MenteVive",
         locale: "pt_BR",
         images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
         ...(post.publishedAt && { publishedTime: post.publishedAt.toISOString() }),
@@ -76,7 +76,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       },
     };
   } catch {
-    return { title: "Blog - Psicolobia" };
+    return { title: "Blog" };
   }
 }
 
@@ -104,7 +104,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
 
   if (!post) notFound();
 
-  const baseUrl = "https://psicolobia.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "";
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -115,13 +115,12 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
     datePublished: post.publishedAt?.toISOString(),
     author: {
       "@type": "Person",
-      name: "Beatriz Ribeiro",
-      jobTitle: "Psicóloga Clínica",
+      name: "MenteVive",
       url: baseUrl,
     },
     publisher: {
       "@type": "Organization",
-      name: "Psicolobia",
+      name: "MenteVive",
       logo: { "@type": "ImageObject", url: `${baseUrl}/icon.svg` },
     },
   };
@@ -134,7 +133,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
       />
       <header className="bg-white border-b border-primary/10 py-4 px-4">
         <div className="max-w-[800px] mx-auto flex items-center justify-between">
-          <Link href="/" className="font-heading text-xl font-bold text-primary-dark">Psicolobia</Link>
+          <Link href="/" className="font-heading text-xl font-bold text-primary-dark">MenteVive</Link>
           <Link href="/blog" className="text-sm text-primary-dark font-bold hover:underline">Voltar ao blog</Link>
         </div>
       </header>

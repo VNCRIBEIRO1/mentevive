@@ -152,7 +152,7 @@ export default function PortalDocumentosPage() {
             </p>
             <div className="flex gap-3 flex-wrap">
               <a
-                href="https://wa.me/5511988840525?text=Olá Bea! Preciso solicitar um documento."
+                href="https://wa.me/?text=Ol%C3%A1! Preciso solicitar um documento."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-brand-primary text-sm"

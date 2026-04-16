@@ -6,7 +6,7 @@
  */
 
 export const JITSI_DOMAIN = "meet.jit.si";
-export const ROOM_PREFIX = "psicolobia";
+export const ROOM_PREFIX = "mv";
 
 /** Config overrides for the Jitsi External API iframe */
 export const jitsiConfig = {

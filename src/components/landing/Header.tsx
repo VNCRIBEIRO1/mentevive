@@ -37,7 +37,7 @@ export function Header() {
             Ψ
           </div>
           <div>
-            <span className="font-heading text-lg font-semibold text-txt block leading-tight">Psicolobia</span>
+            <span className="font-heading text-lg font-semibold text-txt block leading-tight">MenteVive</span>
             <span className="text-[0.6rem] text-txt-muted block">Beatriz · Psicóloga Clínica</span>
           </div>
         </Link>

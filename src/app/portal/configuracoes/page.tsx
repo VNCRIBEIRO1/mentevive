@@ -118,15 +118,15 @@ export default function PortalConfiguracoesPage() {
       <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
         <h2 className="font-heading text-lg font-bold text-txt mb-3">ℹ️ Informações</h2>
         <p className="text-sm text-txt-light">
-          Para alterar outros dados do seu perfil (nome, telefone, etc.), entre em contato com a Bea pelo WhatsApp.
+          Para alterar outros dados do seu perfil (nome, telefone, etc.), entre em contato pelo WhatsApp.
         </p>
         <a
-          href="https://wa.me/5511988840525"
+          href="https://wa.me/"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 mt-3 text-sm text-primary-dark hover:underline font-bold"
         >
-          💬 Falar com a Bea
+          💬 Enviar WhatsApp
         </a>
       </div>
     </div>

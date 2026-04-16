@@ -135,7 +135,7 @@ export function DeviceFrame({ children, className = "" }: { children: React.Reac
         </div>
         <div className="flex-1 mx-3">
           <div className="bg-gray-100/80 rounded-md px-3 py-1 text-[10px] text-txt-muted text-center font-mono">
-            psicolobia.vercel.app/portal
+            mentevive.vercel.app/portal
           </div>
         </div>
       </div>

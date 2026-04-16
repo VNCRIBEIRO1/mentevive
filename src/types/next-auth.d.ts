@@ -9,6 +9,7 @@ declare module "next-auth" {
     isSuperAdmin: boolean;
     activeTenantId?: string;
     tenantSlug?: string;
+    tenantName?: string;
     membershipRole?: string;
     needsTenantSelection?: boolean;
   }
@@ -22,6 +23,7 @@ declare module "next-auth" {
       isSuperAdmin: boolean;
       activeTenantId?: string;
       tenantSlug?: string;
+      tenantName?: string;
       membershipRole?: string;
       needsTenantSelection?: boolean;
     };
@@ -36,6 +38,7 @@ declare module "next-auth/jwt" {
     isSuperAdmin: boolean;
     activeTenantId?: string;
     tenantSlug?: string;
+    tenantName?: string;
     membershipRole?: string;
     needsTenantSelection?: boolean;
   }

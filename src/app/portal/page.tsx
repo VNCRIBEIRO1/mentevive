@@ -220,7 +220,7 @@ export default function PortalPage() {
           <QuickAction href="/portal/sessoes" icon={<ClipboardList className="w-5 h-5" />} title="Minhas Sessões" description="Histórico completo" color="primary" delay={0.2} />
           <QuickAction href="/portal/pagamentos" icon={<CreditCard className="w-5 h-5" />} title="Pagamentos" description="Faturas e recibos" color="primary" delay={0.25} />
           <QuickAction href="/portal/documentos" icon={<FileText className="w-5 h-5" />} title="Notas da Sessão" description="Tarefas e lembretes" color="accent" delay={0.3} />
-          <QuickAction href={WHATSAPP_LINK} icon={<MessageCircle className="w-5 h-5" />} title="Falar com a Bea" description="WhatsApp direto" color="accent" delay={0.35} />
+          <QuickAction href={WHATSAPP_LINK} icon={<MessageCircle className="w-5 h-5" />} title="Enviar WhatsApp" description="Contato direto" color="accent" delay={0.35} />
         </div>
       </div>
 

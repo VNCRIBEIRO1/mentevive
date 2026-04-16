@@ -78,6 +78,7 @@ export const authOptions: NextAuthOptions = {
           const tenantSlug = credentials?.tenantSlug || undefined;
           let activeTenantId: string | undefined;
           let activeSlug: string | undefined;
+          let activeTenantName: string | undefined;
           let membershipRole: string | undefined;
           let needsTenantSelection = false;
 
@@ -86,6 +87,7 @@ export const authOptions: NextAuthOptions = {
             if (memberships.length === 1) {
               activeTenantId = memberships[0].tenantId;
               activeSlug = memberships[0].slug;
+              activeTenantName = memberships[0].tenantName;
               membershipRole = memberships[0].role;
             }
             // Otherwise they can pick later or go to super admin dashboard
@@ -95,6 +97,7 @@ export const authOptions: NextAuthOptions = {
             if (match) {
               activeTenantId = match.tenantId;
               activeSlug = match.slug;
+              activeTenantName = match.tenantName;
               membershipRole = match.role;
             } else {
               return null; // No membership for requested tenant
@@ -103,6 +106,7 @@ export const authOptions: NextAuthOptions = {
             // Single membership → auto-select
             activeTenantId = memberships[0].tenantId;
             activeSlug = memberships[0].slug;
+            activeTenantName = memberships[0].tenantName;
             membershipRole = memberships[0].role;
           } else if (memberships.length > 1) {
             needsTenantSelection = true;
@@ -120,6 +124,7 @@ export const authOptions: NextAuthOptions = {
             isSuperAdmin: user.isSuperAdmin ?? false,
             activeTenantId,
             tenantSlug: activeSlug,
+            tenantName: activeTenantName,
             membershipRole,
             needsTenantSelection,
           };
@@ -143,6 +148,7 @@ export const authOptions: NextAuthOptions = {
         token.isSuperAdmin = user.isSuperAdmin;
         token.activeTenantId = user.activeTenantId;
         token.tenantSlug = user.tenantSlug;
+        token.tenantName = user.tenantName;
         token.membershipRole = user.membershipRole;
         token.needsTenantSelection = user.needsTenantSelection;
       }
@@ -156,6 +162,7 @@ export const authOptions: NextAuthOptions = {
         session.user.isSuperAdmin = token.isSuperAdmin;
         session.user.activeTenantId = token.activeTenantId;
         session.user.tenantSlug = token.tenantSlug;
+        session.user.tenantName = token.tenantName;
         session.user.membershipRole = token.membershipRole;
         session.user.needsTenantSelection = token.needsTenantSelection;
       }

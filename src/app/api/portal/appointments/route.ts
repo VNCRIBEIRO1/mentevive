@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
         checkout = await createCheckoutSession({
           paymentId: newPayment.id,
           amount,
-          description: newPayment.description || "Sessão de Psicologia — Psicolobia",
+          description: newPayment.description || "Sessão de Psicologia",
           customerEmail: patient.email || undefined,
           successUrl: `${baseUrl}/portal/agendar?${successParams.toString()}`,
           cancelUrl: `${baseUrl}/portal/agendar?${cancelParams.toString()}`,

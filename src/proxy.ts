@@ -109,11 +109,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Tenant context: JWT activeTenantId or cookie fallback
-  const activeTenantId =
-    token.activeTenantId || request.cookies.get("active-tenant-id")?.value;
-  const membershipRole =
-    token.membershipRole || request.cookies.get("membership-role")?.value;
+  // Tenant context: JWT claims only (no cookie fallback for security)
+  const activeTenantId = token.activeTenantId as string | undefined;
+  const membershipRole = token.membershipRole as string | undefined;
 
   // Allow select-tenant page even without active tenant
   if (pathname === "/select-tenant") {

@@ -338,9 +338,9 @@ function AgendarPageContent() {
     if (!selectedDate || !selectedTime) return "";
     const amountLabel = formatCurrency(displayAmount || 0);
 
-    return `*Agendamento confirmado e pagamento aprovado - Psicolobia*\n\n` +
-      `Ola, Bea! Tudo bem?\n` +
-      `Conclui pelo site o agendamento e o pagamento da minha sessao.\n\n` +
+    return `*Agendamento confirmado e pagamento aprovado*\n\n` +
+      `Ol\u00e1! Tudo bem?\n` +
+      `Conclu\u00ed pelo site o agendamento e o pagamento da minha sess\u00e3o.\n\n` +
       `*Data:* ${fmtDateBR(selectedDate)}\n` +
       `*Horario:* ${selectedTime} as ${getEndTime(selectedTime)}\n` +
       `*Modalidade:* Online (videochamada)\n` +
@@ -351,7 +351,7 @@ function AgendarPageContent() {
   }, [displayAmount, fmtDateBR, getEndTime, methodLabel, selectedDate, selectedTime]);
 
   const sendWhatsApp = (message: string) => {
-    window.open(`https://wa.me/5511988840525?text=${encodeURIComponent(message)}`, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const copyText = async (text: string, successMessage: string) => {

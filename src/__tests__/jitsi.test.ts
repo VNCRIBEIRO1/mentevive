@@ -13,10 +13,10 @@ describe("buildRoomName", () => {
     process.env = ORIGINAL_ENV;
   });
 
-  it("returns a room name starting with psicolobia-", async () => {
+  it("returns a room name starting with mv-", async () => {
     const { buildRoomName } = await import("@/lib/jitsi");
     const name = buildRoomName("550e8400-e29b-41d4-a716-446655440000");
-    expect(name).toMatch(/^psicolobia-[0-9a-f]{16}$/);
+    expect(name).toMatch(/^mv-[0-9a-f]{16}$/);
   });
 
   it("is deterministic for the same appointment ID", async () => {
@@ -49,7 +49,7 @@ describe("buildRoomName", () => {
   it("uses 16 hex chars after prefix", async () => {
     const { buildRoomName } = await import("@/lib/jitsi");
     const name = buildRoomName("any-uuid");
-    const hash = name.replace("psicolobia-", "");
+    const hash = name.replace("mv-", "");
     expect(hash).toHaveLength(16);
     expect(hash).toMatch(/^[0-9a-f]+$/);
   });
@@ -62,7 +62,7 @@ describe("buildRoomName", () => {
 
     const { buildRoomName } = await import("@/lib/jitsi");
     const name = buildRoomName("appointment-auth-secret");
-    expect(name).toMatch(/^psicolobia-[0-9a-f]{16}$/);
+    expect(name).toMatch(/^mv-[0-9a-f]{16}$/);
   });
 });
 
@@ -75,6 +75,6 @@ describe("buildMeetingUrl", () => {
   it("returns a valid Jitsi URL", async () => {
     const { buildMeetingUrl } = await import("@/lib/jitsi");
     const url = buildMeetingUrl("test-id");
-    expect(url).toMatch(/^https:\/\/meet\.jit\.si\/psicolobia-[0-9a-f]{16}$/);
+    expect(url).toMatch(/^https:\/\/meet\.jit\.si\/mv-[0-9a-f]{16}$/);
   });
 });

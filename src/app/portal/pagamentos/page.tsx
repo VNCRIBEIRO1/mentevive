@@ -282,7 +282,7 @@ function PagamentosContent() {
         </p>
         <p className="text-xs text-blue-600 mt-2">
           Se preferir, entre em contato pelo{" "}
-          <a href="https://wa.me/5511988840525" target="_blank" rel="noopener noreferrer" className="underline font-bold">
+          <a href="https://wa.me/" target="_blank" rel="noopener noreferrer" className="underline font-bold">
             WhatsApp
           </a>{" "}
           para combinar outra forma de pagamento.

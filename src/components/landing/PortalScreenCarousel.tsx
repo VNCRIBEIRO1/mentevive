@@ -526,7 +526,7 @@ export function PortalScreenCarousel() {
               animate={{ opacity: 1 }}
               className="bg-gray-100 rounded-md px-3 py-1 text-[10px] text-gray-400 text-center truncate"
             >
-              psicolobia.vercel.app{screen.url}
+              mentevive.vercel.app{screen.url}
             </motion.div>
           </div>
         </div>

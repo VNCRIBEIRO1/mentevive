@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
         ? tenant.stripeAccountId
         : null;
 
-    const baseUrl = process.env.NEXTAUTH_URL || "https://psicolobia.vercel.app";
+    const baseUrl = process.env.NEXTAUTH_URL || "";
     let successUrl: string | undefined;
     let cancelUrl: string | undefined;
 

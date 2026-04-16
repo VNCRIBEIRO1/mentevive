@@ -59,7 +59,7 @@ export async function createCheckoutSession(
   const client = getClient();
   if (!client) return null;
 
-  const baseUrl = process.env.NEXTAUTH_URL || "https://psicolobia.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "";
 
   const session = await client.checkout.sessions.create({
     mode: "payment",
@@ -70,7 +70,7 @@ export async function createCheckoutSession(
           currency: "brl",
           product_data: {
             name: input.description,
-            description: "Psicóloga Clínica — Psicolobia",
+            description: input.description,
           },
           unit_amount: Math.round(input.amount * 100), // BRL cents
         },
@@ -84,7 +84,7 @@ export async function createCheckoutSession(
     expires_at: Math.floor(Date.now() / 1000) + 24 * 3600, // 24h expiry
     metadata: {
       payment_id: input.paymentId,
-      source: "psicolobia",
+      source: "mentevive",
     },
   });
 

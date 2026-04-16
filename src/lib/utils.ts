@@ -91,6 +91,6 @@ export function buildWhatsAppUrl(phone: string, message?: string): string {
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }
 
-export const WHATSAPP_LINK = "https://wa.me/5511988840525";
-export const INSTAGRAM_URL = "https://www.instagram.com/psicolobiaa";
-export const TIKTOK_URL = "https://www.tiktok.com/@psicolobiaa";
+export const WHATSAPP_LINK = "";
+export const INSTAGRAM_URL = "";
+export const TIKTOK_URL = "";

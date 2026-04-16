@@ -1,19 +1,10 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { authOptions } from "@/lib/auth";
 
-async function getCookie(name: string): Promise<string | undefined> {
-  try {
-    return (await cookies()).get(name)?.value;
-  } catch {
-    return undefined;
-  }
-}
-
-async function getTenantContext(session: { user: { activeTenantId?: string; membershipRole?: string } }) {
-  const tenantId = session.user.activeTenantId || await getCookie("active-tenant-id");
-  const role = session.user.membershipRole || await getCookie("membership-role");
+function getTenantContext(session: { user: { activeTenantId?: string; membershipRole?: string } }) {
+  const tenantId = session.user.activeTenantId;
+  const role = session.user.membershipRole;
   return { tenantId, role };
 }
 
@@ -23,7 +14,7 @@ export async function requireAdmin() {
     return { error: true, response: NextResponse.json({ error: "Não autenticado." }, { status: 401 }) };
   }
 
-  const { tenantId, role } = await getTenantContext(session);
+  const { tenantId, role } = getTenantContext(session);
 
   if (!tenantId) {
     return { error: true, response: NextResponse.json({ error: "Nenhum consultório selecionado." }, { status: 403 }) };
@@ -40,7 +31,7 @@ export async function requireAuth() {
     return { error: true, response: NextResponse.json({ error: "Não autenticado." }, { status: 401 }) };
   }
 
-  const { tenantId, role } = await getTenantContext(session);
+  const { tenantId, role } = getTenantContext(session);
 
   if (!tenantId) {
     return { error: true, response: NextResponse.json({ error: "Nenhum consultório selecionado." }, { status: 403 }) };

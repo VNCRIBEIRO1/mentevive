@@ -246,7 +246,7 @@ export default function ProcessoPage() {
               </div>
               <div className="flex items-start gap-3">
                 <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0">4</span>
-                <p><strong>Flexibilidade</strong> — Se precisar cancelar alguma sessão específica, entre em contato com a Bea pelo WhatsApp.</p>
+                <p><strong>Flexibilidade</strong> — Se precisar cancelar alguma sessão específica, entre em contato pelo WhatsApp.</p>
               </div>
             </div>
           </div>
@@ -533,7 +533,7 @@ export default function ProcessoPage() {
               </div>
             </div>
             <p className="text-[0.65rem] text-txt-muted mt-2">
-              Datas com conflitos serão automaticamente puladas. A Bea confirmará cada sessão individualmente.
+              Datas com conflitos serão automaticamente puladas. Cada sessão será confirmada individualmente.
             </p>
           </div>
 
@@ -566,7 +566,7 @@ export default function ProcessoPage() {
             <p className="text-sm font-semibold text-green-800 mb-1">✅ Seu horário fixo está garantido!</p>
             <p className="text-xs text-green-700">
               Todas as {recurrenceType === "weekly" ? "semanas" : "quinzenas"}, {selectedDow} às {selectedTime}.
-              A Bea irá confirmar cada sessão e você receberá o link no portal.
+              A profissional irá confirmar cada sessão e você receberá o link no portal.
             </p>
           </div>
 
@@ -583,12 +583,12 @@ export default function ProcessoPage() {
 
           <div className="bg-[#dcf8c6] border border-green-300 rounded-brand-sm p-3 mb-6 text-left">
             <p className="text-xs text-green-800 mb-2">
-              <strong>Envie uma mensagem para a Bea</strong> confirmando o início do seu processo:
+              <strong>Envie uma mensagem</strong> confirmando o início do seu processo:
             </p>
             <button
               onClick={() => {
-                const msg = `*Processo Terapêutico — Psicolobia*\n\nOlá, Bea! Acabei de ativar meu processo terapêutico ${recurrenceType === "weekly" ? "semanal" : "quinzenal"} pelo site.\n\n*Dia fixo:* ${selectedDow}\n*Horário:* ${selectedTime}\n*Sessões agendadas:* ${result.created}\n\nAguardo a confirmação! 💚`;
-                window.open(`https://wa.me/5511988840525?text=${encodeURIComponent(msg)}`, "_blank");
+                const msg = `*Processo Terapêutico*\n\nOlá! Acabei de ativar meu processo terapêutico ${recurrenceType === "weekly" ? "semanal" : "quinzenal"} pelo site.\n\n*Dia fixo:* ${selectedDow}\n*Horário:* ${selectedTime}\n*Sessões agendadas:* ${result.created}\n\nAguardo a confirmação! 💚`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white text-xs font-bold rounded-brand-sm hover:bg-[#1da855] transition-colors"
             >

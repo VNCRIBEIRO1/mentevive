@@ -222,7 +222,7 @@ describe("Meeting URL Integration (Sala de Espera)", () => {
   it("should generate deterministic meeting URL from appointment ID", () => {
     const aptId = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
     const url = buildMeetingUrl(aptId);
-    expect(url).toMatch(/^https:\/\/meet\.jit\.si\/psicolobia-/);
+    expect(url).toMatch(/^https:\/\/meet\.jit\.si\/mv-/);
     expect(buildMeetingUrl(aptId)).toBe(url);
   });
 
@@ -232,14 +232,14 @@ describe("Meeting URL Integration (Sala de Espera)", () => {
     expect(url1).not.toBe(url2);
   });
 
-  it("should generate room name with psicolobia prefix for branding", () => {
+  it("should generate room name with mv prefix for branding", () => {
     const room = buildRoomName("test-appointment-uuid");
-    expect(room.startsWith("psicolobia-")).toBe(true);
+    expect(room.startsWith("mv-")).toBe(true);
   });
 
   it("should keep room name short (prefix + 16 hex chars)", () => {
     const room = buildRoomName("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
-    const suffix = room.replace("psicolobia-", "");
+    const suffix = room.replace("mv-", "");
     expect(suffix.length).toBe(16);
   });
 

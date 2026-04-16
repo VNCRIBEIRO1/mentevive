@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Award, Brain, Building, Backpack, Target } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "./AnimatedSection";
+import { INSTAGRAM_URL, TIKTOK_URL } from "@/lib/utils";
 
 export function About() {
   return (
@@ -11,7 +12,7 @@ export function About() {
           <div className="p-1 bg-gradient-to-br from-primary/30 via-teal/20 to-accent/30 rounded-[24px_24px_24px_80px]">
             <Image
               src="/pefilsobrre.jpeg"
-              alt="Beatriz — Psicóloga Clínica Psicolobia"
+              alt="Psicóloga Clínica"
               width={400}
               height={500}
               className="rounded-[24px_24px_24px_80px] shadow-warm-lg w-full h-[500px] object-cover object-top"
@@ -107,10 +108,10 @@ export function About() {
               Psicóloga Clínica · CRP 06/173961 · Terapia Online · +3.500 Atendimentos
             </p>
             <p className="flex gap-4 text-sm">
-              <a href="https://www.instagram.com/psicolobiaa" target="_blank" rel="noopener" className="text-accent font-bold hover:underline flex items-center gap-1">
-                📸 @psicolobiaa
+              <a href={INSTAGRAM_URL || "#"} target="_blank" rel="noopener" className="text-accent font-bold hover:underline flex items-center gap-1">
+                📸 Instagram
               </a>
-              <a href="https://www.tiktok.com/@psicolobiaa" target="_blank" rel="noopener" className="text-accent font-bold hover:underline flex items-center gap-1">
+              <a href={TIKTOK_URL || "#"} target="_blank" rel="noopener" className="text-accent font-bold hover:underline flex items-center gap-1">
                 🎵 TikTok
               </a>
             </p>

@@ -82,8 +82,8 @@ vi.mock("next/image", () => ({
 /* ─── Mock @/lib/utils ─── */
 vi.mock("@/lib/utils", () => ({
   WHATSAPP_LINK: "https://wa.me/5511988840525",
-  INSTAGRAM_URL: "https://instagram.com/psicolobiaa",
-  TIKTOK_URL: "https://tiktok.com/@psicolobiaa",
+  INSTAGRAM_URL: "",
+  TIKTOK_URL: "",
 }));
 
 /* ─── Mock fetch for Blog ─── */
@@ -95,10 +95,10 @@ beforeEach(() => {
 // Header Tests
 // ===========================
 describe("Header", () => {
-  it("renders logo text Psicolobia", async () => {
+  it("renders logo text MenteVive", async () => {
     const { Header } = await import("@/components/landing/Header");
     render(<Header />);
-    expect(screen.getByText("Psicolobia")).toBeInTheDocument();
+    expect(screen.getByText("MenteVive")).toBeInTheDocument();
   });
 
   it("renders navigation links", async () => {
@@ -363,7 +363,7 @@ describe("Footer", () => {
   it("renders brand name and tagline", async () => {
     const { Footer } = await import("@/components/landing/Footer");
     render(<Footer />);
-    expect(screen.getAllByText(/Psicolobia/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/MenteVive/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/CRP 06\/173961/i).length).toBeGreaterThan(0);
   });
 
@@ -497,7 +497,7 @@ describe("PortalScreenCarousel", () => {
     render(<PortalScreenCarousel />);
 
     expect(screen.getByText(/Boa tarde, Camila/i)).toBeInTheDocument();
-    expect(screen.getByText("psicolobia.vercel.app/portal")).toBeInTheDocument();
+    expect(screen.getByText("mentevive.vercel.app/portal")).toBeInTheDocument();
   });
 
   it("switches screens when a navigation button is clicked", async () => {
@@ -510,6 +510,6 @@ describe("PortalScreenCarousel", () => {
     await user.click(screen.getAllByLabelText("Abrir Pagamentos")[0]);
 
     expect(screen.getByText("Meus Pagamentos")).toBeInTheDocument();
-    expect(screen.getByText("psicolobia.vercel.app/portal/pagamentos")).toBeInTheDocument();
+    expect(screen.getByText("mentevive.vercel.app/portal/pagamentos")).toBeInTheDocument();
   });
 });

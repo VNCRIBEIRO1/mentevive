@@ -31,7 +31,7 @@ export function AdminSidebar() {
             Ψ
           </div>
           <div>
-            <span className="font-heading text-base font-semibold text-txt block leading-tight">Psicolobia</span>
+            <span className="font-heading text-base font-semibold text-txt block leading-tight">{session?.user?.tenantName || "MenteVive"}</span>
             <span className="text-[0.6rem] text-txt-muted block">Painel Administrativo</span>
           </div>
         </Link>

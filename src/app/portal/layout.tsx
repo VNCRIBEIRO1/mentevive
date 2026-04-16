@@ -29,7 +29,7 @@ const GROUP_LABELS: Record<string, string> = {
   account: "Conta",
 };
 
-function PortalSidebar({ mobileOpen, onClose, userName, userEmail }: { mobileOpen: boolean; onClose: () => void; userName?: string; userEmail?: string }) {
+function PortalSidebar({ mobileOpen, onClose, userName, userEmail, tenantName }: { mobileOpen: boolean; onClose: () => void; userName?: string; userEmail?: string; tenantName?: string }) {
   const pathname = usePathname();
   const initials = userName
     ? userName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
@@ -62,7 +62,7 @@ function PortalSidebar({ mobileOpen, onClose, userName, userEmail }: { mobileOpe
                 <Leaf className="w-4.5 h-4.5 text-white" />
               </div>
               <span className="font-heading text-lg font-bold text-txt group-hover:text-teal-dark transition-colors">
-                Psicolobia
+                {tenantName || "MenteVive"}
               </span>
             </Link>
             <button onClick={onClose} className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-txt-muted hover:text-txt hover:bg-gray-100 transition-colors">
@@ -211,6 +211,7 @@ function PortalShell({ children }: { children: ReactNode }) {
         onClose={() => setMobileOpen(false)}
         userName={session?.user?.name || undefined}
         userEmail={session?.user?.email || undefined}
+        tenantName={session?.user?.tenantName || undefined}
       />
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
@@ -222,7 +223,7 @@ function PortalShell({ children }: { children: ReactNode }) {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-teal to-teal-dark flex items-center justify-center">
               <Leaf className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-heading text-base font-bold text-txt">Psicolobia</span>
+            <span className="font-heading text-base font-bold text-txt">{session?.user?.tenantName || "MenteVive"}</span>
           </Link>
           <div className="w-9" />
         </header>

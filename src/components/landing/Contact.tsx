@@ -47,8 +47,8 @@ export function Contact() {
 
   const contacts: { icon: ReactNode; title: string; content: string; href?: string }[] = [
     { icon: <Smartphone className="w-5 h-5 text-teal" />, title: "WhatsApp", content: "(11) 98884-0525", href: WHATSAPP_LINK },
-    { icon: <Camera className="w-5 h-5 text-teal" />, title: "Instagram", content: "@psicolobiaa", href: INSTAGRAM_URL },
-    { icon: <Music className="w-5 h-5 text-teal" />, title: "TikTok", content: "@psicolobiaa", href: TIKTOK_URL },
+    { icon: <Camera className="w-5 h-5 text-teal" />, title: "Instagram", content: "Instagram", href: INSTAGRAM_URL },
+    { icon: <Music className="w-5 h-5 text-teal" />, title: "TikTok", content: "TikTok", href: TIKTOK_URL },
     { icon: <Monitor className="w-5 h-5 text-teal" />, title: "Atendimento Online", content: "Terapia por videochamada em todo o Brasil" },
   ];
 

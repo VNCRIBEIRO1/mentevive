@@ -99,7 +99,7 @@ export default function ConfiguracoesPage() {
             setPricing(data.value);
           } else {
             // Try localStorage fallback
-            const stored = localStorage.getItem("psicolobia_pricing");
+            const stored = localStorage.getItem("mv_pricing");
             if (stored) {
               const parsed = JSON.parse(stored) as PricingItem[];
               // Migrate old format to new format
@@ -121,7 +121,7 @@ export default function ConfiguracoesPage() {
           if (data.value && Array.isArray(data.value)) {
             setAreas(data.value);
           } else {
-            const stored = localStorage.getItem("psicolobia_areas");
+            const stored = localStorage.getItem("mv_areas");
             if (stored) setAreas(JSON.parse(stored));
           }
         }
@@ -198,7 +198,7 @@ export default function ConfiguracoesPage() {
       });
       if (!res.ok) hasError = true;
       // Keep localStorage in sync for fallback
-      localStorage.setItem("psicolobia_pricing", JSON.stringify(pricing));
+      localStorage.setItem("mv_pricing", JSON.stringify(pricing));
     } catch { hasError = true; }
 
     // Save areas to DB
@@ -209,7 +209,7 @@ export default function ConfiguracoesPage() {
         body: JSON.stringify({ key: "areas", value: areas }),
       });
       if (!res.ok) hasError = true;
-      localStorage.setItem("psicolobia_areas", JSON.stringify(areas));
+      localStorage.setItem("mv_areas", JSON.stringify(areas));
     } catch { hasError = true; }
 
     if (hasError) {

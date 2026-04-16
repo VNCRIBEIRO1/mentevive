@@ -227,7 +227,7 @@ export function AppointmentDetailModal({ apt, onClose, onStatus, onDelete, onUpd
                   {apt.patientPhone && (
                     <button
                       onClick={() => {
-                        const msg = `Link da sua sessão — Psicolobia\n\nOlá, ${apt.patientName}! Aqui está o link da sua videochamada:\n\n${apt.meetingUrl}\n\nTe espero! 🌿`;
+                        const msg = `Link da sua sessão\n\nOlá, ${apt.patientName}! Aqui está o link da sua videochamada:\n\n${apt.meetingUrl}\n\nTe espero! 🌿`;
                         const url = buildWhatsAppUrl(apt.patientPhone!, msg);
                         window.open(url, "_blank");
                       }}

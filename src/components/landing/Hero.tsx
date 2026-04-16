@@ -58,9 +58,9 @@ export function Hero() {
 
         <div className="mt-10 flex justify-center gap-4 flex-wrap">
           {[
-            { src: "/bia.png", alt: "Beatriz — Psicóloga Clínica Psicolobia", delay: 0.6, mt: "" },
-            { src: "/bia2.png", alt: "Beatriz — Atendimento Online", delay: 0.7, mt: "mt-6" },
-            { src: "/bia3.webp", alt: "Beatriz — Consultório Psicolobia", delay: 0.8, mt: "" },
+            { src: "/bia.png", alt: "Psicóloga Clínica", delay: 0.6, mt: "" },
+            { src: "/bia2.png", alt: "Atendimento Online", delay: 0.7, mt: "mt-6" },
+            { src: "/bia3.webp", alt: "Consultório", delay: 0.8, mt: "" },
           ].map((img) => (
             <motion.div
               key={img.src}

@@ -34,8 +34,8 @@ describe("WhatsApp Utilities", () => {
   });
 
   describe("WHATSAPP_LINK constant", () => {
-    it("should be Bea's WhatsApp link", () => {
-      expect(WHATSAPP_LINK).toBe("https://wa.me/5511988840525");
+    it("should be an empty string (tenant-specific, configured at runtime)", () => {
+      expect(WHATSAPP_LINK).toBe("");
     });
   });
 });

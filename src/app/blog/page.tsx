@@ -8,24 +8,24 @@ import type { Metadata } from "next";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Blog — Psicolobia | Reflexões & Bem-estar",
+  title: "Blog — MenteVive | Reflexões & Bem-estar",
   description:
-    "Artigos sobre saúde mental, autoconhecimento, ansiedade, autoestima e bem-estar por Beatriz Ribeiro, Psicóloga Clínica.",
-  alternates: { canonical: "https://psicolobia.vercel.app/blog" },
+    "Artigos sobre saúde mental, autoconhecimento, ansiedade, autoestima e bem-estar.",
+  alternates: { canonical: `${process.env.NEXTAUTH_URL || ""}/blog` },
   openGraph: {
     type: "website",
-    title: "Blog — Psicolobia | Reflexões & Bem-estar",
+    title: "Blog — MenteVive | Reflexões & Bem-estar",
     description:
-      "Artigos sobre saúde mental, autoconhecimento, ansiedade e bem-estar por Beatriz Ribeiro.",
-    url: "https://psicolobia.vercel.app/blog",
-    siteName: "Psicolobia",
+      "Artigos sobre saúde mental, autoconhecimento, ansiedade e bem-estar.",
+    url: `${process.env.NEXTAUTH_URL || ""}/blog`,
+    siteName: "MenteVive",
     locale: "pt_BR",
-    images: [{ url: "/bia.png", width: 1200, height: 630, alt: "Blog Psicolobia" }],
+    images: [{ url: "/bia.png", width: 1200, height: 630, alt: "Blog MenteVive" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog Psicolobia",
-    description: "Artigos sobre saúde mental por Beatriz Ribeiro, Psicóloga Clínica.",
+    title: "Blog MenteVive",
+    description: "Artigos sobre saúde mental.",
     images: ["/bia.png"],
   },
 };
@@ -65,7 +65,7 @@ export default async function BlogPage() {
       <header className="bg-white border-b border-primary/10 py-4 px-4">
         <div className="max-w-[1100px] mx-auto flex items-center justify-between">
           <Link href="/" className="font-heading text-xl font-bold text-primary-dark">
-            Ψ Psicolobia
+            Ψ MenteVive
           </Link>
           <nav className="flex gap-4 items-center">
             <Link href="/" className="text-sm text-txt-light hover:text-primary-dark transition-colors">Início</Link>

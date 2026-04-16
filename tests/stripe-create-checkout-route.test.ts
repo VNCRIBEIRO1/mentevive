@@ -129,7 +129,7 @@ beforeAll(async () => {
 beforeEach(() => {
   mocks.reset();
   vi.clearAllMocks();
-  process.env.NEXTAUTH_URL = "https://psicolobia.vercel.app";
+  process.env.NEXTAUTH_URL = "https://mentevive.vercel.app";
 });
 
 describe("POST /api/stripe/create-checkout", () => {

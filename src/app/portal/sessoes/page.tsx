@@ -335,7 +335,7 @@ export default function PortalSessoesPage() {
                   )}
                   {a.therapistFeedback && (
                     <div className="mt-3 bg-purple-50 border border-purple-100 rounded-brand-sm p-3">
-                      <span className="text-purple-600 text-xs font-bold">💬 Feedback da Bea:</span>
+                      <span className="text-purple-600 text-xs font-bold">💬 Feedback da terapeuta:</span>
                       <p className="text-sm text-txt mt-1">{a.therapistFeedback}</p>
                     </div>
                   )}
