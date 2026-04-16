@@ -183,12 +183,13 @@ function PortalAuthGuard({ children }: { children: ReactNode }) {
 
   if (status !== "authenticated") return null;
 
-  if (session?.user?.role !== "patient") {
+  const effectiveRole = session?.user?.membershipRole || session?.user?.role;
+  if (effectiveRole !== "patient") {
     return (
       <SessionMismatch
         userName={session?.user?.name || "Usuário"}
         userEmail={session?.user?.email || ""}
-        userRole={session?.user?.role || "admin"}
+        userRole={effectiveRole || "admin"}
         targetArea="portal"
       />
     );
