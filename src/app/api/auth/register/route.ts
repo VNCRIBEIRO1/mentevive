@@ -35,14 +35,25 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Payload invalido." }, { status: 400 });
+    }
+
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "Payload invalido." }, { status: 400 });
+    }
+
     const parsed = registerSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
     }
 
     const { name, email, password, phone, turnstileToken, accountType, clinicName, crp } = parsed.data;
-    const tenantSlug = body.tenantSlug as string | undefined;
+    const normalizedEmail = email.toLowerCase();
+    const tenantSlug = (body as { tenantSlug?: string }).tenantSlug;
     const isTherapist = accountType === "therapist";
 
     const captchaOk = await verifyTurnstileToken(turnstileToken, ip);
@@ -56,7 +67,7 @@ export async function POST(request: Request) {
     // ── Therapist flow: create new tenant ──
     if (isTherapist) {
       // Check if user already exists
-      const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+      const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, normalizedEmail)).limit(1);
       if (existing.length > 0) {
         return NextResponse.json({ error: "E-mail já cadastrado. Faça login." }, { status: 409 });
       }
@@ -75,12 +86,12 @@ export async function POST(request: Request) {
 
       // Create user
       const hashedPassword = await bcrypt.hash(password, 12);
-      const [newUser] = await db.insert(users).values({
-        name,
-        email,
-        password: hashedPassword,
-        role: "therapist",
-        phone: phone || null,
+        const [newUser] = await db.insert(users).values({
+          name,
+          email: normalizedEmail,
+          password: hashedPassword,
+          role: "therapist",
+          phone: phone || null,
       }).returning();
 
       // Create tenant
@@ -118,7 +129,7 @@ export async function POST(request: Request) {
     const tenantId = tenant.id;
 
     // Check if user already exists
-    const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    const existing = await db.select().from(users).where(eq(users.email, normalizedEmail)).limit(1);
 
     let userId: string;
     if (existing.length > 0) {
@@ -137,7 +148,7 @@ export async function POST(request: Request) {
       const hashedPassword = await bcrypt.hash(password, 12);
       const [newUser] = await db.insert(users).values({
         name,
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         role: "patient",
         phone: phone || null,
@@ -152,7 +163,7 @@ export async function POST(request: Request) {
     const [existingPatient] = await db
       .select()
       .from(patients)
-      .where(and(eq(patients.email, email), eq(patients.tenantId, tenantId)))
+      .where(and(eq(patients.email, normalizedEmail), eq(patients.tenantId, tenantId)))
       .limit(1);
 
     let patientId: string | undefined;
@@ -171,7 +182,7 @@ export async function POST(request: Request) {
         userId,
         tenantId,
         name,
-        email,
+        email: normalizedEmail,
         phone: phone || "",
       }).returning();
       patientId = newPatient.id;
@@ -182,14 +193,21 @@ export async function POST(request: Request) {
       tenantId,
       type: "registration",
       title: "Novo paciente cadastrado",
-      message: `${name} (${email}) se cadastrou no portal.${existingPatient ? " Vinculado a cadastro existente." : ""}`,
+      message: `${name} (${normalizedEmail}) se cadastrou no portal.${existingPatient ? " Vinculado a cadastro existente." : ""}`,
       patientId,
       linkUrl: patientId ? `/admin/pacientes/${patientId}` : `/admin/pacientes`,
     });
 
     return NextResponse.json({ message: "Conta criada com sucesso!" }, { status: 201 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Registration error:", error);
+    const dbErr = error as { code?: string; message?: string; detail?: string };
+    if (dbErr?.code === "23505") {
+      return NextResponse.json(
+        { error: "E-mail ou identificador ja cadastrado. Tente fazer login." },
+        { status: 409 }
+      );
+    }
     return NextResponse.json({ error: "Erro interno do servidor." }, { status: 500 });
   }
 }
