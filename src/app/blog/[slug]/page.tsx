@@ -1,24 +1,56 @@
 import { db } from "@/lib/db";
-import { blogPosts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { blogPosts, tenants } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 
 export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ tenant?: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+async function getPublicTenantSlug(searchParams?: Promise<{ tenant?: string }>) {
+  const headerList = await headers();
+  const headerTenantSlug = headerList.get("x-tenant-slug");
+  if (headerTenantSlug) return headerTenantSlug;
+
+  const resolvedSearchParams = await searchParams;
+  return resolvedSearchParams?.tenant || null;
+}
+
+async function getPublishedPostForTenant(slug: string, tenantSlug: string) {
+  const [found] = await db
+    .select({ post: blogPosts })
+    .from(blogPosts)
+    .innerJoin(tenants, eq(blogPosts.tenantId, tenants.id))
+    .where(and(eq(blogPosts.slug, slug), eq(tenants.slug, tenantSlug)));
+
+  if (!found?.post || found.post.status !== "published") {
+    return null;
+  }
+
+  return found.post;
+}
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
   const baseUrl = "https://psicolobia.vercel.app";
+  const tenantSlug = await getPublicTenantSlug(searchParams);
+
+  if (!tenantSlug) {
+    return { title: "Post não encontrado" };
+  }
+
   try {
-    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
+    const post = await getPublishedPostForTenant(slug, tenantSlug);
     if (!post) return { title: "Post não encontrado" };
-    const title = `${post.title} — Psicolobia Blog`;
+
+    const title = `${post.title} - Psicolobia Blog`;
     const description = post.excerpt || post.title;
     const ogImage = post.coverImage || `${baseUrl}/bia.png`;
     return {
@@ -44,12 +76,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     };
   } catch {
-    return { title: "Blog — Psicolobia" };
+    return { title: "Blog - Psicolobia" };
   }
 }
 
-export default async function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const tenantSlug = await getPublicTenantSlug(searchParams);
+
+  if (!tenantSlug) notFound();
+
   let post: {
     id: string;
     title: string;
@@ -61,8 +97,7 @@ export default async function BlogPostPage({ params }: Props) {
   } | null = null;
 
   try {
-    const [found] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
-    if (found && found.status === "published") post = found;
+    post = await getPublishedPostForTenant(slug, tenantSlug);
   } catch {
     // DB not connected
   }
@@ -99,8 +134,8 @@ export default async function BlogPostPage({ params }: Props) {
       />
       <header className="bg-white border-b border-primary/10 py-4 px-4">
         <div className="max-w-[800px] mx-auto flex items-center justify-between">
-          <Link href="/" className="font-heading text-xl font-bold text-primary-dark">Ψ Psicolobia</Link>
-          <Link href="/blog" className="text-sm text-primary-dark font-bold hover:underline">← Blog</Link>
+          <Link href="/" className="font-heading text-xl font-bold text-primary-dark">Psicolobia</Link>
+          <Link href="/blog" className="text-sm text-primary-dark font-bold hover:underline">Voltar ao blog</Link>
         </div>
       </header>
 
@@ -136,8 +171,8 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="mt-12 pt-8 border-t border-primary/10 text-center">
           <p className="text-sm text-txt-muted mb-4">Gostou desse conteúdo?</p>
           <div className="flex gap-3 justify-center">
-            <Link href="/blog" className="btn-brand-outline text-sm">← Mais artigos</Link>
-            <Link href="/#agendamento" className="btn-brand-primary text-sm">Agendar Sessão 🌿</Link>
+            <Link href="/blog" className="btn-brand-outline text-sm">Mais artigos</Link>
+            <Link href="/#agendamento" className="btn-brand-primary text-sm">Agendar sessão</Link>
           </div>
         </div>
       </article>

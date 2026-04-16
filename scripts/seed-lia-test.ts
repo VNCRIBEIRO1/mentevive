@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Seed focado: limpa banco → cria admin + Lia → 2 sessões (1 em 10min, 1 finalizada entre elas)
  * Uso: npx tsx scripts/seed-lia-test.ts

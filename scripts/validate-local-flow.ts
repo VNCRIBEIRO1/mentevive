@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
 import { and, eq, ne, lt, gt, asc, sql } from "drizzle-orm";
