@@ -68,11 +68,13 @@ export default function SelectTenantPage() {
       }
 
       const data = await res.json();
+      const selectedMembership = memberships.find((m) => m.tenantSlug === slug);
 
       // Update the JWT session with the selected tenant claims
       await update({
         activeTenantId: data.tenantId,
         tenantSlug: data.slug,
+        tenantName: data.tenantName || selectedMembership?.tenantName,
         membershipRole: data.role,
         needsTenantSelection: false,
       });

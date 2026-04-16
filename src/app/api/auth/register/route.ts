@@ -103,24 +103,19 @@ export async function POST(request: Request) {
       }, { status: 201 });
     }
 
-    // ── Patient flow: join existing tenant ──
-    let tenantId: string;
-    if (tenantSlug) {
-      const [tenant] = await db.select({ id: tenants.id }).from(tenants)
-        .where(and(eq(tenants.slug, tenantSlug), eq(tenants.active, true))).limit(1);
-      if (!tenant) {
-        return NextResponse.json({ error: "Consultório não encontrado." }, { status: 404 });
-      }
-      tenantId = tenant.id;
-    } else {
-      // Fallback: use the first (default) tenant
-      const [defaultTenant] = await db.select({ id: tenants.id }).from(tenants)
-        .where(eq(tenants.active, true)).limit(1);
-      if (!defaultTenant) {
-        return NextResponse.json({ error: "Nenhum consultório disponível." }, { status: 500 });
-      }
-      tenantId = defaultTenant.id;
+    // Patient flow: join an existing tenant (tenantSlug is required)
+    if (!tenantSlug) {
+      return NextResponse.json(
+        { error: "Tenant obrigatorio para cadastro de paciente. Use o link do consultorio." },
+        { status: 400 }
+      );
     }
+    const [tenant] = await db.select({ id: tenants.id }).from(tenants)
+      .where(and(eq(tenants.slug, tenantSlug), eq(tenants.active, true))).limit(1);
+    if (!tenant) {
+      return NextResponse.json({ error: "Consultorio nao encontrado." }, { status: 404 });
+    }
+    const tenantId = tenant.id;
 
     // Check if user already exists
     const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);

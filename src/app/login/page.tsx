@@ -11,6 +11,11 @@ const ROLE_LABELS: Record<string, string> = {
   patient: "Paciente",
 };
 
+function isSafeInternalCallback(path: string): boolean {
+  // Accept only app-internal relative paths like "/admin" and reject "//host", "\" and full URLs.
+  return /^\/(?!\/)/.test(path) && !path.includes("\\");
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -98,7 +103,7 @@ function LoginForm() {
         ...(bookingNotes ? { notes: bookingNotes } : {}),
       });
       router.push(`${redirectTo}?${params.toString()}`);
-    } else if (callbackUrl && callbackUrl.startsWith("/")) {
+    } else if (callbackUrl && isSafeInternalCallback(callbackUrl)) {
       // Return to the page they were trying to access before auth redirect
       router.push(callbackUrl);
     } else if (effectiveRole === "patient") {

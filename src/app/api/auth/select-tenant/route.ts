@@ -23,6 +23,7 @@ export async function POST(request: Request) {
         tenantId: tenantMemberships.tenantId,
         role: tenantMemberships.role,
         slug: tenants.slug,
+        tenantName: tenants.name,
       })
       .from(tenantMemberships)
       .innerJoin(tenants, eq(tenantMemberships.tenantId, tenants.id))
@@ -54,6 +55,7 @@ export async function POST(request: Request) {
       tenantId: membership.tenantId,
       role: membership.role,
       slug: membership.slug,
+      tenantName: membership.tenantName,
     });
 
     response.cookies.set("active-tenant-id", membership.tenantId, cookieOptions);
