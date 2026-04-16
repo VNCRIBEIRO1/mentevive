@@ -14,6 +14,7 @@ const menuItems = [
   { href: "/admin/prontuarios", icon: "📋", label: "Prontuários" },
   { href: "/admin/blog", icon: "✍️", label: "Blog" },
   { href: "/admin/grupos", icon: "🤝", label: "Grupos" },
+  { href: "/admin/assinatura", icon: "💎", label: "Assinatura" },
   { href: "/admin/configuracoes", icon: "⚙️", label: "Configurações" },
 ];
 

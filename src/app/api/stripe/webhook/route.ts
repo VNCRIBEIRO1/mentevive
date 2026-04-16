@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { payments, appointments } from "@/db/schema";
+import { payments, appointments, tenants } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { validateWebhookSignature, mapStripeStatus } from "@/lib/stripe";
 import { createNotification } from "@/lib/notifications";
@@ -161,6 +161,90 @@ export async function POST(req: NextRequest) {
             stripeStatus: "refunded",
           })
           .where(eq(payments.stripePaymentIntentId, paymentIntentId));
+      }
+    }
+
+    /* ── Platform Subscription Events ── */
+
+    if (
+      eventType === "customer.subscription.created" ||
+      eventType === "customer.subscription.updated"
+    ) {
+      const sub = eventData as Record<string, unknown>;
+      const tenantId = ((sub.metadata as Record<string, string>)?.tenant_id) || "";
+      const status = sub.status as string;
+      const currentPeriodEnd = sub.current_period_end
+        ? new Date((sub.current_period_end as number) * 1000)
+        : null;
+      const subscriptionId = sub.id as string;
+
+      if (tenantId) {
+        const planMap: Record<string, "professional" | "enterprise"> = {};
+        // Determine plan from price
+        const items = sub.items as Record<string, unknown> | undefined;
+        const dataArr = (items?.data as Array<Record<string, unknown>>) || [];
+        const priceId = (dataArr[0]?.price as Record<string, unknown>)?.id as string || "";
+
+        let plan: "professional" | "enterprise" = "professional";
+        if (priceId === process.env.STRIPE_PRICE_ANNUAL) {
+          plan = "enterprise";
+        }
+
+        const updateData: Record<string, unknown> = {
+          stripeSubscriptionId: subscriptionId,
+          subscriptionStatus: status === "active" ? "active"
+            : status === "trialing" ? "trialing"
+            : status === "past_due" ? "past_due"
+            : status === "canceled" ? "canceled"
+            : status === "unpaid" ? "unpaid"
+            : "incomplete",
+          currentPeriodEnd,
+          updatedAt: new Date(),
+        };
+
+        // Only upgrade plan on active/trialing
+        if (status === "active" || status === "trialing") {
+          updateData.plan = plan;
+        }
+
+        await db.update(tenants).set(updateData).where(eq(tenants.id, tenantId));
+      }
+    }
+
+    if (eventType === "customer.subscription.deleted") {
+      const sub = eventData as Record<string, unknown>;
+      const tenantId = ((sub.metadata as Record<string, string>)?.tenant_id) || "";
+
+      if (tenantId) {
+        await db.update(tenants).set({
+          plan: "free",
+          subscriptionStatus: "canceled",
+          stripeSubscriptionId: null,
+          currentPeriodEnd: null,
+          updatedAt: new Date(),
+        }).where(eq(tenants.id, tenantId));
+      }
+    }
+
+    if (eventType === "invoice.payment_failed") {
+      const invoice = eventData as Record<string, unknown>;
+      const subId = invoice.subscription as string || "";
+      const customerEmail = invoice.customer_email as string || "";
+
+      if (subId) {
+        // Find tenant by subscription ID and mark as past_due
+        const [tenant] = await db
+          .select({ id: tenants.id })
+          .from(tenants)
+          .where(eq(tenants.stripeSubscriptionId, subId))
+          .limit(1);
+
+        if (tenant) {
+          await db.update(tenants).set({
+            subscriptionStatus: "past_due",
+            updatedAt: new Date(),
+          }).where(eq(tenants.id, tenant.id));
+        }
       }
     }
 

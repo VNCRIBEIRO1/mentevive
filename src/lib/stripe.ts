@@ -359,3 +359,100 @@ export async function createConnectedCheckoutSession(
   };
 }
 
+/* ── Platform Subscription Billing ── */
+
+/**
+ * Get or create a Stripe Customer for a tenant (platform billing, NOT Connect).
+ */
+export async function getOrCreatePlatformCustomer(
+  tenantId: string,
+  email: string,
+  name: string,
+  existingCustomerId?: string | null
+): Promise<string | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  if (existingCustomerId) {
+    try {
+      const existing = await client.customers.retrieve(existingCustomerId);
+      if (!existing.deleted) return existingCustomerId;
+    } catch { /* customer deleted or invalid, create new */ }
+  }
+
+  const customer = await client.customers.create({
+    email,
+    name,
+    metadata: { tenant_id: tenantId, source: "mentevive_platform" },
+  });
+  return customer.id;
+}
+
+/**
+ * Create a Stripe Checkout Session for platform subscription (monthly or annual).
+ */
+export async function createSubscriptionCheckout(input: {
+  customerId: string;
+  priceId: string;
+  tenantId: string;
+  successUrl: string;
+  cancelUrl: string;
+}): Promise<CreateCheckoutResult | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  const session = await client.checkout.sessions.create({
+    mode: "subscription",
+    customer: input.customerId,
+    line_items: [{ price: input.priceId, quantity: 1 }],
+    success_url: input.successUrl,
+    cancel_url: input.cancelUrl,
+    subscription_data: {
+      metadata: { tenant_id: input.tenantId, source: "mentevive_platform" },
+    },
+    metadata: { tenant_id: input.tenantId, source: "mentevive_platform" },
+  });
+
+  if (!session.id || !session.url) {
+    throw new Error("Stripe não retornou ID ou URL de checkout de assinatura.");
+  }
+
+  return { sessionId: session.id, checkoutUrl: session.url };
+}
+
+/**
+ * Create a Stripe Customer Portal session for self-service management.
+ */
+export async function createCustomerPortalSession(
+  customerId: string,
+  returnUrl: string
+): Promise<string | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  const session = await client.billingPortal.sessions.create({
+    customer: customerId,
+    return_url: returnUrl,
+  });
+
+  return session.url;
+}
+
+/**
+ * Cancel a Stripe subscription at period end.
+ */
+export async function cancelSubscription(subscriptionId: string): Promise<boolean> {
+  const client = getClient();
+  if (!client) return false;
+
+  try {
+    await client.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    });
+    return true;
+  } catch (error) {
+    console.error("Erro ao cancelar assinatura:", error);
+    return false;
+  }
+}
+

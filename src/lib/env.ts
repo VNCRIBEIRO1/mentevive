@@ -16,6 +16,8 @@ const envSchema = z
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+    STRIPE_PRICE_MONTHLY: z.string().optional(),
+    STRIPE_PRICE_ANNUAL: z.string().optional(),
 
     // Vercel Cron (optional)
     CRON_SECRET: z.string().optional(),

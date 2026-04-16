@@ -46,6 +46,14 @@ export const paymentMethodEnum = pgEnum("payment_method", [
 ]);
 export const blogStatusEnum = pgEnum("blog_status", ["draft", "published", "archived"]);
 export const tenantPlanEnum = pgEnum("tenant_plan", ["free", "starter", "professional", "enterprise"]);
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "trialing",
+  "active",
+  "past_due",
+  "canceled",
+  "unpaid",
+  "incomplete",
+]);
 
 /* ========== TENANTS ========== */
 export const tenants = pgTable("tenants", {
@@ -57,6 +65,12 @@ export const tenants = pgTable("tenants", {
   branding: jsonb("branding"), // { logo, primaryColor, accentColor, ... }
   stripeAccountId: varchar("stripe_account_id", { length: 255 }),
   stripeOnboardingComplete: boolean("stripe_onboarding_complete").default(false).notNull(),
+  // Platform subscription billing
+  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
+  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
+  subscriptionStatus: subscriptionStatusEnum("subscription_status"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  trialEndsAt: timestamp("trial_ends_at"),
   plan: tenantPlanEnum("plan").default("free").notNull(),
   maxPatients: integer("max_patients").default(50),
   maxAppointmentsPerMonth: integer("max_appointments_per_month").default(200),
@@ -397,6 +411,21 @@ export const notifications = pgTable("notifications", {
   }).onDelete("cascade"),
 ]);
 
+/* ========== CDKEYS (Activation Codes) ========== */
+export const cdkeys = pgTable("cdkeys", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  code: varchar("code", { length: 32 }).unique().notNull(),
+  plan: tenantPlanEnum("plan").default("starter").notNull(), // plan granted upon redemption
+  durationDays: integer("duration_days").default(30).notNull(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "set null" }),
+  redeemedAt: timestamp("redeemed_at"),
+  createdBy: uuid("created_by").references(() => users.id), // superadmin who created it
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_cdkeys_code").on(table.code),
+  index("idx_cdkeys_tenant").on(table.tenantId),
+]);
+
 /* ========== RELATIONS ========== */
 
 export const tenantsRelations = relations(tenants, ({ one, many }) => ({
@@ -415,6 +444,7 @@ export const tenantsRelations = relations(tenants, ({ one, many }) => ({
   blockedDates: many(blockedDates),
   settings: many(settings),
   notifications: many(notifications),
+  cdkeys: many(cdkeys),
 }));
 
 export const tenantMembershipsRelations = relations(tenantMemberships, ({ one }) => ({
@@ -499,4 +529,9 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
   patient: one(patients, { fields: [notifications.tenantId, notifications.patientId], references: [patients.tenantId, patients.id] }),
   appointment: one(appointments, { fields: [notifications.tenantId, notifications.appointmentId], references: [appointments.tenantId, appointments.id] }),
   payment: one(payments, { fields: [notifications.tenantId, notifications.paymentId], references: [payments.tenantId, payments.id] }),
+}));
+
+export const cdkeysRelations = relations(cdkeys, ({ one }) => ({
+  tenant: one(tenants, { fields: [cdkeys.tenantId], references: [tenants.id] }),
+  creator: one(users, { fields: [cdkeys.createdBy], references: [users.id] }),
 }));

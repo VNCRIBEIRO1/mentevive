@@ -62,6 +62,12 @@ function SuperSidebar() {
         >
           Consultórios
         </Link>
+        <Link
+          href="/super/cdkeys"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-txt-muted hover:text-txt hover:bg-bg transition-colors"
+        >
+          CDKeys
+        </Link>
       </nav>
       <div className="p-4 border-t border-border">
         <Link href="/admin" className="text-xs text-txt-muted hover:text-txt transition-colors">
