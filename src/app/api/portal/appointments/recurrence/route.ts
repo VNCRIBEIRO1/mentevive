@@ -20,7 +20,7 @@ function todaySP(): string {
  *   startDate: string (YYYY-MM-DD) — first session date
  *   startTime: string (HH:MM)
  *   endTime: string (HH:MM)
- *   modality: "online"
+ *   modality: "online" (optional, forced to online)
  *   recurrenceType: "weekly" | "biweekly"
  *   weeks: number (how many weeks to generate, default 8)
  *   notes?: string
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       notes,
     } = body;
 
-    const finalModality = modality === "presencial" ? "presencial" : "online";
+    const finalModality = "online";
 
     if (!startDate || !startTime || !endTime) {
       return NextResponse.json({ error: "Data, hora início e hora fim são obrigatórios." }, { status: 400 });
@@ -172,8 +172,8 @@ export async function POST(req: NextRequest) {
     }
     // Create pending payments for each created appointment
     try {
-      const modalityLabel = finalModality === "presencial" ? "presencial" : "online";
-      const amount = await getSessionPrice(tenantId, finalModality);
+      const modalityLabel = "online";
+      const amount = await getSessionPrice(tenantId);
       if (amount > 0) {
         const paymentMethod = isStripeConfigured() ? "stripe" : "pix";
         for (const apt of created) {

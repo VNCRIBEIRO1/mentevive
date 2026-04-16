@@ -40,12 +40,10 @@ export function NewSessionModal({ patients, selectedDate, saving, onClose, onCre
               <input name="endTime" type="time" step="60" required className={inputCls} />
             </div>
           </div>
+          <input type="hidden" name="modality" value="online" />
           <div>
             <label className="block text-xs font-bold mb-1.5">Modalidade</label>
-            <select name="modality" defaultValue="online" className={inputCls}>
-              <option value="online">Online (videochamada)</option>
-              <option value="presencial">Presencial</option>
-            </select>
+            <div className={inputCls + " bg-bg"}>Online (videochamada)</div>
           </div>
           <div>
             <label className="block text-xs font-bold mb-1.5">Status inicial</label>

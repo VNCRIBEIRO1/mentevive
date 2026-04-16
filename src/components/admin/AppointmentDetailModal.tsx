@@ -127,7 +127,7 @@ export function AppointmentDetailModal({ apt, onClose, onStatus, onDelete, onUpd
           </div>
           <div className="flex justify-between py-1.5 border-b border-primary/5">
             <span className="text-txt-muted">Modalidade</span>
-            <span className="text-txt">{apt.modality === "presencial" ? "Presencial" : "Online (videochamada)"}</span>
+            <span className="text-txt">Online (videochamada)</span>
           </div>
           <div className="flex justify-between py-1.5 border-b border-primary/5">
             <span className="text-txt-muted">Status</span>
@@ -177,8 +177,7 @@ export function AppointmentDetailModal({ apt, onClose, onStatus, onDelete, onUpd
           </div>
         )}
 
-        {apt.modality !== "presencial" && (
-          <div className="mt-4 pt-4 border-t border-primary/10">
+        <div className="mt-4 pt-4 border-t border-primary/10">
             <h4 className="text-xs font-bold text-txt-muted mb-3">📹 Videochamada e sala de espera</h4>
             <div className="mb-3 rounded-brand-sm border border-primary/10 bg-bg/60 p-3">
               <p className="text-xs font-bold text-txt">Sala do paciente</p>
@@ -245,7 +244,6 @@ export function AppointmentDetailModal({ apt, onClose, onStatus, onDelete, onUpd
               </div>
             )}
           </div>
-        )}
 
         <div className="mt-6 pt-4 border-t border-primary/10">
           <h4 className="text-xs font-bold text-txt-muted mb-3">Editar Sessão</h4>

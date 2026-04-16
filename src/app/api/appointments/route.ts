@@ -62,9 +62,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
     }
 
-    const { patientId, date, startTime, endTime, modality, notes, status } = parsed.data;
+    const { patientId, date, startTime, endTime, notes, status } = parsed.data;
     const initialStatus = status === "pending" ? "pending" : "confirmed";
-    const finalModality = modality || "online";
+    const finalModality = "online";
     const tenantId = auth.tenantId!;
     const patient = await getTenantPatientById(tenantId, patientId);
 
@@ -124,8 +124,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const modalityLabel = finalModality === "presencial" ? "presencial" : "online";
-    const amount = await getSessionPrice(tenantId, finalModality);
+    const modalityLabel = "online";
+    const amount = await getSessionPrice(tenantId);
     let newPayment: typeof payments.$inferSelect | null = null;
 
     if (amount > 0) {

@@ -55,7 +55,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
     }
 
-    const { date, startTime, endTime, modality, status, notes, meetingUrl, therapistFeedback } = parsed.data;
+    const { date, startTime, endTime, status, notes, meetingUrl, therapistFeedback } = parsed.data;
     const tenantId = auth.tenantId!;
 
     const [current] = await db
@@ -69,7 +69,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const effectiveDate = date || current.date;
     const effectiveStart = startTime || current.startTime;
     const effectiveEnd = endTime || current.endTime;
-    const effectiveModality = modality || current.modality || "online";
+    const effectiveModality = "online";
 
     if (startTime !== undefined || endTime !== undefined) {
       if (effectiveStart >= effectiveEnd) {
@@ -111,15 +111,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       finalMeetingUrl = buildMeetingUrl(id);
     }
 
-    if (effectiveModality === "presencial") {
-      finalMeetingUrl = null;
-    }
-
     const [updated] = await db.update(appointments).set({
       ...(date !== undefined && { date }),
       ...(startTime !== undefined && { startTime }),
       ...(endTime !== undefined && { endTime }),
-      ...(modality !== undefined && { modality }),
+      modality: "online",
       ...(status !== undefined && { status }),
       ...(notes !== undefined && { notes }),
       ...(finalMeetingUrl !== undefined && { meetingUrl: finalMeetingUrl }),
@@ -183,8 +179,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             .limit(1);
 
           if (!existingLinkedPayment) {
-            const amount = await getSessionPrice(tenantId, effectiveModality as "online" | "presencial");
-            const modalityLabel = effectiveModality === "presencial" ? "presencial" : "online";
+            const amount = await getSessionPrice(tenantId);
+            const modalityLabel = "online";
 
             if (amount > 0) {
               const [newPayment] = await db.insert(payments).values({

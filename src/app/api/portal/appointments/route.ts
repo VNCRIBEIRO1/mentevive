@@ -76,8 +76,8 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { date, startTime, notes, modality } = body;
-    const finalModality = modality === "presencial" ? "presencial" : "online";
+    const { date, startTime, notes } = body;
+    const finalModality = "online";
 
     if (!date || !startTime) {
       return NextResponse.json(
@@ -185,8 +185,8 @@ export async function POST(req: NextRequest) {
       })
       .returning();
 
-    const modalityLabel = finalModality === "presencial" ? "presencial" : "online";
-    const amount = await getSessionPrice(tenantId, finalModality);
+    const modalityLabel = "online";
+    const amount = await getSessionPrice(tenantId);
     const [newPayment] = await db
       .insert(payments)
       .values({

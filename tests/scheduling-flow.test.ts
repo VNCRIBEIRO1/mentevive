@@ -311,23 +311,6 @@ describe("POST /api/portal/appointments — Scheduling", () => {
       const body = await res.json();
       expect(body.modality).toBe("online");
     });
-
-    it("should accept 'presencial' modality", async () => {
-      mocks.setSession({ user: { id: "u1", role: "patient" } });
-      mocks.setDbResults(
-        [{ id: "p1", userId: "u1", name: "Maria" }],
-        [],
-        [{ dayOfWeek: 0, startTime: "08:00", endTime: "20:00", active: true }],
-        []
-      );
-      const res = await POST(
-        mockRequest({ date: "2026-06-14", startTime: "10:00", endTime: "11:00", modality: "presencial" })
-      );
-      expect(res.status).toBe(201);
-      const body = await res.json();
-      expect(body.modality).toBe("presencial");
-    });
-
     it("should send notification to admin on creation", async () => {
       mocks.setSession({ user: { id: "u1", role: "patient" } });
       mocks.setDbResults(
@@ -391,3 +374,4 @@ describe("GET /api/portal/appointments", () => {
     expect(body.length).toBe(2);
   });
 });
+

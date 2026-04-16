@@ -9,7 +9,6 @@ const navLinks = [
   { href: "#sobre", label: "Sobre" },
   { href: "#servicos", label: "Serviços" },
   { href: "#agendamento", label: "Agendar" },
-  { href: "#blog", label: "Blog" },
   { href: "#contato", label: "Contato" },
 ];
 

@@ -73,7 +73,6 @@ export async function proxy(request: NextRequest) {
   if (
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/stripe/webhook") ||
-    pathname.startsWith("/api/blog") ||
     pathname.startsWith("/api/contact") ||
     pathname.startsWith("/api/setup") ||
     pathname.startsWith("/api/cron") ||
@@ -85,8 +84,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/favicon") ||
     pathname === "/" ||
     pathname === "/login" ||
-    pathname === "/registro" ||
-    pathname.startsWith("/blog")
+    pathname === "/registro"
   ) {
     // Even for public paths, set tenant header from subdomain if available
     if (subdomainSlug) {

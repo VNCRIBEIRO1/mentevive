@@ -256,7 +256,6 @@ export function WaitingRoomView({ viewerArea = "portal" }: WaitingRoomViewProps)
   }
 
   const isInactive = apt.status === "cancelled" || apt.status === "completed" || apt.status === "no_show";
-  const isOnline = apt.modality === "online";
 
   const statusBadge: Record<string, { cls: string; label: string }> = {
     confirmed: { cls: "bg-green-100 text-green-600", label: "Confirmada" },
@@ -341,7 +340,7 @@ export function WaitingRoomView({ viewerArea = "portal" }: WaitingRoomViewProps)
         onSaved={setTriage}
       />
 
-      {isOnline && !isAdminView && (
+      {!isAdminView && (
         <div className="mb-6 rounded-brand border border-primary/5 bg-white p-6 shadow-sm">
           <h3 className="mb-4 font-heading text-sm font-semibold text-txt">Checklist de preparacao</h3>
           <div className="space-y-3">
@@ -408,15 +407,14 @@ export function WaitingRoomView({ viewerArea = "portal" }: WaitingRoomViewProps)
         </div>
       )}
 
-      {isOnline && !hasMeetingUrl && (
+      {!hasMeetingUrl && (
         <div className="mb-6 rounded-brand border border-yellow-200 bg-yellow-50 p-4 text-center">
           <p className="text-sm font-medium text-yellow-800">O link da videochamada sera gerado automaticamente quando a sessao for confirmada.</p>
           <p className="mt-1 text-xs text-yellow-600">Esta pagina atualiza sozinha.</p>
         </div>
       )}
 
-      {isOnline && (
-        <div className="mb-8 text-center">
+      <div className="mb-8 text-center">
           <button
             onClick={() => setShowJitsi(true)}
             disabled={!canEnter}
@@ -438,8 +436,7 @@ export function WaitingRoomView({ viewerArea = "portal" }: WaitingRoomViewProps)
               </a>
             </p>
           )}
-        </div>
-      )}
+      </div>
 
       {showJitsi && (
         <JitsiMeet

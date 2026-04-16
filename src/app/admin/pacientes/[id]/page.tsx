@@ -325,7 +325,7 @@ export default function PacienteDetalhePage() {
           date: fd.get("date"),
           startTime: fd.get("startTime"),
           endTime: fd.get("endTime"),
-          modality: fd.get("modality"),
+          modality: "online",
           notes: fd.get("notes"),
         }),
       });
