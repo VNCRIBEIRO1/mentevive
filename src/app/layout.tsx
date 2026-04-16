@@ -67,8 +67,8 @@ export const metadata: Metadata = {
     images: ["/og-mentevive.png"],
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   alternates: {
     canonical: "https://mentevive.vercel.app",

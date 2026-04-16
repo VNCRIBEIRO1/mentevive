@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { PlatformLanding } from "@/components/platform/PlatformLanding";
 
 export default function Home() {
-  redirect("/login");
+  return <PlatformLanding />;
 }
