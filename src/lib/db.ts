@@ -2,12 +2,31 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "@/db/schema";
 
+function normalizeDatabaseUrl(raw: string | undefined): string {
+  if (!raw) return "";
+  // Handle common env formatting issues (quoted strings or escaped newlines from env pull/copy).
+  return raw
+    .trim()
+    .replace(/^"+|"+$/g, "")
+    .replace(/^'+|'+$/g, "")
+    .replace(/\\r\\n/g, "")
+    .replace(/\\n/g, "")
+    .replace(/\\r/g, "")
+    .trim();
+}
+
 function createDb() {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = normalizeDatabaseUrl(process.env.DATABASE_URL);
   if (!connectionString) {
     throw new Error(
       "DATABASE_URL is not set. Please configure your .env.local file."
     );
+  }
+  try {
+    // Validate URL early so runtime failures become actionable.
+    new URL(connectionString);
+  } catch {
+    throw new Error("DATABASE_URL is not a valid URL. Check quoting/escaping in environment variables.");
   }
   const sql = neon(connectionString);
   return drizzle(sql, { schema });
