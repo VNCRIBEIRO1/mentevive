@@ -37,7 +37,10 @@ export async function POST() {
     return NextResponse.json({ error: "Paciente não encontrado." }, { status: 404 });
   }
 
-  await db.update(patients).set({ consentAcceptedAt: new Date() }).where(eq(patients.id, patient.id));
+  await db
+    .update(patients)
+    .set({ consentAcceptedAt: new Date() })
+    .where(and(eq(patients.tenantId, tenantId), eq(patients.id, patient.id)));
 
   return NextResponse.json({ ok: true });
 }

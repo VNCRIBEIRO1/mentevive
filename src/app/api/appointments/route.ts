@@ -8,6 +8,7 @@ import { createAppointmentSchema, formatZodError } from "@/lib/validations";
 import { buildMeetingUrl } from "@/lib/jitsi";
 import { getSessionPrice } from "@/lib/session-pricing";
 import { isStripeConfigured } from "@/lib/stripe";
+import { getTenantPatientById } from "@/lib/tenant-guards";
 
 export async function GET(req: NextRequest) {
   try {
@@ -36,7 +37,10 @@ export async function GET(req: NextRequest) {
         patientPhone: patients.phone,
       })
       .from(appointments)
-      .leftJoin(patients, eq(appointments.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(appointments.tenantId, patients.tenantId), eq(appointments.patientId, patients.id))
+      )
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(appointments.date));
 
@@ -61,18 +65,23 @@ export async function POST(req: NextRequest) {
     const { patientId, date, startTime, endTime, modality, notes, status } = parsed.data;
     const initialStatus = status === "pending" ? "pending" : "confirmed";
     const finalModality = modality || "online";
+    const tenantId = auth.tenantId!;
+    const patient = await getTenantPatientById(tenantId, patientId);
+
+    if (!patient) {
+      return NextResponse.json({ error: "Paciente não encontrado neste tenant." }, { status: 404 });
+    }
 
     if (startTime >= endTime) {
       return NextResponse.json({ error: "O horário final deve ser maior que o inicial." }, { status: 400 });
     }
 
-    // M1: Check for overlapping appointments (same logic as portal)
     const overlapping = await db
       .select({ id: appointments.id, startTime: appointments.startTime, endTime: appointments.endTime })
       .from(appointments)
       .where(
         and(
-          eq(appointments.tenantId, auth.tenantId!),
+          eq(appointments.tenantId, tenantId),
           eq(appointments.date, date),
           ne(appointments.status, "cancelled"),
           lt(appointments.startTime, endTime),
@@ -96,11 +105,10 @@ export async function POST(req: NextRequest) {
       modality: finalModality,
       notes: notes || null,
       status: initialStatus,
-      tenantId: auth.tenantId!,
+      tenantId,
     }).returning();
 
     let newAppointment = createdAppointment;
-    // Only generate meeting URL for online sessions
     if (newAppointment.status === "confirmed" && finalModality === "online") {
       const [updatedAppointment] = await db
         .update(appointments)
@@ -108,7 +116,7 @@ export async function POST(req: NextRequest) {
           meetingUrl: buildMeetingUrl(newAppointment.id),
           updatedAt: new Date(),
         })
-        .where(eq(appointments.id, newAppointment.id))
+        .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, newAppointment.id)))
         .returning();
 
       if (updatedAppointment) {
@@ -117,7 +125,7 @@ export async function POST(req: NextRequest) {
     }
 
     const modalityLabel = finalModality === "presencial" ? "presencial" : "online";
-    const amount = await getSessionPrice(finalModality);
+    const amount = await getSessionPrice(tenantId, finalModality);
     let newPayment: typeof payments.$inferSelect | null = null;
 
     if (amount > 0) {
@@ -131,33 +139,31 @@ export async function POST(req: NextRequest) {
           status: "pending",
           dueDate: date,
           description: `Sessão ${modalityLabel} em ${date} às ${startTime}`,
-          tenantId: auth.tenantId!,
+          tenantId,
         })
         .returning();
     }
 
-    // Get patient name for notification
-    const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, patientId));
     await createNotification({
       type: "appointment",
       title: "Sessão agendada",
-      message: `Sessão ${modalityLabel} agendada para ${pat?.name || "paciente"} em ${date} às ${startTime}.`,
+      message: `Sessão ${modalityLabel} agendada para ${patient.name || "paciente"} em ${date} às ${startTime}.`,
       patientId,
       appointmentId: newAppointment.id,
       linkUrl: `/admin/agenda`,
-      tenantId: auth.tenantId!,
+      tenantId,
     });
 
     if (newPayment) {
       await createNotification({
         type: "payment",
         title: "Cobrança criada",
-        message: `Cobrança de R$ ${amount.toFixed(2)} criada para ${pat?.name || "paciente"} no fluxo da sessão agendada.`,
+        message: `Cobrança de R$ ${amount.toFixed(2)} criada para ${patient.name || "paciente"} no fluxo da sessão agendada.`,
         patientId,
         appointmentId: newAppointment.id,
         paymentId: newPayment.id,
         linkUrl: `/admin/financeiro`,
-        tenantId: auth.tenantId!,
+        tenantId,
       });
     }
 

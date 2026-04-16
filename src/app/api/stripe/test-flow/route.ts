@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!checkout) {
-      await db.delete(payments).where(eq(payments.id, payment.id));
+      await db.delete(payments).where(and(eq(payments.tenantId, tenantId), eq(payments.id, payment.id)));
       return NextResponse.json(
         { error: "Falha ao criar checkout de teste." },
         { status: 500 }
@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
         checkoutUrl: checkout.checkoutUrl,
         externalReference: payment.id,
       })
-      .where(eq(payments.id, payment.id));
+      .where(and(eq(payments.tenantId, tenantId), eq(payments.id, payment.id)));
 
     return NextResponse.json(
       {
@@ -172,7 +172,10 @@ export async function GET(req: NextRequest) {
         patientEmail: patients.email,
       })
       .from(payments)
-      .leftJoin(patients, eq(payments.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(payments.tenantId, patients.tenantId), eq(payments.patientId, patients.id))
+      )
       .where(and(eq(payments.id, paymentId), eq(payments.tenantId, tenantId)))
       .limit(1);
 

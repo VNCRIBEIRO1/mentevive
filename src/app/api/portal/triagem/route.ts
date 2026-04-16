@@ -4,8 +4,8 @@ import { triages, appointments, patients } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { requireAuth } from "@/lib/api-auth";
 import { createNotification } from "@/lib/notifications";
+import { getTenantPatientForUser } from "@/lib/tenant-guards";
 
-/* GET /api/portal/triagem?appointmentId=xxx */
 export async function GET(req: NextRequest) {
   try {
     const auth = await requireAuth();
@@ -16,8 +16,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "appointmentId é obrigatório." }, { status: 400 });
     }
 
-    const role = auth.session!.user.role;
     const tenantId = auth.tenantId!;
+    const role = auth.role || auth.session!.user.membershipRole || auth.session!.user.role;
 
     let apt;
     if (role === "admin" || role === "therapist") {
@@ -26,18 +26,13 @@ export async function GET(req: NextRequest) {
         .from(appointments)
         .where(and(eq(appointments.id, appointmentId), eq(appointments.tenantId, tenantId)));
     } else {
-      const userId = auth.session!.user.id;
-      const [patient] = await db
-        .select({ id: patients.id })
-        .from(patients)
-        .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
-        .limit(1);
-
+      const patient = await getTenantPatientForUser(tenantId, auth.session!.user.id);
       [apt] = await db
         .select()
         .from(appointments)
         .where(
           and(
+            eq(appointments.tenantId, tenantId),
             eq(appointments.id, appointmentId),
             eq(appointments.patientId, patient?.id || "")
           )
@@ -51,7 +46,7 @@ export async function GET(req: NextRequest) {
     const [triage] = await db
       .select()
       .from(triages)
-      .where(eq(triages.appointmentId, appointmentId));
+      .where(and(eq(triages.tenantId, tenantId), eq(triages.appointmentId, appointmentId)));
 
     return NextResponse.json(triage || null);
   } catch (error) {
@@ -60,7 +55,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/* POST /api/portal/triagem — create or update triage */
 export async function POST(req: NextRequest) {
   try {
     const auth = await requireAuth();
@@ -81,17 +75,11 @@ export async function POST(req: NextRequest) {
     if (!appointmentId) {
       return NextResponse.json({ error: "appointmentId é obrigatório." }, { status: 400 });
     }
-    // Verify appointment belongs to this patient
-    const userId = auth.session!.user.id;
-    const tenantId = auth.tenantId!;
-    const [patient] = await db
-      .select({ id: patients.id })
-      .from(patients)
-      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
-      .limit(1);
 
+    const tenantId = auth.tenantId!;
+    const patient = await getTenantPatientForUser(tenantId, auth.session!.user.id);
     if (!patient) {
-      return NextResponse.json({ error: "Registro de paciente n\u00e3o encontrado." }, { status: 404 });
+      return NextResponse.json({ error: "Registro de paciente não encontrado." }, { status: 404 });
     }
 
     const [apt] = await db
@@ -99,6 +87,7 @@ export async function POST(req: NextRequest) {
       .from(appointments)
       .where(
         and(
+          eq(appointments.tenantId, tenantId),
           eq(appointments.id, appointmentId),
           eq(appointments.patientId, patient.id)
         )
@@ -106,16 +95,15 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     if (!apt) {
-      return NextResponse.json({ error: "Agendamento n\u00e3o encontrado." }, { status: 404 });
+      return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }
-    // Check if triage already exists
+
     const [existing] = await db
       .select()
       .from(triages)
-      .where(eq(triages.appointmentId, appointmentId));
+      .where(and(eq(triages.tenantId, tenantId), eq(triages.appointmentId, appointmentId)));
 
     if (existing) {
-      // Update
       const [updated] = await db
         .update(triages)
         .set({
@@ -129,18 +117,23 @@ export async function POST(req: NextRequest) {
           completed: true,
           updatedAt: new Date(),
         })
-        .where(eq(triages.appointmentId, appointmentId))
+        .where(and(eq(triages.tenantId, tenantId), eq(triages.appointmentId, appointmentId)))
         .returning();
 
-      // Notify admin about updated triage
-      const [aptForNotif] = await db.select().from(appointments).where(eq(appointments.id, appointmentId));
+      const [aptForNotif] = await db
+        .select()
+        .from(appointments)
+        .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, appointmentId)));
       if (aptForNotif) {
-        const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, aptForNotif.patientId));
+        const [pat] = await db
+          .select({ name: patients.name })
+          .from(patients)
+          .where(and(eq(patients.tenantId, tenantId), eq(patients.id, aptForNotif.patientId)));
         await createNotification({
           tenantId,
           type: "triage",
           title: "Triagem atualizada",
-          message: `${pat?.name || "Paciente"} atualizou a triagem da sess\u00e3o de ${aptForNotif.date}.`,
+          message: `${pat?.name || "Paciente"} atualizou a triagem da sessão de ${aptForNotif.date}.`,
           patientId: aptForNotif.patientId,
           appointmentId,
           linkUrl: `/admin/pacientes/${aptForNotif.patientId}`,
@@ -149,7 +142,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(updated);
     }
 
-    // Create
     const [created] = await db
       .insert(triages)
       .values({
@@ -166,15 +158,20 @@ export async function POST(req: NextRequest) {
       })
       .returning();
 
-    // Notify admin about new triage
-    const [aptForNotif2] = await db.select().from(appointments).where(eq(appointments.id, appointmentId));
+    const [aptForNotif2] = await db
+      .select()
+      .from(appointments)
+      .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, appointmentId)));
     if (aptForNotif2) {
-      const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, aptForNotif2.patientId));
+      const [pat] = await db
+        .select({ name: patients.name })
+        .from(patients)
+        .where(and(eq(patients.tenantId, tenantId), eq(patients.id, aptForNotif2.patientId)));
       await createNotification({
         tenantId,
         type: "triage",
         title: "Nova triagem recebida",
-        message: `${pat?.name || "Paciente"} preencheu a triagem pr\u00e9-sess\u00e3o de ${aptForNotif2.date}.${mainConcern ? ` Queixa: ${mainConcern.substring(0, 80)}${mainConcern.length > 80 ? "..." : ""}` : ""}`,
+        message: `${pat?.name || "Paciente"} preencheu a triagem pré-sessão de ${aptForNotif2.date}.${mainConcern ? ` Queixa: ${mainConcern.substring(0, 80)}${mainConcern.length > 80 ? "..." : ""}` : ""}`,
         patientId: aptForNotif2.patientId,
         appointmentId,
         linkUrl: `/admin/pacientes/${aptForNotif2.patientId}`,

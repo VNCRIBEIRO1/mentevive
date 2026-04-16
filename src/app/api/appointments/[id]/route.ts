@@ -8,34 +8,30 @@ import { buildMeetingUrl } from "@/lib/jitsi";
 import { updateAppointmentSchema, formatZodError } from "@/lib/validations";
 import { getSessionPrice } from "@/lib/session-pricing";
 import { isStripeConfigured } from "@/lib/stripe";
+import { getTenantPatientForUser } from "@/lib/tenant-guards";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    // Allow both admin and authenticated patients (who own the appointment)
     const auth = await requireAuth();
     if (auth.error) return auth.response;
 
     const { id } = await params;
     const tenantId = auth.tenantId!;
-    const [appointment] = await db.select().from(appointments).where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id)));
+    const [appointment] = await db
+      .select()
+      .from(appointments)
+      .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id)));
+
     if (!appointment) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }
 
-    const role = auth.session!.user.role;
-    // Admin/therapist can see any appointment
+    const role = auth.role || auth.session!.user.membershipRole || auth.session!.user.role;
     if (role === "admin" || role === "therapist") {
       return NextResponse.json(appointment);
     }
 
-    // Patient can only see their own appointment
-    const userId = auth.session!.user.id;
-    const [patient] = await db
-      .select({ id: patients.id })
-      .from(patients)
-      .where(eq(patients.userId, userId))
-      .limit(1);
-
+    const patient = await getTenantPatientForUser(tenantId, auth.session!.user.id);
     if (!patient || appointment.patientId !== patient.id) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }
@@ -54,42 +50,40 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const { id } = await params;
     const body = await req.json();
-
-    // Validate update fields with Zod
     const parsed = updateAppointmentSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
     }
 
     const { date, startTime, endTime, modality, status, notes, meetingUrl, therapistFeedback } = parsed.data;
+    const tenantId = auth.tenantId!;
 
-    // Get current appointment to detect status changes
-    const [current] = await db.select().from(appointments).where(and(eq(appointments.tenantId, auth.tenantId!), eq(appointments.id, id)));
+    const [current] = await db
+      .select()
+      .from(appointments)
+      .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id)));
     if (!current) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }
 
-    // Resolve effective values for validation
     const effectiveDate = date || current.date;
     const effectiveStart = startTime || current.startTime;
     const effectiveEnd = endTime || current.endTime;
     const effectiveModality = modality || current.modality || "online";
 
-    // Validate start < end when times are being changed
     if (startTime !== undefined || endTime !== undefined) {
       if (effectiveStart >= effectiveEnd) {
         return NextResponse.json({ error: "O horário final deve ser maior que o inicial." }, { status: 400 });
       }
     }
 
-    // Check for overlapping appointments when date/time changes
     if (date !== undefined || startTime !== undefined || endTime !== undefined) {
       const overlapping = await db
         .select({ id: appointments.id, startTime: appointments.startTime, endTime: appointments.endTime })
         .from(appointments)
         .where(
           and(
-            eq(appointments.tenantId, auth.tenantId!),
+            eq(appointments.tenantId, tenantId),
             eq(appointments.date, effectiveDate),
             ne(appointments.status, "cancelled"),
             ne(appointments.id, id),
@@ -107,7 +101,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       }
     }
 
-    // Auto-generate meeting URL when confirming an online appointment
     let finalMeetingUrl = meetingUrl;
     if (
       status === "confirmed" &&
@@ -118,7 +111,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       finalMeetingUrl = buildMeetingUrl(id);
     }
 
-    // Presencial sessions must never have a meeting URL
     if (effectiveModality === "presencial") {
       finalMeetingUrl = null;
     }
@@ -133,19 +125,25 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(finalMeetingUrl !== undefined && { meetingUrl: finalMeetingUrl }),
       ...(therapistFeedback !== undefined && { therapistFeedback }),
       updatedAt: new Date(),
-    }).where(and(eq(appointments.tenantId, auth.tenantId!), eq(appointments.id, id))).returning();
+    }).where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id))).returning();
 
     if (!updated) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }
 
-    // Notify on status change
-    if (status !== undefined && current && current.status !== status) {
+    if (status !== undefined && current.status !== status) {
       const statusLabels: Record<string, string> = {
-        pending: "Pendente", confirmed: "Confirmada", cancelled: "Cancelada",
-        completed: "Realizada", no_show: "Não compareceu",
+        pending: "Pendente",
+        confirmed: "Confirmada",
+        cancelled: "Cancelada",
+        completed: "Realizada",
+        no_show: "Não compareceu",
       };
-      const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, updated.patientId));
+      const [pat] = await db
+        .select({ name: patients.name })
+        .from(patients)
+        .where(and(eq(patients.tenantId, tenantId), eq(patients.id, updated.patientId)));
+
       await createNotification({
         type: "status_change",
         title: `Sessão ${statusLabels[status] || status}`,
@@ -153,22 +151,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         patientId: updated.patientId,
         appointmentId: updated.id,
         linkUrl: `/admin/agenda`,
-        tenantId: auth.tenantId!,
+        tenantId,
       });
 
-      // Cancel linked pending payments when appointment is cancelled
       if (status === "cancelled" && current.status !== "cancelled") {
         try {
           const linkedPayments = await db
             .select({ id: payments.id, status: payments.status })
             .from(payments)
-            .where(eq(payments.appointmentId, updated.id));
+            .where(and(eq(payments.tenantId, tenantId), eq(payments.appointmentId, updated.id)));
 
           for (const lp of linkedPayments) {
             if (lp.status === "pending" || lp.status === "overdue") {
-              await db.update(payments)
+              await db
+                .update(payments)
                 .set({ status: "cancelled" })
-                .where(eq(payments.id, lp.id));
+                .where(and(eq(payments.tenantId, tenantId), eq(payments.id, lp.id)));
             }
           }
         } catch (cancelErr) {
@@ -176,17 +174,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         }
       }
 
-      // Auto-create pending payment when confirmed
       if (status === "confirmed" && current.status !== "confirmed") {
         try {
           const [existingLinkedPayment] = await db
             .select({ id: payments.id })
             .from(payments)
-            .where(eq(payments.appointmentId, updated.id))
+            .where(and(eq(payments.tenantId, tenantId), eq(payments.appointmentId, updated.id)))
             .limit(1);
 
           if (!existingLinkedPayment) {
-            const amount = await getSessionPrice(effectiveModality as "online" | "presencial");
+            const amount = await getSessionPrice(tenantId, effectiveModality as "online" | "presencial");
             const modalityLabel = effectiveModality === "presencial" ? "presencial" : "online";
 
             if (amount > 0) {
@@ -197,8 +194,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                 method: isStripeConfigured() ? "stripe" : "pix",
                 status: "pending",
                 dueDate: updated.date,
-                description: `Sessão ${modalityLabel} — ${updated.date}`,
-                tenantId: auth.tenantId!,
+                description: `Sessão ${modalityLabel} - ${updated.date}`,
+                tenantId,
               }).returning();
 
               if (newPayment) {
@@ -209,14 +206,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                   patientId: updated.patientId,
                   paymentId: newPayment.id,
                   linkUrl: `/admin/financeiro`,
-                  tenantId: auth.tenantId!,
+                  tenantId,
                 });
               }
             }
           }
         } catch (payErr) {
           console.error("Auto-create payment error:", payErr);
-          // Don't fail the status update if payment creation fails
         }
       }
     }
@@ -234,26 +230,34 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     if (auth.error) return auth.response;
 
     const { id } = await params;
+    const tenantId = auth.tenantId!;
 
-    // Cancel linked pending/overdue payments before deleting
     try {
       const linkedPayments = await db
         .select({ id: payments.id, status: payments.status })
         .from(payments)
-        .where(eq(payments.appointmentId, id));
+        .where(and(eq(payments.tenantId, tenantId), eq(payments.appointmentId, id)));
 
       for (const lp of linkedPayments) {
         if (lp.status === "pending" || lp.status === "overdue") {
           await db.update(payments)
             .set({ status: "cancelled", updatedAt: new Date() })
-            .where(eq(payments.id, lp.id));
+            .where(and(eq(payments.tenantId, tenantId), eq(payments.id, lp.id)));
         }
       }
+
+      await db
+        .update(payments)
+        .set({ appointmentId: null, updatedAt: new Date() })
+        .where(and(eq(payments.tenantId, tenantId), eq(payments.appointmentId, id)));
     } catch (payErr) {
       console.error("Cancel linked payments on delete error:", payErr);
     }
 
-    const [deleted] = await db.delete(appointments).where(and(eq(appointments.tenantId, auth.tenantId!), eq(appointments.id, id))).returning();
+    const [deleted] = await db
+      .delete(appointments)
+      .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id)))
+      .returning();
     if (!deleted) {
       return NextResponse.json({ error: "Agendamento não encontrado." }, { status: 404 });
     }

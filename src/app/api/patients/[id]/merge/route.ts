@@ -57,7 +57,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const apptResult = await db
       .update(appointments)
       .set({ patientId: targetId, updatedAt: new Date() })
-      .where(eq(appointments.patientId, sourcePatientId))
+      .where(and(eq(appointments.tenantId, tenantId), eq(appointments.patientId, sourcePatientId)))
       .returning({ id: appointments.id });
     transferResults.appointments = apptResult.length;
 
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const recResult = await db
       .update(clinicalRecords)
       .set({ patientId: targetId, updatedAt: new Date() })
-      .where(eq(clinicalRecords.patientId, sourcePatientId))
+      .where(and(eq(clinicalRecords.tenantId, tenantId), eq(clinicalRecords.patientId, sourcePatientId)))
       .returning({ id: clinicalRecords.id });
     transferResults.clinicalRecords = recResult.length;
 
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const payResult = await db
       .update(payments)
       .set({ patientId: targetId })
-      .where(eq(payments.patientId, sourcePatientId))
+      .where(and(eq(payments.tenantId, tenantId), eq(payments.patientId, sourcePatientId)))
       .returning({ id: payments.id });
     transferResults.payments = payResult.length;
 
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const docResult = await db
       .update(documents)
       .set({ patientId: targetId })
-      .where(eq(documents.patientId, sourcePatientId))
+      .where(and(eq(documents.tenantId, tenantId), eq(documents.patientId, sourcePatientId)))
       .returning({ id: documents.id });
     transferResults.documents = docResult.length;
 
@@ -89,20 +89,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const sourceGroups = await db
       .select()
       .from(groupMembers)
-      .where(eq(groupMembers.patientId, sourcePatientId));
+      .where(and(eq(groupMembers.tenantId, tenantId), eq(groupMembers.patientId, sourcePatientId)));
     const targetGroups = await db
       .select()
       .from(groupMembers)
-      .where(eq(groupMembers.patientId, targetId));
+      .where(and(eq(groupMembers.tenantId, tenantId), eq(groupMembers.patientId, targetId)));
     const targetGroupIds = new Set(targetGroups.map((g) => g.groupId));
 
     for (const sg of sourceGroups) {
       if (targetGroupIds.has(sg.groupId)) {
         // Target already in group — remove duplicate
-        await db.delete(groupMembers).where(eq(groupMembers.id, sg.id));
+        await db.delete(groupMembers).where(and(eq(groupMembers.tenantId, tenantId), eq(groupMembers.id, sg.id)));
       } else {
         // Move membership
-        await db.update(groupMembers).set({ patientId: targetId }).where(eq(groupMembers.id, sg.id));
+        await db.update(groupMembers).set({ patientId: targetId }).where(and(eq(groupMembers.tenantId, tenantId), eq(groupMembers.id, sg.id)));
         transferResults.groupMembers++;
       }
     }
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (Object.keys(updateData).length > 0) {
       updateData.updatedAt = new Date();
-      await db.update(patients).set(updateData).where(eq(patients.id, targetId));
+      await db.update(patients).set(updateData).where(and(eq(patients.tenantId, tenantId), eq(patients.id, targetId)));
     }
 
     // --- Deactivate source patient's user account if not inherited ---
@@ -140,7 +140,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     await db.delete(patients).where(and(eq(patients.tenantId, tenantId), eq(patients.id, sourcePatientId)));
 
     // Get updated target
-    const [updated] = await db.select().from(patients).where(eq(patients.id, targetId));
+    const [updated] = await db.select().from(patients).where(and(eq(patients.tenantId, tenantId), eq(patients.id, targetId)));
 
     return NextResponse.json({
       message: `Paciente "${source.name}" mesclado em "${target.name}" com sucesso.`,

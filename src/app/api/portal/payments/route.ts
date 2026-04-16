@@ -29,8 +29,11 @@ export async function GET() {
         patientName: patients.name,
       })
       .from(payments)
-      .leftJoin(patients, eq(payments.patientId, patients.id))
-      .where(eq(payments.patientId, patient.id))
+      .leftJoin(
+        patients,
+        and(eq(payments.tenantId, patients.tenantId), eq(payments.patientId, patients.id))
+      )
+      .where(and(eq(payments.tenantId, tenantId), eq(payments.patientId, patient.id)))
       .orderBy(desc(payments.createdAt));
 
     return NextResponse.json(result);

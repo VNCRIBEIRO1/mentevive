@@ -2,18 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
 import { db } from "@/lib/db";
 import { payments, appointments } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { getCheckoutSession, mapStripeStatus, isStripeConfigured } from "@/lib/stripe";
 import { getAuthorizedPayment } from "@/lib/payment-access";
 import { buildMeetingUrl } from "@/lib/jitsi";
 
-/**
- * GET /api/stripe/status?paymentId=<uuid>
- *
- * On-demand payment status check from the Stripe API.
- * Useful when a patient returns from checkout and wants to verify.
- * Also updates the local payment record if the status has changed.
- */
 export async function GET(req: NextRequest) {
   try {
     const auth = await requireAuth();
@@ -34,7 +27,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const access = await getAuthorizedPayment(paymentId, auth.session!.user, auth.tenantId!);
+    const tenantId = auth.tenantId!;
+    const access = await getAuthorizedPayment(paymentId, auth.session!.user, tenantId);
     if (access.reason === "not_found") {
       return NextResponse.json({ error: "Pagamento não encontrado." }, { status: 404 });
     }
@@ -44,7 +38,6 @@ export async function GET(req: NextRequest) {
 
     const payment = access.payment!;
 
-    // If no Stripe session ID, we can't check Stripe status
     if (!payment.stripeSessionId) {
       return NextResponse.json({
         status: payment.status,
@@ -59,7 +52,6 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Fetch from Stripe API
     const stripeSession = await getCheckoutSession(payment.stripeSessionId);
     if (!stripeSession) {
       return NextResponse.json({
@@ -75,7 +67,6 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Update local record if status changed
     const newStatus = mapStripeStatus(stripeSession.status);
     if (payment.status !== newStatus || payment.stripeStatus !== stripeSession.status) {
       const updateData: Record<string, unknown> = {
@@ -88,15 +79,17 @@ export async function GET(req: NextRequest) {
         updateData.paidAt = new Date();
       }
 
-      await db.update(payments).set(updateData).where(eq(payments.id, paymentId));
+      await db
+        .update(payments)
+        .set(updateData)
+        .where(and(eq(payments.tenantId, tenantId), eq(payments.id, paymentId)));
 
-      // Auto-confirm appointment when payment becomes paid
       if (newStatus === "paid" && payment.appointmentId) {
         try {
           const [apt] = await db
             .select({ id: appointments.id, status: appointments.status, modality: appointments.modality, meetingUrl: appointments.meetingUrl })
             .from(appointments)
-            .where(eq(appointments.id, payment.appointmentId))
+            .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, payment.appointmentId)))
             .limit(1);
 
           if (apt && apt.status === "pending") {
@@ -107,7 +100,10 @@ export async function GET(req: NextRequest) {
             if (apt.modality === "online" && !apt.meetingUrl) {
               confirmData.meetingUrl = buildMeetingUrl(apt.id);
             }
-            await db.update(appointments).set(confirmData).where(eq(appointments.id, apt.id));
+            await db
+              .update(appointments)
+              .set(confirmData)
+              .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, apt.id)));
           }
         } catch (confirmErr) {
           console.error("Status check auto-confirm appointment error:", confirmErr);

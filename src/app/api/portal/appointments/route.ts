@@ -42,8 +42,11 @@ export async function GET() {
         patientName: patients.name,
       })
       .from(appointments)
-      .leftJoin(patients, eq(appointments.patientId, patients.id))
-      .where(eq(appointments.patientId, patient.id))
+      .leftJoin(
+        patients,
+        and(eq(appointments.tenantId, patients.tenantId), eq(appointments.patientId, patients.id))
+      )
+      .where(and(eq(appointments.tenantId, tenantId), eq(appointments.patientId, patient.id)))
       .orderBy(desc(appointments.date));
 
     return NextResponse.json(result);
@@ -237,7 +240,7 @@ export async function POST(req: NextRequest) {
               checkoutUrl: checkout.checkoutUrl,
               externalReference: newPayment.id,
             })
-            .where(eq(payments.id, newPayment.id));
+            .where(and(eq(payments.tenantId, tenantId), eq(payments.id, newPayment.id)));
         }
       } catch (checkoutError) {
         checkoutWarning = "Falha ao gerar o checkout agora.";

@@ -106,6 +106,7 @@ vi.mock("@/lib/validations", () => ({
 }));
 
 vi.mock("drizzle-orm", () => ({
+  and: vi.fn(),
   eq: vi.fn(),
 }));
 

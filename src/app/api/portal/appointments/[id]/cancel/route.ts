@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
-import { appointments, patients, payments } from "@/db/schema";
+import { appointments, payments } from "@/db/schema";
 import { requireAuth } from "@/lib/api-auth";
 import { db } from "@/lib/db";
 import { createNotification } from "@/lib/notifications";
 import { refundPayment } from "@/lib/stripe";
+import { getTenantPatientForUser } from "@/lib/tenant-guards";
 
 export async function POST(
   _req: NextRequest,
@@ -20,12 +21,7 @@ export async function POST(
   }
 
   const tenantId = auth.tenantId!;
-
-  const [patient] = await db
-    .select({ id: patients.id })
-    .from(patients)
-    .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
-    .limit(1);
+  const patient = await getTenantPatientForUser(tenantId, userId);
 
   if (!patient) {
     return NextResponse.json({ error: "Paciente não encontrado." }, { status: 404 });
@@ -34,7 +30,7 @@ export async function POST(
   const [appointment] = await db
     .select()
     .from(appointments)
-    .where(and(eq(appointments.id, id), eq(appointments.patientId, patient.id)))
+    .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id), eq(appointments.patientId, patient.id)))
     .limit(1);
 
   if (!appointment) {
@@ -65,7 +61,7 @@ export async function POST(
       stripePaymentIntentId: payments.stripePaymentIntentId,
     })
     .from(payments)
-    .where(eq(payments.appointmentId, id));
+    .where(and(eq(payments.tenantId, tenantId), eq(payments.appointmentId, id)));
 
   let cancelledCharges = 0;
   let refundedCharges = 0;
@@ -79,7 +75,7 @@ export async function POST(
           status: "cancelled",
           updatedAt: new Date(),
         })
-        .where(eq(payments.id, payment.id));
+        .where(and(eq(payments.tenantId, tenantId), eq(payments.id, payment.id)));
       cancelledCharges += 1;
       continue;
     }
@@ -102,7 +98,7 @@ export async function POST(
           stripeStatus: "refunded",
           updatedAt: new Date(),
         })
-        .where(eq(payments.id, payment.id));
+        .where(and(eq(payments.tenantId, tenantId), eq(payments.id, payment.id)));
       refundedCharges += 1;
       continue;
     }
@@ -113,7 +109,7 @@ export async function POST(
   await db
     .update(appointments)
     .set({ status: "cancelled", updatedAt: new Date() })
-    .where(eq(appointments.id, id));
+    .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id)));
 
   const paymentSummary = [
     cancelledCharges > 0
@@ -134,7 +130,7 @@ export async function POST(
     type: "status_change",
     title: "Sessão cancelada pelo paciente",
     message: `Paciente cancelou a sessão de ${appointment.date} às ${appointment.startTime}.${paymentSummary ? ` ${paymentSummary}.` : ""}`,
-    icon: "❌",
+    icon: "X",
     linkUrl: "/admin/agenda",
     patientId: patient.id,
     appointmentId: id,

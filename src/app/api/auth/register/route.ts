@@ -7,6 +7,7 @@ import { createNotification } from "@/lib/notifications";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { registerSchema, formatZodError } from "@/lib/validations";
 import { verifyTurnstileToken } from "@/lib/turnstile";
+import { ensureTenantMembership } from "@/lib/tenant-guards";
 
 export async function POST(request: Request) {
   try {
@@ -60,8 +61,6 @@ export async function POST(request: Request) {
     const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
     let userId: string;
-    let isNewUser = false;
-
     if (existing.length > 0) {
       userId = existing[0].id;
       // Check if user already has membership in this tenant
@@ -84,15 +83,10 @@ export async function POST(request: Request) {
         phone: phone || null,
       }).returning();
       userId = newUser.id;
-      isNewUser = true;
     }
 
     // Create tenant membership
-    await db.insert(tenantMemberships).values({
-      userId,
-      tenantId,
-      role: "patient",
-    });
+    await ensureTenantMembership(tenantId, userId, "patient");
 
     // Check if patient record already exists for this tenant
     const [existingPatient] = await db
@@ -109,7 +103,7 @@ export async function POST(request: Request) {
         userId,
         phone: phone || existingPatient.phone,
         updatedAt: new Date(),
-      }).where(eq(patients.id, existingPatient.id));
+      }).where(and(eq(patients.tenantId, tenantId), eq(patients.id, existingPatient.id)));
       patientId = existingPatient.id;
     } else if (!existingPatient) {
       // Create new patient record

@@ -28,7 +28,7 @@ export async function GET() {
     const result = await db
       .select()
       .from(documents)
-      .where(eq(documents.patientId, patient.id))
+      .where(and(eq(documents.tenantId, tenantId), eq(documents.patientId, patient.id)))
       .orderBy(desc(documents.createdAt));
 
     return NextResponse.json(result);

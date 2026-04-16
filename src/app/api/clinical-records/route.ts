@@ -4,6 +4,7 @@ import { clinicalRecords, patients } from "@/db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 import { createClinicalRecordSchema, formatZodError } from "@/lib/validations";
+import { getTenantPatientById } from "@/lib/tenant-guards";
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,7 +26,10 @@ export async function GET(req: NextRequest) {
         patientName: patients.name,
       })
       .from(clinicalRecords)
-      .leftJoin(patients, eq(clinicalRecords.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(clinicalRecords.tenantId, patients.tenantId), eq(clinicalRecords.patientId, patients.id))
+      )
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(clinicalRecords.sessionDate));
 
@@ -47,7 +51,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
     }
 
-    const { patientId, sessionDate, sessionNumber, chiefComplaint, clinicalNotes, interventions, homework, mood, riskAssessment, nextSessionPlan } = parsed.data;
+    const {
+      patientId,
+      sessionDate,
+      sessionNumber,
+      chiefComplaint,
+      clinicalNotes,
+      interventions,
+      homework,
+      mood,
+      riskAssessment,
+      nextSessionPlan,
+    } = parsed.data;
+
+    const patient = await getTenantPatientById(auth.tenantId!, patientId);
+    if (!patient) {
+      return NextResponse.json({ error: "Paciente não encontrado neste tenant." }, { status: 404 });
+    }
 
     const [newRecord] = await db.insert(clinicalRecords).values({
       patientId,

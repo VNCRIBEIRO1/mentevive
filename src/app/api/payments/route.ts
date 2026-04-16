@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/api-auth";
 import { createNotification } from "@/lib/notifications";
 import { createPaymentSchema, updatePaymentSchema, formatZodError } from "@/lib/validations";
 import { refundPayment } from "@/lib/stripe";
+import { getTenantAppointmentById, getTenantPatientById } from "@/lib/tenant-guards";
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,7 +30,10 @@ export async function GET(req: NextRequest) {
         patientName: patients.name,
       })
       .from(payments)
-      .leftJoin(patients, eq(payments.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(payments.tenantId, patients.tenantId), eq(payments.patientId, patients.id))
+      )
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(payments.createdAt));
 
@@ -46,14 +50,24 @@ export async function POST(req: NextRequest) {
     if (auth.error) return auth.response;
 
     const body = await req.json();
-
-    // Zod validation
     const parsed = createPaymentSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
     }
 
     const { patientId, appointmentId, amount, method, dueDate, description } = parsed.data;
+    const tenantId = auth.tenantId!;
+    const patient = await getTenantPatientById(tenantId, patientId);
+
+    if (!patient) {
+      return NextResponse.json({ error: "Paciente não encontrado neste tenant." }, { status: 404 });
+    }
+    if (appointmentId) {
+      const appointment = await getTenantAppointmentById(tenantId, appointmentId);
+      if (!appointment || appointment.patientId !== patientId) {
+        return NextResponse.json({ error: "Agendamento inválido para este tenant/paciente." }, { status: 400 });
+      }
+    }
 
     const [newPayment] = await db.insert(payments).values({
       patientId,
@@ -63,19 +77,17 @@ export async function POST(req: NextRequest) {
       dueDate: dueDate || null,
       description: description || null,
       status: "pending",
-      tenantId: auth.tenantId!,
+      tenantId,
     }).returning();
 
-    // Notify about new payment created
-    const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, patientId));
     await createNotification({
       type: "payment",
       title: "Cobrança criada",
-      message: `Cobrança de R$ ${Number(amount).toFixed(2)} criada para ${pat?.name || "paciente"}.`,
+      message: `Cobrança de R$ ${Number(amount).toFixed(2)} criada para ${patient.name || "paciente"}.`,
       patientId,
       paymentId: newPayment.id,
       linkUrl: `/admin/financeiro`,
-      tenantId: auth.tenantId!,
+      tenantId,
     });
 
     return NextResponse.json(newPayment, { status: 201 });
@@ -97,7 +109,6 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "ID do pagamento é obrigatório." }, { status: 400 });
     }
 
-    // Validate update fields with Zod
     const parsed = updatePaymentSchema.safeParse(rest);
     if (!parsed.success) {
       return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
@@ -105,9 +116,12 @@ export async function PUT(req: NextRequest) {
 
     const { status, paidAt, method, amount, dueDate, description } = parsed.data;
 
-    // If refunding a MP payment, call the MP Refund API first
     if (status === "refunded") {
-      const [existing] = await db.select().from(payments).where(and(eq(payments.tenantId, auth.tenantId!), eq(payments.id, id))).limit(1);
+      const [existing] = await db
+        .select()
+        .from(payments)
+        .where(and(eq(payments.tenantId, auth.tenantId!), eq(payments.id, id)))
+        .limit(1);
       if (existing?.stripePaymentIntentId) {
         const refunded = await refundPayment(existing.stripePaymentIntentId);
         if (!refunded) {
@@ -129,10 +143,18 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Pagamento não encontrado." }, { status: 404 });
     }
 
-    // Notify about payment status change
     if (status !== undefined) {
-      const statusLabels: Record<string, string> = { pending: "Pendente", paid: "Pago", overdue: "Atrasado", cancelled: "Cancelado", refunded: "Reembolsado" };
-      const [pat] = await db.select({ name: patients.name }).from(patients).where(eq(patients.id, updated.patientId));
+      const statusLabels: Record<string, string> = {
+        pending: "Pendente",
+        paid: "Pago",
+        overdue: "Atrasado",
+        cancelled: "Cancelado",
+        refunded: "Reembolsado",
+      };
+      const [pat] = await db
+        .select({ name: patients.name })
+        .from(patients)
+        .where(and(eq(patients.tenantId, auth.tenantId!), eq(patients.id, updated.patientId)));
       await createNotification({
         type: "payment",
         title: `Pagamento ${statusLabels[status] || status}`,

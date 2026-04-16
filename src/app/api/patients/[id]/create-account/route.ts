@@ -4,6 +4,7 @@ import { patients, users } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { requireAdmin } from "@/lib/api-auth";
+import { ensureTenantMembership } from "@/lib/tenant-guards";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const [otherPatient] = await db
           .select({ id: patients.id, name: patients.name })
           .from(patients)
-          .where(and(eq(patients.userId, existingUser.id)))
+          .where(and(eq(patients.userId, existingUser.id), eq(patients.tenantId, auth.tenantId!)))
           .limit(1);
 
         if (otherPatient) {
@@ -58,7 +59,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           userId: existingUser.id,
           email: accountEmail,
           updatedAt: new Date(),
-        }).where(eq(patients.id, id));
+        }).where(and(eq(patients.tenantId, auth.tenantId!), eq(patients.id, id)));
+        await ensureTenantMembership(auth.tenantId!, existingUser.id, "patient");
 
         return NextResponse.json({
           message: "Conta existente vinculada com sucesso!",
@@ -89,13 +91,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       role: "patient",
       phone: patient.phone || null,
     }).returning();
+    await ensureTenantMembership(auth.tenantId!, newUser.id, "patient");
 
     // Link user to patient and sync email
     await db.update(patients).set({
       userId: newUser.id,
       email: accountEmail,
       updatedAt: new Date(),
-    }).where(eq(patients.id, id));
+    }).where(and(eq(patients.tenantId, auth.tenantId!), eq(patients.id, id)));
 
     return NextResponse.json({ message: "Acesso ao portal criado com sucesso!", userId: newUser.id }, { status: 201 });
   } catch (error) {

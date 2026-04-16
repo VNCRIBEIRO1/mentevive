@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
-import { appointments, patients } from "@/db/schema";
+import { appointments } from "@/db/schema";
 import { requireAuth } from "@/lib/api-auth";
 import { db } from "@/lib/db";
+import { getTenantPatientForUser } from "@/lib/tenant-guards";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -10,8 +11,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (auth.error) return auth.response;
 
     const { id } = await params;
-    const role = auth.session!.user.role;
     const tenantId = auth.tenantId!;
+    const role = auth.role || auth.session!.user.membershipRole || auth.session!.user.role;
 
     if (role === "admin" || role === "therapist") {
       const [appointment] = await db
@@ -27,13 +28,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       return NextResponse.json(appointment);
     }
 
-    const userId = auth.session!.user.id;
-    const [patient] = await db
-      .select({ id: patients.id })
-      .from(patients)
-      .where(and(eq(patients.userId, userId), eq(patients.tenantId, tenantId)))
-      .limit(1);
-
+    const patient = await getTenantPatientForUser(tenantId, auth.session!.user.id);
     if (!patient) {
       return NextResponse.json({ error: "Paciente nao encontrado." }, { status: 404 });
     }
@@ -41,7 +36,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const [appointment] = await db
       .select()
       .from(appointments)
-      .where(and(eq(appointments.id, id), eq(appointments.patientId, patient.id)))
+      .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, id), eq(appointments.patientId, patient.id)))
       .limit(1);
 
     if (!appointment) {

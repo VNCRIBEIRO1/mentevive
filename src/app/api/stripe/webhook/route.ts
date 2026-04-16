@@ -1,46 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { payments, appointments } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { validateWebhookSignature, mapStripeStatus } from "@/lib/stripe";
 import { createNotification } from "@/lib/notifications";
 import { buildMeetingUrl } from "@/lib/jitsi";
 
-/**
- * POST /api/stripe/webhook
- *
- * Receives Stripe webhook events.
- * This endpoint is PUBLIC — no auth guard.
- * Validates signature via Stripe SDK.
- *
- * Handles: checkout.session.completed, checkout.session.expired,
- *          payment_intent.succeeded, charge.refunded
- */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
     const signature = req.headers.get("stripe-signature") || "";
 
-    // Validate webhook signature — fail closed in production
     let event = validateWebhookSignature(body, signature);
 
     if (!event) {
       if (process.env.NODE_ENV === "development" && !process.env.STRIPE_WEBHOOK_SECRET) {
-        // Dev-only: parse raw body for local testing without Stripe CLI
         try {
           event = JSON.parse(body);
-          console.warn("⚠️ Stripe webhook: signature skipped (dev mode only)");
+          console.warn("Stripe webhook: signature skipped (dev mode only)");
         } catch {
           return NextResponse.json({ error: "Invalid event body" }, { status: 400 });
         }
       } else {
-        // Production: reject unverified webhooks
         console.error("Stripe webhook signature verification failed");
         return NextResponse.json({ error: "Webhook signature verification failed" }, { status: 401 });
       }
     }
 
-    // Parse event type
     const eventType = event?.type || "";
     const eventObj = event as unknown as Record<string, unknown>;
     const eventData = (eventObj?.data as Record<string, unknown>)?.object as Record<string, unknown> | undefined;
@@ -49,7 +35,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Handle checkout.session.completed
     if (eventType === "checkout.session.completed" || eventType === "checkout.session.async_payment_succeeded") {
       const paymentId = (eventData.client_reference_id as string) || "";
       const paymentStatus = (eventData.payment_status as string) || "unpaid";
@@ -73,9 +58,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ received: true }, { status: 200 });
       }
 
+      const tenantId = existingPayment.tenantId;
       const newStatus = mapStripeStatus(paymentStatus);
 
-      // Idempotency: skip if already up-to-date
       if (
         existingPayment.stripePaymentIntentId === paymentIntentId &&
         existingPayment.status === newStatus &&
@@ -97,15 +82,14 @@ export async function POST(req: NextRequest) {
       await db
         .update(payments)
         .set(updateData)
-        .where(eq(payments.id, existingPayment.id));
+        .where(and(eq(payments.tenantId, tenantId), eq(payments.id, existingPayment.id)));
 
-      // Auto-confirm appointment when payment is successful
       if (newStatus === "paid" && existingPayment.appointmentId) {
         try {
           const [apt] = await db
             .select({ id: appointments.id, status: appointments.status, modality: appointments.modality, meetingUrl: appointments.meetingUrl })
             .from(appointments)
-            .where(eq(appointments.id, existingPayment.appointmentId))
+            .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, existingPayment.appointmentId)))
             .limit(1);
 
           if (apt && apt.status === "pending") {
@@ -116,50 +100,57 @@ export async function POST(req: NextRequest) {
             if (apt.modality === "online" && !apt.meetingUrl) {
               confirmData.meetingUrl = buildMeetingUrl(apt.id);
             }
-            await db.update(appointments).set(confirmData).where(eq(appointments.id, apt.id));
+            await db
+              .update(appointments)
+              .set(confirmData)
+              .where(and(eq(appointments.tenantId, tenantId), eq(appointments.id, apt.id)));
           }
         } catch (confirmErr) {
           console.error("Webhook auto-confirm appointment error:", confirmErr);
         }
       }
 
-      // Notification
       const statusLabels: Record<string, string> = {
-        paid: "✅ Pagamento aprovado",
-        pending: "⏳ Pagamento pendente",
-        cancelled: "❌ Pagamento cancelado",
-        refunded: "🔄 Pagamento reembolsado",
+        paid: "Pagamento aprovado",
+        pending: "Pagamento pendente",
+        cancelled: "Pagamento cancelado",
+        refunded: "Pagamento reembolsado",
       };
 
       await createNotification({
-        tenantId: existingPayment.tenantId,
+        tenantId,
         type: "payment",
         title: statusLabels[newStatus] || "Atualização de pagamento",
         message: `Pagamento de R$ ${existingPayment.amount} atualizado via Stripe (${paymentStatus}).`,
-        icon: newStatus === "paid" ? "💰" : newStatus === "cancelled" ? "❌" : "🔄",
+        icon: newStatus === "paid" ? "$" : newStatus === "cancelled" ? "X" : "!",
         linkUrl: "/admin/financeiro",
         patientId: existingPayment.patientId,
         paymentId: existingPayment.id,
       });
     }
 
-    // Handle checkout.session.expired
     if (eventType === "checkout.session.expired") {
       const paymentId = (eventData.client_reference_id as string) || "";
       if (paymentId) {
-        // Clear expired checkout URL so a new one can be generated
-        await db
-          .update(payments)
-          .set({
-            checkoutUrl: null,
-            stripeSessionId: null,
-            stripeStatus: "expired",
-          })
-          .where(eq(payments.id, paymentId));
+        const [existingPayment] = await db
+          .select({ id: payments.id, tenantId: payments.tenantId })
+          .from(payments)
+          .where(eq(payments.id, paymentId))
+          .limit(1);
+
+        if (existingPayment) {
+          await db
+            .update(payments)
+            .set({
+              checkoutUrl: null,
+              stripeSessionId: null,
+              stripeStatus: "expired",
+            })
+            .where(and(eq(payments.tenantId, existingPayment.tenantId), eq(payments.id, paymentId)));
+        }
       }
     }
 
-    // Handle charge.refunded
     if (eventType === "charge.refunded") {
       const paymentIntentId = (eventData.payment_intent as string) || "";
       if (paymentIntentId) {
@@ -175,7 +166,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
-    // Always return 200 to prevent Stripe retry floods
     console.error("POST /api/stripe/webhook error:", error);
     return NextResponse.json({ received: true, error: "internal" }, { status: 200 });
   }

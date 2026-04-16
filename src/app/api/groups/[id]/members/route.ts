@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { groupMembers, patients, groups } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
+import { getTenantPatientById } from "@/lib/tenant-guards";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -19,7 +20,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         joinedAt: groupMembers.joinedAt,
       })
       .from(groupMembers)
-      .leftJoin(patients, eq(groupMembers.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(groupMembers.tenantId, patients.tenantId), eq(groupMembers.patientId, patients.id))
+      )
       .where(and(eq(groupMembers.tenantId, auth.tenantId!), eq(groupMembers.groupId, id)));
 
     return NextResponse.json(members);
@@ -41,29 +45,31 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: "patientId é obrigatório." }, { status: 400 });
     }
 
-    // Check group exists and get max participants
+    const patient = await getTenantPatientById(auth.tenantId!, patientId);
+    if (!patient) {
+      return NextResponse.json({ error: "Paciente não encontrado neste tenant." }, { status: 404 });
+    }
+
     const [group] = await db.select().from(groups).where(and(eq(groups.tenantId, auth.tenantId!), eq(groups.id, id)));
     if (!group) {
       return NextResponse.json({ error: "Grupo não encontrado." }, { status: 404 });
     }
 
-    // Check if already a member
     const existing = await db
       .select({ id: groupMembers.id })
       .from(groupMembers)
-      .where(and(eq(groupMembers.groupId, id), eq(groupMembers.patientId, patientId)))
+      .where(and(eq(groupMembers.tenantId, auth.tenantId!), eq(groupMembers.groupId, id), eq(groupMembers.patientId, patientId)))
       .limit(1);
 
     if (existing.length > 0) {
       return NextResponse.json({ error: "Paciente já é membro deste grupo." }, { status: 409 });
     }
 
-    // Check max participants
     if (group.maxParticipants) {
       const currentMembers = await db
         .select({ id: groupMembers.id })
         .from(groupMembers)
-        .where(eq(groupMembers.groupId, id));
+        .where(and(eq(groupMembers.tenantId, auth.tenantId!), eq(groupMembers.groupId, id)));
 
       if (currentMembers.length >= group.maxParticipants) {
         return NextResponse.json({ error: "Grupo está cheio." }, { status: 400 });

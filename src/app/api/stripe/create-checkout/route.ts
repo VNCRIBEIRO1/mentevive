@@ -2,20 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
 import { db } from "@/lib/db";
 import { payments, patients, tenants } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { createCheckoutSession, createConnectedCheckoutSession, isStripeConfigured } from "@/lib/stripe";
 import { createCheckoutSchema, formatZodError } from "@/lib/validations";
 import { getAuthorizedPayment } from "@/lib/payment-access";
 
-/**
- * POST /api/stripe/create-checkout
- *
- * Creates a Stripe Checkout Session for a given payment.
- * Called when patient clicks "Pagar agora" or admin clicks "Gerar Link".
- *
- * Body: { paymentId: string }
- * Returns: { checkoutUrl: string, sessionId: string }
- */
 export async function POST(req: NextRequest) {
   try {
     const auth = await requireAuth();
@@ -29,7 +20,6 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-
     const parsed = createCheckoutSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -39,8 +29,8 @@ export async function POST(req: NextRequest) {
     }
 
     const { paymentId } = parsed.data;
-
-    const access = await getAuthorizedPayment(paymentId, auth.session!.user, auth.tenantId!);
+    const tenantId = auth.tenantId!;
+    const access = await getAuthorizedPayment(paymentId, auth.session!.user, tenantId);
     if (access.reason === "not_found") {
       return NextResponse.json({ error: "Pagamento não encontrado." }, { status: 404 });
     }
@@ -58,7 +48,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Este pagamento foi cancelado ou reembolsado." }, { status: 400 });
     }
 
-    // If a checkout URL already exists and session is still valid, return it
     if (payment.checkoutUrl && payment.stripeSessionId) {
       return NextResponse.json({
         checkoutUrl: payment.checkoutUrl,
@@ -66,27 +55,24 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Get patient info for customer email
     const [patient] = await db
       .select()
       .from(patients)
-      .where(eq(patients.id, payment.patientId))
+      .where(and(eq(patients.tenantId, tenantId), eq(patients.id, payment.patientId)))
       .limit(1);
 
-    // Get tenant's Stripe Connect account (if onboarding complete)
     const [tenant] = await db
       .select({
         stripeAccountId: tenants.stripeAccountId,
         stripeOnboardingComplete: tenants.stripeOnboardingComplete,
       })
       .from(tenants)
-      .where(eq(tenants.id, auth.tenantId!));
+      .where(eq(tenants.id, tenantId));
     const connectedAccountId =
       tenant?.stripeOnboardingComplete && tenant?.stripeAccountId
         ? tenant.stripeAccountId
         : null;
 
-    // Build appointment-aware redirect URLs so the user can reach the waiting room
     const baseUrl = process.env.NEXTAUTH_URL || "https://psicolobia.vercel.app";
     let successUrl: string | undefined;
     let cancelUrl: string | undefined;
@@ -109,7 +95,7 @@ export async function POST(req: NextRequest) {
     const checkoutInput = {
       paymentId: payment.id,
       amount: parseFloat(payment.amount),
-      description: payment.description || "Sessão de Psicologia — MenteVive",
+      description: payment.description || "Sessão de Psicologia - MenteVive",
       customerEmail: patient?.email || undefined,
       successUrl,
       cancelUrl,
@@ -119,7 +105,7 @@ export async function POST(req: NextRequest) {
       ? await createConnectedCheckoutSession({
           ...checkoutInput,
           connectedAccountId,
-          applicationFeeAmount: 0, // Platform fee (0 = no fee for now)
+          applicationFeeAmount: 0,
         })
       : await createCheckoutSession(checkoutInput);
 
@@ -130,7 +116,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Save session data to payment record
     await db
       .update(payments)
       .set({
@@ -138,7 +123,7 @@ export async function POST(req: NextRequest) {
         checkoutUrl: result.checkoutUrl,
         externalReference: payment.id,
       })
-      .where(eq(payments.id, paymentId));
+      .where(and(eq(payments.tenantId, tenantId), eq(payments.id, paymentId)));
 
     return NextResponse.json({
       checkoutUrl: result.checkoutUrl,

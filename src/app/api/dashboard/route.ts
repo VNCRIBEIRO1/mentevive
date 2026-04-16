@@ -44,7 +44,10 @@ export async function GET() {
     const upcoming = await db
       .select({ appointment: appointments, patientName: patients.name })
       .from(appointments)
-      .leftJoin(patients, eq(appointments.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(appointments.tenantId, patients.tenantId), eq(appointments.patientId, patients.id))
+      )
       .where(
         and(
           eq(appointments.tenantId, tenantId),
@@ -61,7 +64,10 @@ export async function GET() {
     const pendingPayments = await db
       .select({ payment: payments, patientName: patients.name })
       .from(payments)
-      .leftJoin(patients, eq(payments.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(payments.tenantId, patients.tenantId), eq(payments.patientId, patients.id))
+      )
       .where(and(eq(payments.tenantId, tenantId), eq(payments.status, "pending")))
       .orderBy(desc(payments.createdAt))
       .limit(5);

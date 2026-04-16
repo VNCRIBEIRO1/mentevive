@@ -26,7 +26,10 @@ export async function GET(req: NextRequest) {
         patientName: patients.name,
       })
       .from(notifications)
-      .leftJoin(patients, eq(notifications.patientId, patients.id))
+      .leftJoin(
+        patients,
+        and(eq(notifications.tenantId, patients.tenantId), eq(notifications.patientId, patients.id))
+      )
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(notifications.createdAt))
       .limit(limit);

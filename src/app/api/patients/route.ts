@@ -4,6 +4,7 @@ import { patients, users } from "@/db/schema";
 import { ilike, or, desc, eq, and } from "drizzle-orm";
 import { requireAdmin } from "@/lib/api-auth";
 import bcrypt from "bcryptjs";
+import { ensureTenantMembership } from "@/lib/tenant-guards";
 
 export async function GET(req: NextRequest) {
   try {
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
         phone: phone || null,
       }).returning();
       userId = newUser.id;
+      await ensureTenantMembership(auth.tenantId!, newUser.id, "patient");
     }
 
     const [newPatient] = await db.insert(patients).values({
