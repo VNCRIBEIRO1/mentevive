@@ -2,8 +2,10 @@
 
 import { AnimatedSection, AnimatedItem } from "@/components/landing";
 import { Check, Sparkles } from "lucide-react";
-import { WHATSAPP_LINK } from "@/lib/utils";
+import { WHATSAPP_LINK, buildWhatsAppUrl } from "@/lib/utils";
 import { WhatsAppIcon } from "./WhatsAppIcon";
+
+const PLATFORM_WHATSAPP = WHATSAPP_LINK || "https://wa.me/5511988840525";
 
 const sharedFeatures = [
   "Site / landing page profissional",
@@ -60,9 +62,7 @@ export function PlatformPricing() {
           className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch"
         >
           {plans.map((plan) => {
-            const href = WHATSAPP_LINK
-              ? `${WHATSAPP_LINK}?text=${encodeURIComponent(plan.whatsappMsg)}`
-              : "#";
+            const href = `${PLATFORM_WHATSAPP}?text=${encodeURIComponent(plan.whatsappMsg)}`;
 
             return (
               <AnimatedItem key={plan.name}>
@@ -138,8 +138,8 @@ export function PlatformPricing() {
                   {/* CTA */}
                   <a
                     href={href}
-                    target={WHATSAPP_LINK ? "_blank" : undefined}
-                    rel={WHATSAPP_LINK ? "noopener noreferrer" : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`inline-flex items-center justify-center gap-2.5 text-base font-semibold px-8 py-3.5 rounded-brand transition-all duration-300 ${
                       plan.popular
                         ? "btn-brand-primary shadow-warm-lg hover:shadow-warm-xl"

@@ -14,9 +14,8 @@ const navLinks = [
   { label: "FAQ", href: "#faq" },
 ];
 
-const whatsappHref = WHATSAPP_LINK
-  ? `${WHATSAPP_LINK}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre a MenteVive.")}`
-  : "#planos";
+const PLATFORM_WA = WHATSAPP_LINK || "https://wa.me/5511988840525";
+const whatsappHref = `${PLATFORM_WA}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre a MenteVive.")}`;
 
 export function PlatformNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -68,8 +67,8 @@ export function PlatformNav() {
           </Link>
           <a
             href={whatsappHref}
-            target={WHATSAPP_LINK ? "_blank" : undefined}
-            rel={WHATSAPP_LINK ? "noopener noreferrer" : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn-brand-primary text-sm px-5 py-2.5 inline-flex items-center gap-2"
           >
             <WhatsAppIcon className="w-4 h-4" />
@@ -117,8 +116,8 @@ export function PlatformNav() {
               </Link>
               <a
                 href={whatsappHref}
-                target={WHATSAPP_LINK ? "_blank" : undefined}
-                rel={WHATSAPP_LINK ? "noopener noreferrer" : undefined}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-brand-primary text-sm text-center px-5 py-2.5 inline-flex items-center justify-center gap-2"
                 onClick={() => setMenuOpen(false)}
               >

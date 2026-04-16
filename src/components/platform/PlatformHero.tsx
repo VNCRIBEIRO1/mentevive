@@ -12,9 +12,8 @@ const pills = [
   { icon: HeadphonesIcon, label: "Suporte dedicado" },
 ];
 
-const whatsappHref = WHATSAPP_LINK
-  ? `${WHATSAPP_LINK}?text=${encodeURIComponent("Olá! Quero criar meu consultório online com a MenteVive.")}`
-  : "#planos";
+const PLATFORM_WA = WHATSAPP_LINK || "https://wa.me/5511988840525";
+const whatsappHref = `${PLATFORM_WA}?text=${encodeURIComponent("Olá! Quero criar meu consultório online com a MenteVive.")}`;
 
 export function PlatformHero() {
   return (
@@ -49,8 +48,8 @@ export function PlatformHero() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href={whatsappHref}
-              target={WHATSAPP_LINK ? "_blank" : undefined}
-              rel={WHATSAPP_LINK ? "noopener noreferrer" : undefined}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-brand-primary text-base px-8 py-3.5 shadow-warm-lg inline-flex items-center gap-2.5"
             >
               <WhatsAppIcon className="w-5 h-5" />

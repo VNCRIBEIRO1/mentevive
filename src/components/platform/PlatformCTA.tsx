@@ -2,9 +2,8 @@ import { AnimatedSection } from "@/components/landing";
 import { WHATSAPP_LINK } from "@/lib/utils";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 
-const whatsappHref = WHATSAPP_LINK
-  ? `${WHATSAPP_LINK}?text=${encodeURIComponent("Olá! Quero começar com a MenteVive.")}`
-  : "#planos";
+const PLATFORM_WA = WHATSAPP_LINK || "https://wa.me/5511988840525";
+const whatsappHref = `${PLATFORM_WA}?text=${encodeURIComponent("Olá! Quero começar com a MenteVive.")}`;
 
 export function PlatformCTA() {
   return (
@@ -23,8 +22,8 @@ export function PlatformCTA() {
             </p>
             <a
               href={whatsappHref}
-              target={WHATSAPP_LINK ? "_blank" : undefined}
-              rel={WHATSAPP_LINK ? "noopener noreferrer" : undefined}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-8 inline-flex items-center gap-2.5 bg-white text-foreground font-semibold px-8 py-3.5 rounded-brand shadow-warm-lg hover:shadow-warm-xl transition-all duration-300 hover:-translate-y-0.5"
             >
               <WhatsAppIcon className="w-5 h-5" />
