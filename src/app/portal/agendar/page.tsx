@@ -2,7 +2,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, PROFESSIONAL_NAME } from "@/lib/utils";
 import { getAvailabilityForDate, getTimeOptionsForDate, type AvailabilitySlot } from "@/lib/availability-slots";
 import { CalendarPlus, ArrowLeft, Sparkles } from "lucide-react";
 import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
@@ -106,7 +106,7 @@ function AgendarPageContent() {
     time: "Perfeito. Agora escolha o horario de inicio da sua sessao de 1 hora.",
     confirm: "Revise os detalhes do agendamento. Quando estiver tudo certo, seguimos para a cobranca segura no Stripe.",
     payment: paymentState === "paid"
-      ? "Pagamento identificado. Agora voce ja pode compartilhar a mensagem pronta com a Bea."
+      ? `Pagamento identificado. Agora voce ja pode compartilhar a mensagem pronta com ${PROFESSIONAL_NAME || "seu/sua psicólogo(a)"}.`
       : "Seu agendamento foi criado. Falta apenas concluir o pagamento seguro via Stripe para finalizar o fluxo.",
     done: verifyingPayment
       ? "Estou validando o retorno do Stripe para confirmar o pagamento..."
@@ -723,7 +723,7 @@ function AgendarPageContent() {
             <div className="mt-5 rounded-brand-sm border border-green-200 bg-green-50 p-4">
               <p className="text-sm font-semibold text-green-900">Pagamento identificado</p>
               <p className="mt-1 text-xs text-green-700">
-                O sistema ja conciliou o pagamento automaticamente. Agora voce pode enviar uma mensagem pronta para a Bea, sem precisar mandar comprovante manual.
+                O sistema ja conciliou o pagamento automaticamente. Agora voce pode enviar uma mensagem pronta para {PROFESSIONAL_NAME || "seu/sua psicólogo(a)"}, sem precisar mandar comprovante manual.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
@@ -768,7 +768,7 @@ function AgendarPageContent() {
             <p className="text-sm text-txt-muted mt-2">
               {verifyingPayment
                 ? "Um instante enquanto confirmo o retorno do Stripe."
-                : "Seu fluxo foi concluido no site. Agora voce pode avisar a Bea com a mensagem pronta abaixo."}
+                : `Seu fluxo foi concluido no site. Agora voce pode avisar ${PROFESSIONAL_NAME || "seu/sua psicólogo(a)"} com a mensagem pronta abaixo.`}
             </p>
           </div>
 
