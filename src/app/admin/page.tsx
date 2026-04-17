@@ -3,6 +3,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import { buildWaitingRoomPath, getAppointmentTiming } from "@/components/admin/appointment-timing";
+import {
+  Users, CalendarDays, DollarSign, ClipboardList,
+  UserX, XCircle, BarChart3, TrendingUp, Calendar,
+  Clock, ArrowRight, Video, ExternalLink,
+} from "lucide-react";
 
 const MONTH_LABELS: Record<string, string> = { "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr", "05": "Mai", "06": "Jun", "07": "Jul", "08": "Ago", "09": "Set", "10": "Out", "11": "Nov", "12": "Dez" };
 function formatMonth(ym: string) {
@@ -10,11 +15,14 @@ function formatMonth(ym: string) {
   return MONTH_LABELS[m] ?? m;
 }
 
-function MiniBarChart({ title, data, color, isCurrency }: { title: string; data: Array<{ label: string; value: number }>; color: string; isCurrency?: boolean }) {
+function MiniBarChart({ title, icon: Icon, data, color, isCurrency }: { title: string; icon: React.ElementType; data: Array<{ label: string; value: number }>; color: string; isCurrency?: boolean }) {
   const max = Math.max(...data.map(d => d.value), 1);
   return (
-    <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
-      <h3 className="font-heading text-base font-semibold text-txt mb-4">{title}</h3>
+    <div className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5">
+      <div className="flex items-center gap-2 mb-4">
+        <Icon className="w-4.5 h-4.5 text-primary-dark" />
+        <h3 className="font-heading text-base font-semibold text-txt">{title}</h3>
+      </div>
       {data.length === 0 ? (
         <p className="text-sm text-txt-muted text-center py-8">Sem dados</p>
       ) : (
@@ -52,12 +60,12 @@ export default function AdminDashboard() {
   }, []);
 
   const stats = [
-    { icon: "👥", label: "Pacientes Ativos", value: data?.stats.activePatients ?? 0, color: "bg-blue-50 text-blue-600" },
-    { icon: "📅", label: "Sessões este mês", value: data?.stats.monthSessions ?? 0, color: "bg-green-50 text-green-600" },
-    { icon: "💰", label: "Receita do mês", value: formatCurrency(Number(data?.stats.monthRevenue ?? 0)), color: "bg-yellow-50 text-yellow-600" },
-    { icon: "📋", label: "Próximas sessões", value: data?.upcoming.length ?? 0, color: "bg-purple-50 text-purple-600" },
-    { icon: "🚫", label: "No-show rate", value: `${data?.stats.noShowRate ?? 0}%`, color: "bg-red-50 text-red-600" },
-    { icon: "❌", label: "Canceladas (mês)", value: data?.stats.cancelledThisMonth ?? 0, color: "bg-orange-50 text-orange-600" },
+    { icon: Users, label: "Pacientes Ativos", value: data?.stats.activePatients ?? 0, color: "bg-blue-50 text-blue-600" },
+    { icon: CalendarDays, label: "Sessões este mês", value: data?.stats.monthSessions ?? 0, color: "bg-green-50 text-green-600" },
+    { icon: DollarSign, label: "Receita do mês", value: formatCurrency(Number(data?.stats.monthRevenue ?? 0)), color: "bg-yellow-50 text-yellow-600" },
+    { icon: ClipboardList, label: "Próximas sessões", value: data?.upcoming.length ?? 0, color: "bg-purple-50 text-purple-600" },
+    { icon: UserX, label: "No-show rate", value: `${data?.stats.noShowRate ?? 0}%`, color: "bg-red-50 text-red-600" },
+    { icon: XCircle, label: "Canceladas (mês)", value: data?.stats.cancelledThisMonth ?? 0, color: "bg-orange-50 text-orange-600" },
   ];
   const nextSession = data?.upcoming?.[0] ?? null;
   const nextTiming = nextSession
@@ -73,19 +81,22 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-        {stats.map((s, i) => (
-          <div key={i} className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
-            <div className={`w-10 h-10 rounded-full ${s.color} flex items-center justify-center text-lg mb-3`}>
-              {s.icon}
+        {stats.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <div key={i} className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5 hover:shadow-warm-md transition-all duration-300">
+              <div className={`w-10 h-10 rounded-xl ${s.color} flex items-center justify-center mb-3`}>
+                <Icon className="w-5 h-5" />
+              </div>
+              <p className="text-xs text-txt-muted font-medium">{s.label}</p>
+              <p className="text-2xl font-bold text-txt mt-1">{loading ? "..." : s.value}</p>
             </div>
-            <p className="text-xs text-txt-muted font-medium">{s.label}</p>
-            <p className="text-2xl font-bold text-txt mt-1">{loading ? "..." : s.value}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {nextSession && nextTiming && (
-        <div className="mb-8 rounded-brand border border-primary/10 bg-gradient-to-r from-primary/10 via-white to-accent/10 p-6 shadow-sm">
+        <div className="mb-8 rounded-brand border border-primary/10 bg-gradient-to-r from-primary/10 via-white to-accent/10 p-6 shadow-warm-md">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-dark">Sessao do dia</p>
@@ -126,15 +137,18 @@ export default function AdminDashboard() {
       {/* Mini Charts — Sessions & Revenue last 6 months */}
       {data?.charts && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
-          <MiniBarChart title="📊 Sessões por mês" data={data.charts.sessionsPerMonth.map(r => ({ label: formatMonth(r.month), value: r.total }))} color="bg-primary" />
-          <MiniBarChart title="💵 Receita por mês" data={data.charts.revenuePerMonth.map(r => ({ label: formatMonth(r.month), value: Number(r.total ?? 0) }))} color="bg-accent" isCurrency />
+          <MiniBarChart title="Sessões por mês" icon={BarChart3} data={data.charts.sessionsPerMonth.map(r => ({ label: formatMonth(r.month), value: r.total }))} color="bg-primary" />
+          <MiniBarChart title="Receita por mês" icon={TrendingUp} data={data.charts.revenuePerMonth.map(r => ({ label: formatMonth(r.month), value: Number(r.total ?? 0) }))} color="bg-accent" isCurrency />
         </div>
       )}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
-          <h3 className="font-heading text-base font-semibold text-txt mb-4">📅 Próximas Sessões</h3>
+        <div className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5">
+          <div className="flex items-center gap-2 mb-4">
+            <Calendar className="w-4.5 h-4.5 text-primary-dark" />
+            <h3 className="font-heading text-base font-semibold text-txt">Próximas Sessões</h3>
+          </div>
           {!data?.upcoming.length ? (
             <p className="text-sm text-txt-muted text-center py-8">Nenhuma sessão agendada</p>
           ) : (
@@ -174,8 +188,11 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
-          <h3 className="font-heading text-base font-semibold text-txt mb-4">💰 Pagamentos Pendentes</h3>
+        <div className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5">
+          <div className="flex items-center gap-2 mb-4">
+            <DollarSign className="w-4.5 h-4.5 text-yellow-600" />
+            <h3 className="font-heading text-base font-semibold text-txt">Pagamentos Pendentes</h3>
+          </div>
           {!data?.pendingPayments.length ? (
             <p className="text-sm text-txt-muted text-center py-8">Nenhum pagamento pendente</p>
           ) : (

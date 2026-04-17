@@ -19,6 +19,10 @@
     --text: #3D2B1F;
     --text-light: #6B5445;
     --text-muted: #7D6E62;
+    --surface: #FFFFFF;
+    --border: #E8DDD5;
+    --card: #FFFFFF;
+    --foreground: #3D2B1F;
   }
 
   html {

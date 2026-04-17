@@ -15,6 +15,10 @@ const config: Config = {
         sage: { DEFAULT: "#e6f0eb", dark: "#c8ddd0" },
         bg: { DEFAULT: "#FFF5EE", white: "#FFFFFF", soft: "#FDE8D8", warm: "#F9EDE3" },
         txt: { DEFAULT: "#3D2B1F", light: "#6B5445", muted: "#7D6E62" },
+        surface: "#FFFFFF",
+        border: "#E8DDD5",
+        card: "#FFFFFF",
+        foreground: "#3D2B1F",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Georgia", "serif"],

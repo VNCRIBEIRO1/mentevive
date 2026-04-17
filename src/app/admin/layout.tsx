@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { SessionProvider } from "next-auth/react";
 import { SessionMismatch } from "@/components/SessionMismatch";
+import { Clock } from "lucide-react";
 
 interface SubscriptionStatus {
   plan: string;
@@ -19,9 +20,9 @@ function TrialExpiredOverlay() {
   const router = useRouter();
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-card border border-border rounded-2xl p-8 text-center shadow-lg">
+      <div className="max-w-md w-full bg-white border border-primary/10 rounded-brand p-8 text-center shadow-warm-lg">
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl">⏰</span>
+          <Clock className="w-8 h-8 text-red-500" />
         </div>
         <h2 className="text-xl font-heading font-bold text-txt mb-2">
           Período de teste encerrado
