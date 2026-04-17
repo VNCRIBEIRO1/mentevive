@@ -29,6 +29,10 @@ export default function ConfiguracoesPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [specialty, setSpecialty] = useState("");
+  const [bio, setBio] = useState("");
+  const [crp, setCrp] = useState("");
+  const [profileVisible, setProfileVisible] = useState(false);
   const [slots, setSlots] = useState<AvailSlot[]>([]);
   const [pricing, setPricing] = useState<PricingItem[]>(defaultPricing);
   const [areas, setAreas] = useState<string[]>([]);
@@ -47,6 +51,19 @@ export default function ConfiguracoesPage() {
             setName(session.user.name || "");
             setEmail(session.user.email || "");
             setPhone(session.user.phone || "");
+          }
+        }
+      } catch {}
+
+      try {
+        const res = await fetch("/api/profile");
+        if (res.ok) {
+          const profile = await res.json();
+          if (profile) {
+            setSpecialty(profile.specialty || "");
+            setBio(profile.bio || "");
+            setCrp(profile.crp || "");
+            setProfileVisible(profile.profileVisible || false);
           }
         }
       } catch {}
@@ -122,7 +139,7 @@ export default function ConfiguracoesPage() {
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone }),
+        body: JSON.stringify({ name, phone, specialty, bio, crp, profileVisible }),
       });
       if (!res.ok) hasError = true;
     } catch {
@@ -203,7 +220,36 @@ export default function ConfiguracoesPage() {
               <label className="block text-xs font-bold mb-1.5">Telefone</label>
               <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="(11) 98884-0525" />
             </div>
+            <div>
+              <label className="block text-xs font-bold mb-1.5">CRP</label>
+              <input type="text" value={crp} onChange={(e) => setCrp(e.target.value)} className={inputCls} placeholder="06/123456" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1.5">Especialidade</label>
+              <input type="text" value={specialty} onChange={(e) => setSpecialty(e.target.value)} className={inputCls} placeholder="Ex: Terapia Cognitivo-Comportamental" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1.5">Bio</label>
+              <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className={inputCls + " resize-none"} placeholder="Uma breve descricao sobre voce e sua abordagem..." maxLength={500} />
+              <span className="text-xs text-txt-muted mt-1 block">{bio.length}/500</span>
+            </div>
           </div>
+        </div>
+
+        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+          <h3 className="font-heading text-base font-semibold text-txt mb-2">Diretorio Publico</h3>
+          <p className="text-sm text-txt-muted mb-4">Controle se seu perfil aparece no diretorio de profissionais da landing page.</p>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <div className="relative">
+              <input type="checkbox" checked={profileVisible} onChange={(e) => setProfileVisible(e.target.checked)} className="sr-only peer" />
+              <div className="w-11 h-6 bg-primary/15 rounded-full peer-checked:bg-teal transition-colors"></div>
+              <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
+            </div>
+            <span className="text-sm font-medium text-txt">Aparecer no diretorio de profissionais</span>
+          </label>
+          {profileVisible && (
+            <p className="text-xs text-teal mt-2">Seu nome, especialidade, CRP e bio serao exibidos publicamente.</p>
+          )}
         </div>
 
         <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">

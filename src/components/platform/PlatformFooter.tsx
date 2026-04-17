@@ -1,9 +1,19 @@
 import Link from "next/link";
-import { WHATSAPP_LINK } from "@/lib/utils";
+import { buildSaasWhatsAppUrl } from "./constants";
 import { WhatsAppIcon } from "./WhatsAppIcon";
+function InstagramIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
 
 const productLinks = [
   { label: "Recursos", href: "#recursos" },
+  { label: "Profissionais", href: "#profissionais" },
   { label: "Planos", href: "#planos" },
   { label: "FAQ", href: "#faq" },
 ];
@@ -13,9 +23,7 @@ const legalLinks = [
   { label: "Privacidade", href: "/privacidade" },
 ];
 
-const whatsappHref = WHATSAPP_LINK
-  ? `${WHATSAPP_LINK}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre a MenteVive.")}`
-  : "";
+const whatsappHref = buildSaasWhatsAppUrl("Olá! Gostaria de saber mais sobre a MenteVive.");
 
 export function PlatformFooter() {
   return (
@@ -36,6 +44,27 @@ export function PlatformFooter() {
             <br />
             Profissional, integrado e seguro.
           </p>
+          {/* Social icons */}
+          <div className="flex items-center gap-3 mt-4">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full bg-teal/10 flex items-center justify-center text-teal hover:bg-teal/20 transition-colors"
+              aria-label="WhatsApp"
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+            </a>
+            <a
+              href="https://instagram.com/mentevive.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full bg-teal/10 flex items-center justify-center text-teal hover:bg-teal/20 transition-colors"
+              aria-label="Instagram"
+            >
+              <InstagramIcon size={16} />
+            </a>
+          </div>
         </div>
 
         {/* Product */}
@@ -76,19 +105,17 @@ export function PlatformFooter() {
         <div>
           <h4 className="text-sm font-semibold text-foreground mb-3">Contato</h4>
           <ul className="space-y-2">
-            {whatsappHref && (
-              <li>
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-foreground/50 hover:text-foreground transition-colors inline-flex items-center gap-1.5"
-                >
-                  <WhatsAppIcon className="w-3.5 h-3.5" />
-                  WhatsApp
-                </a>
-              </li>
-            )}
+            <li>
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-foreground/50 hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+              >
+                <WhatsAppIcon className="w-3.5 h-3.5" />
+                WhatsApp
+              </a>
+            </li>
             <li>
               <Link
                 href="/login"

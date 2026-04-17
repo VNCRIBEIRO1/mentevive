@@ -1,13 +1,11 @@
 "use client";
 
 import { AnimatedSection, AnimatedItem } from "@/components/landing";
-import { Check, Sparkles } from "lucide-react";
-import { WHATSAPP_LINK, buildWhatsAppUrl } from "@/lib/utils";
+import { Check, Sparkles, Star } from "lucide-react";
+import { buildSaasWhatsAppUrl } from "./constants";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 
-const PLATFORM_WHATSAPP = WHATSAPP_LINK || "";
-
-const sharedFeatures = [
+const baseFeatures = [
   "Site / landing page profissional",
   "Agenda inteligente",
   "Prontuário digital seguro",
@@ -20,6 +18,13 @@ const sharedFeatures = [
   "Suporte por e-mail e WhatsApp",
 ];
 
+const proExtras = [
+  "Suporte prioritário",
+  "Domínio personalizado",
+  "Relatórios avançados",
+  "Badge Pro no diretório",
+];
+
 const plans = [
   {
     name: "Básico",
@@ -27,6 +32,7 @@ const plans = [
     trial: "30 dias grátis",
     trialNote: "Teste a plataforma por 30 dias sem custo adicional",
     popular: false,
+    features: baseFeatures,
     whatsappMsg: "Olá! Tenho interesse no plano Básico da MenteVive.",
   },
   {
@@ -35,6 +41,7 @@ const plans = [
     trial: "90 dias grátis",
     trialNote: "Teste a plataforma por 90 dias sem custo adicional",
     popular: true,
+    features: [...baseFeatures, ...proExtras],
     whatsappMsg: "Olá! Tenho interesse no plano Pro da MenteVive.",
   },
 ];
@@ -62,14 +69,14 @@ export function PlatformPricing() {
           className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch"
         >
           {plans.map((plan) => {
-            const href = PLATFORM_WHATSAPP ? `${PLATFORM_WHATSAPP}?text=${encodeURIComponent(plan.whatsappMsg)}` : "#planos";
+            const href = buildSaasWhatsAppUrl(plan.whatsappMsg);
 
             return (
               <AnimatedItem key={plan.name}>
                 <div
                   className={`relative h-full rounded-2xl p-8 sm:p-10 flex flex-col transition-all duration-300 ${
                     plan.popular
-                      ? "glass-glow border-2 border-teal/30 shadow-teal-glow"
+                      ? "glass-glow border-2 border-teal/30 shadow-teal-glow scale-[1.02]"
                       : "glass-strong border border-white/10"
                   }`}
                 >
@@ -124,19 +131,27 @@ export function PlatformPricing() {
 
                   {/* Features */}
                   <ul className="space-y-3 mb-8 flex-1">
-                    {sharedFeatures.map((feat) => (
-                      <li
-                        key={feat}
-                        className="flex items-center gap-2.5 text-sm text-foreground/80"
-                      >
-                        <Check size={16} className="text-teal shrink-0" />
-                        {feat}
-                      </li>
-                    ))}
+                    {plan.features.map((feat) => {
+                      const isPro = proExtras.includes(feat);
+                      return (
+                        <li
+                          key={feat}
+                          className={`flex items-center gap-2.5 text-sm ${
+                            isPro ? "text-teal font-medium" : "text-foreground/80"
+                          }`}
+                        >
+                          {isPro ? (
+                            <Star size={16} className="text-teal shrink-0" />
+                          ) : (
+                            <Check size={16} className="text-teal shrink-0" />
+                          )}
+                          {feat}
+                        </li>
+                      );
+                    })}
                   </ul>
 
                   {/* CTA */}
-                  {PLATFORM_WHATSAPP ? (
                   <a
                     href={href}
                     target="_blank"
@@ -150,21 +165,9 @@ export function PlatformPricing() {
                     <WhatsAppIcon className="w-5 h-5" />
                     Quero o plano {plan.name}
                   </a>
-                  ) : (
-                  <a
-                    href="/registro"
-                    className={`inline-flex items-center justify-center gap-2.5 text-base font-semibold px-8 py-3.5 rounded-brand transition-all duration-300 ${
-                      plan.popular
-                        ? "btn-brand-primary shadow-warm-lg hover:shadow-warm-xl"
-                        : "btn-brand-outline"
-                    }`}
-                  >
-                    Começar agora
-                  </a>
-                  )}
 
                   <p className="mt-3 text-xs text-foreground/40 text-center">
-                    {PLATFORM_WHATSAPP ? "Fale conosco pelo WhatsApp" : "Cadastre-se para começar"}
+                    Fale conosco pelo WhatsApp
                   </p>
                 </div>
               </AnimatedItem>

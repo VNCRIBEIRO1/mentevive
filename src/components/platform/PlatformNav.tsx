@@ -4,18 +4,18 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { WHATSAPP_LINK } from "@/lib/utils";
+import { buildSaasWhatsAppUrl } from "./constants";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 
 const navLinks = [
   { label: "Recursos", href: "#recursos" },
+  { label: "Profissionais", href: "#profissionais" },
   { label: "Como Funciona", href: "#como-funciona" },
   { label: "Planos", href: "#planos" },
   { label: "FAQ", href: "#faq" },
 ];
 
-const PLATFORM_WA = WHATSAPP_LINK || "";
-const whatsappHref = PLATFORM_WA ? `${PLATFORM_WA}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre a MenteVive.")}` : "";
+const whatsappHref = buildSaasWhatsAppUrl("Olá! Gostaria de saber mais sobre a MenteVive.");
 
 export function PlatformNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -65,7 +65,6 @@ export function PlatformNav() {
           >
             Entrar
           </Link>
-          {whatsappHref && (
           <a
             href={whatsappHref}
             target="_blank"
@@ -75,7 +74,6 @@ export function PlatformNav() {
             <WhatsAppIcon className="w-4 h-4" />
             Fale conosco
           </a>
-          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -116,7 +114,6 @@ export function PlatformNav() {
               >
                 Entrar
               </Link>
-              {whatsappHref && (
               <a
                 href={whatsappHref}
                 target="_blank"
@@ -127,7 +124,6 @@ export function PlatformNav() {
                 <WhatsAppIcon className="w-4 h-4" />
                 Fale conosco
               </a>
-              )}
             </div>
           </motion.div>
         )}

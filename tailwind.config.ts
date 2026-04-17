@@ -19,6 +19,7 @@ const config: Config = {
         border: "#E8DDD5",
         card: "#FFFFFF",
         foreground: "#3D2B1F",
+        background: "#FFF5EE",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Georgia", "serif"],

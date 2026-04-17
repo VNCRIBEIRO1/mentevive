@@ -92,6 +92,7 @@ export async function POST(request: Request) {
           password: hashedPassword,
           role: "therapist",
           phone: phone || null,
+          crp: crp || null,
       }).returning();
 
       // Create tenant

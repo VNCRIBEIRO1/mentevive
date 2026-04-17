@@ -3,6 +3,7 @@ import { PlatformNav } from "./PlatformNav";
 import { PlatformHero } from "./PlatformHero";
 import { PlatformProblem } from "./PlatformProblem";
 import { PlatformSocialProof } from "./PlatformSocialProof";
+import { PlatformProfessionals } from "./PlatformProfessionals";
 import { PlatformFeatures } from "./PlatformFeatures";
 import { PlatformHowItWorks } from "./PlatformHowItWorks";
 import { PlatformPricing } from "./PlatformPricing";
@@ -18,6 +19,7 @@ export function PlatformLanding() {
       <SectionDivider />
       <PlatformProblem />
       <PlatformSocialProof />
+      <PlatformProfessionals />
       <PlatformFeatures />
       <SectionDivider variant="wave-up" />
       <PlatformHowItWorks />
