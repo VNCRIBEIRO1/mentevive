@@ -63,7 +63,7 @@ function ResetPasswordForm() {
         </div>
 
         {success ? (
-          <div className="bg-white rounded-brand p-8 shadow-md text-center space-y-4">
+          <div className="bg-card rounded-brand p-8 shadow-md text-center space-y-4">
             <div className="text-4xl">✅</div>
             <h2 className="font-heading text-lg font-bold text-txt">Senha redefinida!</h2>
             <p className="text-sm text-txt-light">
@@ -74,7 +74,7 @@ function ResetPasswordForm() {
             </Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-white rounded-brand p-8 shadow-md space-y-5">
+          <form onSubmit={handleSubmit} className="bg-card rounded-brand p-8 shadow-md space-y-5">
             {!token && (
               <div className="bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 rounded-brand-sm">
                 Token não encontrado. Use o link enviado por e-mail para redefinir sua senha.
@@ -96,7 +96,7 @@ function ResetPasswordForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 8 caracteres"
-                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
 
@@ -109,7 +109,7 @@ function ResetPasswordForm() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repita a nova senha"
-                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
 

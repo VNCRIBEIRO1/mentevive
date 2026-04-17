@@ -123,7 +123,7 @@ export default function PortalSessoesPage() {
   return (
     <div>
       {toast && (
-        <div role="status" aria-live="polite" className="fixed top-4 right-4 z-50 bg-white border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
+        <div role="status" aria-live="polite" className="fixed top-4 right-4 z-50 bg-card border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
           {toast}
         </div>
       )}
@@ -155,7 +155,7 @@ export default function PortalSessoesPage() {
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
               filter === f.key
                 ? "bg-primary text-white"
-                : "bg-white border border-primary/15 text-txt-light hover:border-primary/30"
+                : "bg-card border border-primary/15 text-txt-light hover:border-primary/30"
             }`}
           >
             {f.label}
@@ -215,7 +215,7 @@ export default function PortalSessoesPage() {
       )}
 
       {/* Full Table */}
-      <div className="bg-white rounded-brand shadow-sm border border-primary/5 overflow-hidden">
+      <div className="bg-card rounded-brand shadow-sm border border-primary/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -292,7 +292,7 @@ export default function PortalSessoesPage() {
               .map((a) => (
                 <div
                   key={`note-${a.id}`}
-                  className="bg-white rounded-brand p-5 border border-blue-100 shadow-sm"
+                  className="bg-card rounded-brand p-5 border border-blue-100 shadow-sm"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div>

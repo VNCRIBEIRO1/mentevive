@@ -191,7 +191,7 @@ function PagamentosContent() {
             key={key}
             onClick={() => setFilter(key)}
             className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${
-              filter === key ? "bg-primary text-white" : "bg-white border border-primary/15 text-txt-light hover:bg-bg"
+              filter === key ? "bg-primary text-white" : "bg-card border border-primary/15 text-txt-light hover:bg-bg"
             }`}
           >
             {label}
@@ -200,7 +200,7 @@ function PagamentosContent() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-brand shadow-sm border border-primary/5 overflow-hidden">
+      <div className="bg-card rounded-brand shadow-sm border border-primary/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

@@ -37,7 +37,7 @@ const sleepLabels: Record<string, string> = {
 };
 
 const inputCls =
-  "w-full rounded-brand-sm border-[1.5px] border-primary/15 bg-white px-3 py-2.5 text-sm text-txt focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10";
+  "w-full rounded-brand-sm border-[1.5px] border-primary/15 bg-card px-3 py-2.5 text-sm text-txt focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10";
 
 function buildInitialForm(triage: WaitingRoomTriageData | null) {
   return {
@@ -175,13 +175,13 @@ export function WaitingRoomTriageCard({
       </div>
 
       {message && (
-        <div className="mt-4 rounded-brand-sm border border-green-200 bg-white/80 px-3 py-2 text-xs text-green-700">
+        <div className="mt-4 rounded-brand-sm border border-green-200 bg-card/80 px-3 py-2 text-xs text-green-700">
           {message}
         </div>
       )}
 
       {error && (
-        <div className="mt-4 rounded-brand-sm border border-red-200 bg-white/80 px-3 py-2 text-xs text-red-600">
+        <div className="mt-4 rounded-brand-sm border border-red-200 bg-card/80 px-3 py-2 text-xs text-red-600">
           {error}
         </div>
       )}
@@ -209,7 +209,7 @@ export function WaitingRoomTriageCard({
                   className={`rounded-brand-sm border px-3 py-2 text-xs font-medium transition-colors ${
                     form.mood === option.value
                       ? "border-primary bg-primary/10 text-primary-dark"
-                      : "border-primary/10 bg-white text-txt hover:border-primary/30"
+                      : "border-primary/10 bg-card text-txt hover:border-primary/30"
                   }`}
                 >
                   {option.label}
@@ -304,7 +304,7 @@ export function WaitingRoomTriageCard({
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="rounded-brand-sm border border-primary/15 px-4 py-2.5 text-sm text-txt hover:bg-white"
+                className="rounded-brand-sm border border-primary/15 px-4 py-2.5 text-sm text-txt hover:bg-card"
               >
                 Fechar edicao
               </button>

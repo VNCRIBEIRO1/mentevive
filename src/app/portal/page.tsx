@@ -151,7 +151,7 @@ export default function PortalPage() {
       {/* Main grid: Sessions + Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
         {/* Upcoming sessions — 3 cols */}
-        <div className="lg:col-span-3 bg-white rounded-2xl p-6 shadow-warm-sm border border-primary/5">
+        <div className="lg:col-span-3 bg-card rounded-2xl p-6 shadow-warm-sm border border-primary/5">
           <div className="flex items-center justify-between mb-5">
             <h3 className="font-heading text-base font-semibold text-txt flex items-center gap-2">
               <CalendarCheck className="w-4.5 h-4.5 text-teal" />
@@ -225,7 +225,7 @@ export default function PortalPage() {
       </div>
 
       {/* Recent notes */}
-      <div className="bg-white rounded-2xl p-6 shadow-warm-sm border border-primary/5">
+      <div className="bg-card rounded-2xl p-6 shadow-warm-sm border border-primary/5">
         <div className="flex items-center justify-between gap-3 mb-5">
           <div>
             <h3 className="font-heading text-base font-semibold text-txt flex items-center gap-2">
@@ -261,7 +261,7 @@ export default function PortalPage() {
             {recentNotes.map((note) => (
               <article
                 key={note.id}
-                className="rounded-xl border border-primary/8 bg-gradient-to-br from-bg/80 to-white p-4 hover:shadow-warm-sm transition-all duration-300 group"
+                className="rounded-xl border border-primary/8 bg-gradient-to-br from-bg/80 to-card p-4 hover:shadow-warm-sm transition-all duration-300 group"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <p className="text-sm font-semibold text-txt leading-snug line-clamp-2">{note.title}</p>

@@ -77,7 +77,7 @@ export function JitsiMeet({ roomName, displayName, onClose }: JitsiMeetProps) {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center">
-      <div className="relative w-full h-full max-w-5xl max-h-[90vh] m-4 rounded-brand overflow-hidden bg-white shadow-2xl">
+      <div className="relative w-full h-full max-w-5xl max-h-[90vh] m-4 rounded-brand overflow-hidden bg-card shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 bg-txt text-white">
           <span className="text-sm font-bold">🧠 Sessão Online</span>

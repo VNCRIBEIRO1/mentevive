@@ -31,7 +31,7 @@ const methodLabel: Record<string, string> = {
 };
 
 const inputCls =
-  "w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10";
+  "w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10";
 
 export default function FinanceiroPage() {
   const [payments, setPayments] = useState<PaymentRow[]>([]);
@@ -174,7 +174,7 @@ export default function FinanceiroPage() {
   return (
     <div>
       {toast && (
-        <div className="fixed top-4 right-4 z-50 bg-white border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
+        <div className="fixed top-4 right-4 z-50 bg-card border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
           {toast}
         </div>
       )}
@@ -189,17 +189,17 @@ export default function FinanceiroPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <p className="text-xs text-txt-muted font-medium">Receita (Pagos)</p>
           <p className="text-2xl font-bold text-green-600 mt-1">{formatCurrency(totalPaid)}</p>
           <p className="text-xs text-txt-muted mt-1">{paid.length} pagamento(s)</p>
         </div>
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <p className="text-xs text-txt-muted font-medium">Pendente</p>
           <p className="text-2xl font-bold text-yellow-600 mt-1">{formatCurrency(totalPending)}</p>
           <p className="text-xs text-txt-muted mt-1">{pending.length} pagamento(s)</p>
         </div>
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <p className="text-xs text-txt-muted font-medium">Atrasado</p>
           <p className="text-2xl font-bold text-red-500 mt-1">{formatCurrency(totalOverdue)}</p>
           <p className="text-xs text-txt-muted mt-1">{overdue.length} pagamento(s)</p>
@@ -208,7 +208,7 @@ export default function FinanceiroPage() {
 
       {/* Pricing Reference */}
       {pricing.length > 0 && (
-        <div className="bg-white rounded-brand p-5 shadow-sm border border-primary/5 mb-8">
+        <div className="bg-card rounded-brand p-5 shadow-sm border border-primary/5 mb-8">
           <h3 className="text-xs font-bold text-txt-muted uppercase tracking-wide mb-3">💰 Tabela de Preços (Configurações)</h3>
           <div className="flex flex-wrap gap-3">
             {pricing.map((p) => (
@@ -223,7 +223,7 @@ export default function FinanceiroPage() {
       )}
 
       {/* Payments Table */}
-      <div className="bg-white rounded-brand shadow-sm border border-primary/5 overflow-hidden">
+      <div className="bg-card rounded-brand shadow-sm border border-primary/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -307,7 +307,7 @@ export default function FinanceiroPage() {
       {/* New Payment Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="bg-white rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-heading text-lg font-semibold text-txt">Novo Pagamento</h3>
               <button onClick={() => { setShowModal(false); setNewAmount(""); setSelectedPricing(""); }} className="text-txt-muted hover:text-txt text-lg">✕</button>
@@ -404,7 +404,7 @@ export default function FinanceiroPage() {
       {/* Edit Payment Modal */}
       {editPayment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="bg-white rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-heading text-lg font-semibold text-txt">Editar Pagamento</h3>
               <button onClick={() => setEditPayment(null)} className="text-txt-muted hover:text-txt text-lg">✕</button>

@@ -156,7 +156,7 @@ export default function AgendaPage() {
   return (
     <div>
       {toast && (
-        <div className="fixed top-4 right-4 z-50 bg-white border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
+        <div className="fixed top-4 right-4 z-50 bg-card border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
           {toast}
         </div>
       )}
@@ -182,7 +182,7 @@ export default function AgendaPage() {
           <p className="mt-1 text-sm text-amber-800">As próximas salas e links importantes ficam acessíveis aqui.</p>
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
             {hotAppointments.map(({ apt, timing }) => (
-              <div key={apt.id} className="rounded-brand-sm border border-amber-200 bg-white p-3">
+              <div key={apt.id} className="rounded-brand-sm border border-amber-200 bg-card p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-txt">{apt.patientName || "Paciente"}</p>
@@ -214,7 +214,7 @@ export default function AgendaPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Calendar */}
-        <div className="lg:col-span-2 bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="lg:col-span-2 bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-heading text-lg font-semibold text-txt">{MONTHS[month]} {year}</h3>
             <div className="flex gap-2">
@@ -263,7 +263,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Day sidebar */}
-        <div className="lg:col-span-1 bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="lg:col-span-1 bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-heading text-base font-semibold text-txt">
               {selectedDate ? `📅 ${formatDate(selectedDate)}` : "📅 Selecione um dia"}

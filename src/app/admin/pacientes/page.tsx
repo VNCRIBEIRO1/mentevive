@@ -51,11 +51,11 @@ export default function PacientesPage() {
       <div className="mb-6">
         <input type="text" placeholder="Buscar por nome, e-mail ou telefone…"
           value={search} onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-md py-2.5 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+          className="w-full max-w-md py-2.5 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-brand shadow-sm border border-primary/5 overflow-hidden">
+      <div className="bg-card rounded-brand shadow-sm border border-primary/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

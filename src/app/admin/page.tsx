@@ -18,7 +18,7 @@ function formatMonth(ym: string) {
 function MiniBarChart({ title, icon: Icon, data, color, isCurrency }: { title: string; icon: React.ElementType; data: Array<{ label: string; value: number }>; color: string; isCurrency?: boolean }) {
   const max = Math.max(...data.map(d => d.value), 1);
   return (
-    <div className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5">
+    <div className="bg-card rounded-brand p-6 shadow-warm-sm border border-primary/5">
       <div className="flex items-center gap-2 mb-4">
         <Icon className="w-4.5 h-4.5 text-primary-dark" />
         <h3 className="font-heading text-base font-semibold text-txt">{title}</h3>
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
         {stats.map((s, i) => {
           const Icon = s.icon;
           return (
-            <div key={i} className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5 hover:shadow-warm-md transition-all duration-300">
+            <div key={i} className="bg-card rounded-brand p-6 shadow-warm-sm border border-primary/5 hover:shadow-warm-md transition-all duration-300">
               <div className={`w-10 h-10 rounded-xl ${s.color} flex items-center justify-center mb-3`}>
                 <Icon className="w-5 h-5" />
               </div>
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       </div>
 
       {nextSession && nextTiming && (
-        <div className="mb-8 rounded-brand border border-primary/10 bg-gradient-to-r from-primary/10 via-white to-accent/10 p-6 shadow-warm-md">
+        <div className="mb-8 rounded-brand border border-primary/10 bg-gradient-to-r from-primary/10 via-card to-accent/10 p-6 shadow-warm-md">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-dark">Sessao do dia</p>
@@ -115,10 +115,10 @@ export default function AdminDashboard() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Link href={`/admin/pacientes/${nextSession.appointment.patientId}`} className="rounded-brand-sm border border-primary/15 px-4 py-2 text-sm font-bold text-txt hover:bg-white">
+              <Link href={`/admin/pacientes/${nextSession.appointment.patientId}`} className="rounded-brand-sm border border-primary/15 px-4 py-2 text-sm font-bold text-txt hover:bg-card">
                 Ver paciente
               </Link>
-              <Link href="/admin/agenda" className="rounded-brand-sm border border-primary/15 px-4 py-2 text-sm font-bold text-txt hover:bg-white">
+              <Link href="/admin/agenda" className="rounded-brand-sm border border-primary/15 px-4 py-2 text-sm font-bold text-txt hover:bg-card">
                 Abrir agenda
               </Link>
               <Link href={buildWaitingRoomPath(nextSession.appointment.id, "admin")} target="_blank" className="rounded-brand-sm border border-green-200 bg-green-50 px-4 py-2 text-sm font-bold text-green-700 hover:bg-green-100">
@@ -144,7 +144,7 @@ export default function AdminDashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
-        <div className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-warm-sm border border-primary/5">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="w-4.5 h-4.5 text-primary-dark" />
             <h3 className="font-heading text-base font-semibold text-txt">Próximas Sessões</h3>
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        <div className="bg-white rounded-brand p-6 shadow-warm-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-warm-sm border border-primary/5">
           <div className="flex items-center gap-2 mb-4">
             <DollarSign className="w-4.5 h-4.5 text-yellow-600" />
             <h3 className="font-heading text-base font-semibold text-txt">Pagamentos Pendentes</h3>

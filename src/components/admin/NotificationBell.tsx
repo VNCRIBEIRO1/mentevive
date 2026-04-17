@@ -151,7 +151,7 @@ export function NotificationBell() {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-11 w-80 max-h-96 bg-white rounded-brand shadow-xl border border-primary/10 z-[100] overflow-hidden flex flex-col">
+        <div className="absolute right-0 top-11 w-80 max-h-96 bg-card rounded-brand shadow-xl border border-primary/10 z-[100] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-primary/10 bg-bg/50">
             <span className="font-heading text-sm font-semibold text-txt">

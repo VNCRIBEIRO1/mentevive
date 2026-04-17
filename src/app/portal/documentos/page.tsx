@@ -45,7 +45,7 @@ export default function PortalDocumentosPage() {
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_0.7fr] gap-6">
-        <section className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <section className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <div className="flex items-center justify-between gap-3 mb-5">
             <div>
               <h2 className="font-heading text-lg font-semibold text-txt">
@@ -95,7 +95,7 @@ export default function PortalDocumentosPage() {
         </section>
 
         <aside className="space-y-6">
-          <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+          <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
             <h2 className="font-heading text-lg font-semibold text-txt mb-4">
               Documentos Emitidos
             </h2>
@@ -143,7 +143,7 @@ export default function PortalDocumentosPage() {
             </ul>
           </div>
 
-          <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+          <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
             <p className="text-sm font-semibold text-txt mb-2">
               Precisa solicitar um documento?
             </p>

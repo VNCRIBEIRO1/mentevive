@@ -18,7 +18,7 @@ type RecordRow = {
 };
 
 const inputCls =
-  "w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10";
+  "w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10";
 
 export default function ProntuariosPage() {
   const [records, setRecords] = useState<RecordRow[]>([]);
@@ -81,7 +81,7 @@ export default function ProntuariosPage() {
   return (
     <div>
       {toast && (
-        <div className="fixed top-4 right-4 z-50 bg-white border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
+        <div className="fixed top-4 right-4 z-50 bg-card border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
           {toast}
         </div>
       )}
@@ -98,12 +98,12 @@ export default function ProntuariosPage() {
           placeholder="Buscar por nome do paciente…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-md py-2.5 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+          className="w-full max-w-md py-2.5 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-brand shadow-sm border border-primary/5 overflow-hidden">
+      <div className="bg-card rounded-brand shadow-sm border border-primary/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -168,7 +168,7 @@ export default function ProntuariosPage() {
       {/* Edit Record Modal */}
       {editRecord && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="bg-white rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-heading text-lg font-semibold text-txt">Editar Registro Clínico</h3>
               <button onClick={() => setEditRecord(null)} className="text-txt-muted hover:text-txt text-lg">✕</button>

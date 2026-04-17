@@ -30,7 +30,7 @@ export function PortalStatCard({ icon, label, value, subtitle, color, delay = 0 
       className={`${c.bg} rounded-2xl p-5 ring-1 ${c.ring} relative overflow-hidden group transition-all duration-300 hover:shadow-warm-md hover:-translate-y-0.5`}
     >
       {/* Subtle gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-br from-card/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="relative z-10">
         <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${c.icon} mb-3`}>

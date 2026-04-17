@@ -50,7 +50,7 @@ export default function PortalConfiguracoesPage() {
       </div>
 
       {/* Change Password */}
-      <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+      <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
         <h2 className="font-heading text-lg font-bold text-txt mb-4">🔒 Alterar Senha</h2>
 
         {error && (
@@ -74,7 +74,7 @@ export default function PortalConfiguracoesPage() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Digite sua senha atual"
-              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
@@ -87,7 +87,7 @@ export default function PortalConfiguracoesPage() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Mínimo 8 caracteres"
-              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
@@ -100,7 +100,7 @@ export default function PortalConfiguracoesPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repita a nova senha"
-              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
@@ -115,7 +115,7 @@ export default function PortalConfiguracoesPage() {
       </div>
 
       {/* Account Info */}
-      <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+      <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
         <h2 className="font-heading text-lg font-bold text-txt mb-3">ℹ️ Informações</h2>
         <p className="text-sm text-txt-light">
           Para alterar outros dados do seu perfil (nome, telefone, etc.), entre em contato pelo WhatsApp.

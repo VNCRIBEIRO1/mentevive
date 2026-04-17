@@ -69,7 +69,7 @@ export default function EvolucaoPage() {
 
       {/* Timeline */}
       {!data?.sessions.length ? (
-        <div className="text-center py-14 bg-white rounded-2xl border border-primary/5">
+        <div className="text-center py-14 bg-card rounded-2xl border border-primary/5">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-teal/8 flex items-center justify-center mb-4">
             <Sprout className="w-7 h-7 text-teal" />
           </div>
@@ -86,7 +86,7 @@ export default function EvolucaoPage() {
                 {/* Dot */}
                 <div className="absolute left-2.5 top-2 w-3 h-3 rounded-full bg-gradient-to-br from-teal to-primary border-2 border-white shadow-sm" />
 
-                <div className="bg-white rounded-2xl p-5 shadow-warm-sm border border-primary/5 hover:shadow-warm-md transition-shadow duration-300">
+                <div className="bg-card rounded-2xl p-5 shadow-warm-sm border border-primary/5 hover:shadow-warm-md transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <p className="text-sm font-bold text-txt">

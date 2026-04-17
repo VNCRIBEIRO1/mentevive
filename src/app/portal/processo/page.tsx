@@ -251,7 +251,7 @@ export default function ProcessoPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+          <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
             <h3 className="font-heading text-sm font-semibold text-txt mb-3">💡 Benefícios do horário fixo</h3>
             <ul className="space-y-2 text-sm text-txt-light">
               <li className="flex items-center gap-2">
@@ -284,7 +284,7 @@ export default function ProcessoPage() {
 
       {/* STEP: CONFIG */}
       {step === "config" && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
           <h3 className="font-heading text-base font-semibold text-txt mb-6">Configure seu processo</h3>
 
           {/* Frequency */}
@@ -359,7 +359,7 @@ export default function ProcessoPage() {
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
               placeholder="Preferência de horário, observações…"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
             />
           </div>
 
@@ -376,7 +376,7 @@ export default function ProcessoPage() {
 
       {/* STEP: DATE */}
       {step === "date" && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
           <p className="text-sm text-txt-muted mb-4">
             Escolha a data da <strong>primeira sessão</strong>. As próximas serão geradas automaticamente
             {recurrenceType === "weekly" ? " toda semana" : " a cada 15 dias"} no mesmo dia e horário.
@@ -427,7 +427,7 @@ export default function ProcessoPage() {
 
       {/* STEP: TIME */}
       {step === "time" && selectedDate && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
           <h3 className="font-heading text-base font-semibold text-txt mb-2">
             {fmtDateBR(selectedDate)}
           </h3>
@@ -473,7 +473,7 @@ export default function ProcessoPage() {
 
       {/* STEP: CONFIRM */}
       {step === "confirm" && selectedDate && selectedTime && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-2xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-2xl">
           <h3 className="font-heading text-base font-semibold text-txt mb-4">Confirme seu Processo Terapêutico</h3>
 
           {/* Summary */}
@@ -513,7 +513,7 @@ export default function ProcessoPage() {
                     <div
                       key={d}
                       className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-brand-sm ${
-                        conflict ? "bg-yellow-50 text-yellow-700" : "bg-white text-txt"
+                        conflict ? "bg-yellow-50 text-yellow-700" : "bg-card text-txt"
                       }`}
                     >
                       <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[0.6rem] font-bold ${
@@ -550,7 +550,7 @@ export default function ProcessoPage() {
 
       {/* STEP: DONE */}
       {step === "done" && result && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl text-center">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl text-center">
           <span className="text-5xl">🎉</span>
           <h3 className="font-heading text-lg font-semibold text-txt mt-4">
             Processo Terapêutico Ativado!

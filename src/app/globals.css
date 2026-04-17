@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --primary: #C49A6C;
-    --primary-dark: #A67B4B;
-    --primary-light: #DBBF9A;
-    --accent: #D68BA8;
-    --accent-light: #F0B8CE;
-    --teal: #0d6b63;
-    --teal-dark: #084f49;
-    --sage: #dce9e3;
-    --bg: #F5EDE6;
-    --bg-white: #FAFAFA;
-    --bg-soft: #EDD9C8;
-    --bg-warm: #EDE0D4;
-    --text: #2D1F15;
-    --text-light: #5A4535;
-    --text-muted: #6B5C50;
-    --surface: #FAFAF9;
-    --border: #D4C5B8;
-    --card: #FEFEFE;
-    --foreground: #2D1F15;
+    --primary: #5B9BD5;
+    --primary-dark: #4680B4;
+    --primary-light: #8BC1EB;
+    --accent: #6ECFF6;
+    --accent-light: #9BDEF8;
+    --teal: #5EADA5;
+    --teal-dark: #43918A;
+    --sage: #1F2331;
+    --bg: #111520;
+    --bg-white: #1A1E2B;
+    --bg-soft: #161A25;
+    --bg-warm: #1D2130;
+    --text: #E1E5ED;
+    --text-light: #9DA4B3;
+    --text-muted: #6C7384;
+    --surface: #1A1E2B;
+    --border: #2B3042;
+    --card: #1D2130;
+    --foreground: #E1E5ED;
   }
 
   html {
@@ -34,6 +34,7 @@
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
+    color-scheme: dark;
   }
 
   *:focus-visible {
@@ -85,36 +86,36 @@
 
   /* ── Card ── */
   .card {
-    @apply bg-white rounded-brand p-6 shadow-warm-md transition-all duration-300 hover:shadow-warm-lg hover:-translate-y-1;
+    @apply bg-card rounded-brand p-6 shadow-warm-md transition-all duration-300 hover:shadow-warm-lg hover:-translate-y-1;
   }
 
   /* ── Liquid Glass 2.0 ── */
   .glass {
-    background: rgba(255, 255, 255, 0.55);
+    background: rgba(26, 30, 43, 0.7);
     backdrop-filter: blur(40px) saturate(1.4);
     -webkit-backdrop-filter: blur(40px) saturate(1.4);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(91, 155, 213, 0.12);
     box-shadow:
-      0 4px 12px -2px rgba(212, 165, 116, 0.12),
-      inset 0 0 25px -5px rgba(212, 165, 116, 0.06);
+      0 4px 12px -2px rgba(0, 0, 0, 0.25),
+      inset 0 0 25px -5px rgba(91, 155, 213, 0.06);
   }
   .glass-strong {
-    background: rgba(255, 255, 255, 0.65);
+    background: rgba(26, 30, 43, 0.85);
     backdrop-filter: blur(50px) saturate(1.5);
     -webkit-backdrop-filter: blur(50px) saturate(1.5);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(91, 155, 213, 0.18);
     box-shadow:
-      0 8px 20px -4px rgba(212, 165, 116, 0.16),
-      inset 0 0 30px -5px rgba(212, 165, 116, 0.08);
+      0 8px 20px -4px rgba(0, 0, 0, 0.3),
+      inset 0 0 30px -5px rgba(91, 155, 213, 0.08);
   }
   .glass-glow {
-    background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25));
+    background: linear-gradient(135deg, rgba(26,30,43,0.7), rgba(17,21,32,0.5));
     backdrop-filter: blur(40px) saturate(1.4);
     -webkit-backdrop-filter: blur(40px) saturate(1.4);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(110, 207, 246, 0.15);
     box-shadow:
-      0 0 30px -10px rgba(232, 160, 191, 0.25),
-      inset 0 0 20px -5px rgba(212, 165, 116, 0.08);
+      0 0 30px -10px rgba(110, 207, 246, 0.2),
+      inset 0 0 20px -5px rgba(91, 155, 213, 0.08);
   }
 
   /* ── Gradient mesh background ── */

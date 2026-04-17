@@ -216,11 +216,11 @@ function LoginForm() {
         )}
 
         {checkingSession ? (
-          <div className="bg-white rounded-brand p-8 shadow-md text-center">
+          <div className="bg-card rounded-brand p-8 shadow-md text-center">
             <p className="text-sm text-txt-muted">Verificando sessão…</p>
           </div>
         ) : showForgot ? (
-          <form onSubmit={handleForgotPassword} className="bg-white rounded-brand p-8 shadow-md space-y-5">
+          <form onSubmit={handleForgotPassword} className="bg-card rounded-brand p-8 shadow-md space-y-5">
             <div className="text-center mb-2">
               <h2 className="font-heading text-lg font-bold text-txt">Recuperar Senha</h2>
               <p className="text-xs text-txt-light mt-1">Informe seu e-mail para receber o link de redefinição</p>
@@ -242,7 +242,7 @@ function LoginForm() {
               <label className="block text-xs font-bold mb-1.5">E-mail</label>
               <input type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)}
                 placeholder="seu@email.com"
-                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
             </div>
 
             <button type="submit" disabled={forgotLoading}
@@ -258,7 +258,7 @@ function LoginForm() {
             </p>
           </form>
         ) : (
-        <form onSubmit={handleSubmit} className="bg-white rounded-brand p-8 shadow-md space-y-5">
+        <form onSubmit={handleSubmit} className="bg-card rounded-brand p-8 shadow-md space-y-5">
           <input
             type="text"
             name="website"
@@ -277,14 +277,14 @@ function LoginForm() {
             <label className="block text-xs font-bold mb-1.5">E-mail</label>
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
 
           <div>
             <label className="block text-xs font-bold mb-1.5">Senha</label>
             <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
               placeholder="Sua senha"
-              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
 
           <TurnstileWidget />

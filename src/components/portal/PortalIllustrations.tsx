@@ -14,7 +14,7 @@ export function LeafCluster({ className = "" }: { className?: string }) {
           <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.12" />
         </linearGradient>
         <linearGradient id="leaf-g2" x1="100%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#D4A574" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="#5B9BD5" stopOpacity="0.3" />
           <stop offset="100%" stopColor="#E8A0BF" stopOpacity="0.15" />
         </linearGradient>
       </defs>
@@ -38,7 +38,7 @@ export function LeafCluster({ className = "" }: { className?: string }) {
       />
       <motion.circle
         cx="60" cy="140" r="8"
-        fill="#D4A574" fillOpacity="0.2"
+        fill="#5B9BD5" fillOpacity="0.2"
         animate={reduce ? {} : { scale: [1, 1.2, 1], opacity: [0.2, 0.35, 0.2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
       />
@@ -52,7 +52,7 @@ export function WaveBackground({ className = "" }: { className?: string }) {
     <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className={className} aria-hidden="true">
       <defs>
         <linearGradient id="wave-portal" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#D4A574" stopOpacity="0.08" />
+          <stop offset="0%" stopColor="#5B9BD5" stopOpacity="0.08" />
           <stop offset="50%" stopColor="#0f766e" stopOpacity="0.06" />
           <stop offset="100%" stopColor="#E8A0BF" stopOpacity="0.08" />
         </linearGradient>
@@ -71,7 +71,7 @@ export function GrowthLine({ className = "" }: { className?: string }) {
       <defs>
         <linearGradient id="growth-g" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#0f766e" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#D4A574" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#5B9BD5" stopOpacity="0.5" />
         </linearGradient>
       </defs>
       <motion.path
@@ -102,7 +102,7 @@ export function WarmCircles({ className = "" }: { className?: string }) {
     <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
       <motion.circle
         cx="150" cy="150" r="120"
-        fill="#D4A574" fillOpacity="0.06"
+        fill="#5B9BD5" fillOpacity="0.06"
         animate={reduce ? {} : { scale: [1, 1.05, 1] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -127,7 +127,7 @@ export function DeviceFrame({ children, className = "" }: { children: React.Reac
   return (
     <div className={`relative ${className}`}>
       {/* Browser chrome */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-t-2xl border border-white/40 px-4 py-2.5 flex items-center gap-2">
+      <div className="bg-card/80 backdrop-blur-sm rounded-t-2xl border border-white/40 px-4 py-2.5 flex items-center gap-2">
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-red-300/60" />
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-300/60" />

@@ -120,7 +120,7 @@ export default function SelectTenantPage() {
               key={m.tenantId}
               onClick={() => handleSelect(m.tenantSlug)}
               disabled={selecting !== null}
-              className="w-full p-4 bg-white rounded-xl shadow-sm border border-gray-200 
+              className="w-full p-4 bg-card rounded-xl shadow-sm border border-gray-200 
                          hover:border-purple-300 hover:shadow-md transition-all text-left
                          disabled:opacity-50 disabled:cursor-not-allowed"
             >

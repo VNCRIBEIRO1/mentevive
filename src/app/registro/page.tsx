@@ -189,7 +189,7 @@ function RegistroForm() {
             className={`flex-1 py-3 px-4 rounded-brand-sm border-2 text-sm font-bold transition-all ${
               !isTherapist
                 ? "border-primary bg-primary/10 text-primary-dark"
-                : "border-primary/15 bg-white text-txt-light hover:border-primary/30"
+                : "border-primary/15 bg-card text-txt-light hover:border-primary/30"
             }`}
           >
             <span className="block text-lg mb-0.5">🧠</span>
@@ -201,7 +201,7 @@ function RegistroForm() {
             className={`flex-1 py-3 px-4 rounded-brand-sm border-2 text-sm font-bold transition-all ${
               isTherapist
                 ? "border-teal bg-teal/10 text-teal-800"
-                : "border-primary/15 bg-white text-txt-light hover:border-primary/30"
+                : "border-primary/15 bg-card text-txt-light hover:border-primary/30"
             }`}
           >
             <span className="block text-lg mb-0.5">🩺</span>
@@ -222,7 +222,7 @@ function RegistroForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-brand p-8 shadow-md space-y-5">
+      <form onSubmit={handleSubmit} className="bg-card rounded-brand p-8 shadow-md space-y-5">
         <input
           type="text"
           name="website"
@@ -241,21 +241,21 @@ function RegistroForm() {
           <label className="block text-xs font-bold mb-1.5">Nome completo</label>
           <input type="text" required value={name} onChange={(e) => setName(e.target.value)}
             placeholder="Seu nome completo"
-            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </div>
 
         <div>
           <label className="block text-xs font-bold mb-1.5">E-mail</label>
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
             placeholder="seu@email.com"
-            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </div>
 
         <div>
           <label className="block text-xs font-bold mb-1.5">Telefone / WhatsApp</label>
           <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
             placeholder="(11) 99999-9999"
-            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </div>
 
         {isTherapist && (
@@ -264,14 +264,14 @@ function RegistroForm() {
               <label className="block text-xs font-bold mb-1.5">Nome do Consultório / Clínica</label>
               <input type="text" required value={clinicName} onChange={(e) => setClinicName(e.target.value)}
                 placeholder="Ex: Espaço Mente Viva"
-                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
               <p className="text-xs text-txt-muted mt-1">Será usado para criar seu espaço exclusivo na plataforma.</p>
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5">CRP <span className="font-normal text-txt-muted">(opcional)</span></label>
               <input type="text" value={crp} onChange={(e) => setCrp(e.target.value)}
                 placeholder="Ex: 06/173961"
-                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+                className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
             </div>
           </>
         )}
@@ -280,14 +280,14 @@ function RegistroForm() {
           <label className="block text-xs font-bold mb-1.5">Senha</label>
           <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
             placeholder="Mínimo 8 caracteres"
-            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </div>
 
         <div>
           <label className="block text-xs font-bold mb-1.5">Confirmar senha</label>
           <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Repita a senha"
-            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+            className="w-full py-3 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </div>
 
         <TurnstileWidget />

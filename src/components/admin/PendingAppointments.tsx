@@ -22,7 +22,7 @@ export function PendingAppointments({ appointments, onStatus, onDetail, flash }:
   if (pendingApts.length === 0) return null;
 
   return (
-    <div className="mt-6 bg-white rounded-brand p-6 shadow-sm border border-yellow-200">
+    <div className="mt-6 bg-card rounded-brand p-6 shadow-sm border border-yellow-200">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <span className="bg-yellow-400 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold">
@@ -55,10 +55,10 @@ export function PendingAppointments({ appointments, onStatus, onDetail, flash }:
               key={apt.id}
               className={`relative p-4 rounded-brand-sm border-l-4 bg-gradient-to-r transition-shadow hover:shadow-md ${
                 isToday
-                  ? "border-l-red-400 from-red-50 to-white"
+                  ? "border-l-red-400 from-red-50 to-card"
                   : isTomorrow
-                    ? "border-l-orange-400 from-orange-50 to-white"
-                    : "border-l-yellow-400 from-yellow-50 to-white"
+                    ? "border-l-orange-400 from-orange-50 to-card"
+                    : "border-l-yellow-400 from-yellow-50 to-card"
               }`}
             >
               {isToday && (

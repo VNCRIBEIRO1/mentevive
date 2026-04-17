@@ -122,7 +122,7 @@ export function PlatformHero() {
                   transition={{ delay: 0.4 + i * 0.08 }}
                   className="glass rounded-xl p-4 flex flex-col items-center gap-2 group hover:scale-105 transition-transform"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-white/60 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-card/60 flex items-center justify-center">
                     <Icon size={20} className={color} />
                   </div>
                   <span className="text-xs font-medium text-foreground/70">

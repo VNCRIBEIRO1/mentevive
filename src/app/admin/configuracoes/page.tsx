@@ -23,7 +23,7 @@ const defaultPricing: PricingItem[] = [
 ];
 
 const inputCls =
-  "w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10";
+  "w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10";
 
 export default function ConfiguracoesPage() {
   const [name, setName] = useState("");
@@ -194,7 +194,7 @@ export default function ConfiguracoesPage() {
   return (
     <div>
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 border text-sm px-5 py-3 rounded-brand-sm shadow-lg ${toastType === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-white border-primary/20 text-txt"}`}>
+        <div className={`fixed top-4 right-4 z-50 border text-sm px-5 py-3 rounded-brand-sm shadow-lg ${toastType === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-card border-primary/20 text-txt"}`}>
           {toast}
         </div>
       )}
@@ -205,7 +205,7 @@ export default function ConfiguracoesPage() {
       </div>
 
       <div className="space-y-6 max-w-2xl">
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h3 className="font-heading text-base font-semibold text-txt mb-4">Perfil</h3>
           <div className="space-y-4">
             <div>
@@ -236,14 +236,14 @@ export default function ConfiguracoesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h3 className="font-heading text-base font-semibold text-txt mb-2">Diretorio Publico</h3>
           <p className="text-sm text-txt-muted mb-4">Controle se seu perfil aparece no diretorio de profissionais da landing page.</p>
           <label className="flex items-center gap-3 cursor-pointer">
             <div className="relative">
               <input type="checkbox" checked={profileVisible} onChange={(e) => setProfileVisible(e.target.checked)} className="sr-only peer" />
               <div className="w-11 h-6 bg-primary/15 rounded-full peer-checked:bg-teal transition-colors"></div>
-              <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
+              <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-card rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
             </div>
             <span className="text-sm font-medium text-txt">Aparecer no diretorio de profissionais</span>
           </label>
@@ -252,7 +252,7 @@ export default function ConfiguracoesPage() {
           )}
         </div>
 
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h3 className="font-heading text-base font-semibold text-txt mb-2">Horarios de Atendimento</h3>
           <p className="text-sm text-txt-muted mb-4">Configure seus horarios disponiveis. As sessoes duram 1 hora.</p>
           <div className="space-y-2">
@@ -283,7 +283,7 @@ export default function ConfiguracoesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h3 className="font-heading text-base font-semibold text-txt mb-2">Valor da Videochamada</h3>
           <p className="text-sm text-txt-muted mb-4">Valor fixo exibido no agendamento de sessoes online.</p>
           {pricing.map((p, idx) => (
@@ -300,12 +300,12 @@ export default function ConfiguracoesPage() {
           ))}
         </div>
 
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h3 className="font-heading text-base font-semibold text-txt mb-2">Areas de Atuacao</h3>
           <p className="text-sm text-txt-muted mb-4">Selecione suas especialidades para integracao futura no SaaS.</p>
           <div className="flex flex-wrap gap-3">
             {AREAS.map((area) => (
-              <label key={area} className={`flex items-center gap-2 px-3 py-2 rounded-brand-sm border cursor-pointer transition-colors text-sm ${areas.includes(area) ? "border-primary bg-primary/10 text-primary-dark font-medium" : "border-primary/10 bg-white text-txt-light hover:border-primary/30"}`}>
+              <label key={area} className={`flex items-center gap-2 px-3 py-2 rounded-brand-sm border cursor-pointer transition-colors text-sm ${areas.includes(area) ? "border-primary bg-primary/10 text-primary-dark font-medium" : "border-primary/10 bg-card text-txt-light hover:border-primary/30"}`}>
                 <input type="checkbox" checked={areas.includes(area)} onChange={() => toggleArea(area)} className="sr-only" />
                 {area}
               </label>

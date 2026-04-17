@@ -47,7 +47,7 @@ function SuperSidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 flex flex-col z-30">
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-bg-soft" />
+      <div className="absolute inset-0 bg-gradient-to-b from-card via-card to-bg-soft" />
       <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-primary/10 via-primary/20 to-primary/5" />
       <div className="relative z-10 flex flex-col h-full">
         <div className="p-5 border-b border-primary/10">

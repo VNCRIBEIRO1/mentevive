@@ -13,7 +13,7 @@ interface Props {
 export function NewSessionModal({ patients, selectedDate, saving, onClose, onCreate }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-      <div className="bg-white rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-brand p-8 shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-heading text-lg font-semibold text-txt">Nova Sessão</h3>
           <button onClick={onClose} className="text-txt-muted hover:text-txt text-lg">X</button>

@@ -496,7 +496,7 @@ function AgendarPageContent() {
       </div>
 
       {step === "date" && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-heading text-lg font-semibold text-txt">{MONTHS[month]} {year}</h3>
             <div className="flex gap-2">
@@ -540,7 +540,7 @@ function AgendarPageContent() {
       )}
 
       {step === "time" && selectedDate && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
           <h3 className="font-heading text-base font-semibold text-txt mb-2">{fmtDateBR(selectedDate)}</h3>
           <p className="text-sm text-txt-muted mb-4">Selecione o horario da sessao (1 hora):</p>
 
@@ -578,7 +578,7 @@ function AgendarPageContent() {
       )}
 
       {step === "confirm" && selectedDate && selectedTime && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-xl">
           <h3 className="font-heading text-base font-semibold text-txt mb-4">Confirme seu Agendamento</h3>
 
           <div className="space-y-3 text-sm mb-6">
@@ -609,7 +609,7 @@ function AgendarPageContent() {
               onChange={(event) => setNotes(event.target.value)}
               rows={2}
               placeholder="Alguma observacao para a sessao..."
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
             />
           </div>
 
@@ -632,7 +632,7 @@ function AgendarPageContent() {
       )}
 
       {step === "payment" && selectedDate && selectedTime && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-2xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-2xl">
           <div className="text-center mb-6">
             <span className="text-4xl">&#128179;</span>
             <h3 className="font-heading text-lg font-semibold text-txt mt-3">Pagamento do agendamento</h3>
@@ -708,7 +708,7 @@ function AgendarPageContent() {
               </div>
 
               {paymentState !== "paid" && isStripeTestMode && (
-                <div className="mt-4 rounded-brand-sm border border-[#635bff]/20 bg-white/70 p-3">
+                <div className="mt-4 rounded-brand-sm border border-[#635bff]/20 bg-card/70 p-3">
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#4b45c6]">Modo teste</p>
                   <p className="mt-2 text-xs text-txt-muted">
                     Para simular a aprovacao e ver os proximos passos, conclua o checkout com o cartao de teste{" "}
@@ -734,20 +734,20 @@ function AgendarPageContent() {
                 </button>
                 <button
                   onClick={() => void copyText(buildPaidConfirmationMessage(), "Mensagem de confirmacao copiada.")}
-                  className="rounded-brand-sm border border-green-200 px-4 py-2 text-xs font-bold text-green-800 hover:bg-white"
+                  className="rounded-brand-sm border border-green-200 px-4 py-2 text-xs font-bold text-green-800 hover:bg-card"
                 >
                   Copiar mensagem
                 </button>
                 <button
                   onClick={() => setStep("done")}
-                  className="rounded-brand-sm border border-primary/15 px-4 py-2 text-xs font-bold text-txt hover:bg-white"
+                  className="rounded-brand-sm border border-primary/15 px-4 py-2 text-xs font-bold text-txt hover:bg-card"
                 >
                   Ir para conclusao
                 </button>
                 {createdAppointmentId && (
                   <Link
                     href={`/portal/sala-espera/${createdAppointmentId}`}
-                    className="rounded-brand-sm border border-primary/15 px-4 py-2 text-xs font-bold text-txt hover:bg-white"
+                    className="rounded-brand-sm border border-primary/15 px-4 py-2 text-xs font-bold text-txt hover:bg-card"
                   >
                     Ir para sala de espera
                   </Link>
@@ -759,7 +759,7 @@ function AgendarPageContent() {
       )}
 
       {step === "done" && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 max-w-2xl">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 max-w-2xl">
           <div className="text-center">
             <span className="text-5xl">{verifyingPayment ? "⏳" : "🎉"}</span>
             <h3 className="font-heading text-lg font-semibold text-txt mt-4">
@@ -794,7 +794,7 @@ function AgendarPageContent() {
                 <p className="mt-1 text-xs text-green-700">
                   Como o pagamento foi aprovado pelo Stripe, nao ha necessidade de enviar comprovante manual. Se quiser, voce pode apenas avisar que agendou e pagou.
                 </p>
-                <pre className="mt-3 max-h-44 overflow-y-auto whitespace-pre-wrap rounded-brand-sm bg-white/70 p-3 text-xs leading-relaxed text-green-900">
+                <pre className="mt-3 max-h-44 overflow-y-auto whitespace-pre-wrap rounded-brand-sm bg-card/70 p-3 text-xs leading-relaxed text-green-900">
                   {buildPaidConfirmationMessage()}
                 </pre>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -806,7 +806,7 @@ function AgendarPageContent() {
                   </button>
                   <button
                     onClick={() => void copyText(buildPaidConfirmationMessage(), "Mensagem copiada com sucesso.")}
-                    className="rounded-brand-sm border border-green-200 px-4 py-2 text-xs font-bold text-green-800 hover:bg-white"
+                    className="rounded-brand-sm border border-green-200 px-4 py-2 text-xs font-bold text-green-800 hover:bg-card"
                   >
                     Copiar mensagem
                   </button>

@@ -135,7 +135,7 @@ export function AdminSidebar() {
       {/* Mobile hamburger */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-[60] w-10 h-10 bg-white/80 backdrop-blur-md rounded-lg shadow-warm-sm flex items-center justify-center border border-primary/10"
+        className="md:hidden fixed top-4 left-4 z-[60] w-10 h-10 bg-card/80 backdrop-blur-md rounded-lg shadow-warm-sm flex items-center justify-center border border-primary/10"
         aria-label="Abrir menu"
       >
         <Menu className="w-5 h-5 text-txt" />
@@ -145,7 +145,7 @@ export function AdminSidebar() {
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-[70]">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-72 bg-white flex flex-col z-[71] shadow-xl transition-transform duration-300">
+          <aside className="absolute left-0 top-0 bottom-0 w-72 bg-card flex flex-col z-[71] shadow-xl transition-transform duration-300">
             <button
               onClick={() => setMobileOpen(false)}
               className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-txt-muted hover:text-txt hover:bg-gray-100 transition-colors"
@@ -160,7 +160,7 @@ export function AdminSidebar() {
 
       {/* Desktop sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-64 flex-col z-50 hidden md:flex">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-bg-soft" />
+        <div className="absolute inset-0 bg-gradient-to-b from-card via-card to-bg-soft" />
         <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-primary/10 via-primary/20 to-primary/5" />
         <div className="relative z-10 flex flex-col h-full">
           {sidebarContent}

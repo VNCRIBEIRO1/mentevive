@@ -61,7 +61,7 @@ export default function NovoPacientePage() {
         <p className="text-sm text-txt-light mt-1">Cadastre um novo paciente</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-brand p-8 shadow-sm border border-primary/5 max-w-2xl space-y-6">
+      <form onSubmit={handleSubmit} className="bg-card rounded-brand p-8 shadow-sm border border-primary/5 max-w-2xl space-y-6">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-brand-sm">{error}</div>
         )}
@@ -70,12 +70,12 @@ export default function NovoPacientePage() {
           <div>
             <label className="block text-xs font-bold mb-1.5">Nome completo *</label>
             <input name="name" type="text" required placeholder="Nome do paciente"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
           <div>
             <label className="block text-xs font-bold mb-1.5">E-mail</label>
             <input name="email" type="email" placeholder="email@exemplo.com"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
         </div>
 
@@ -83,12 +83,12 @@ export default function NovoPacientePage() {
           <div>
             <label className="block text-xs font-bold mb-1.5">Telefone *</label>
             <input name="phone" type="tel" required placeholder="(00) 99999-9999"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
           <div>
             <label className="block text-xs font-bold mb-1.5">CPF</label>
             <input name="cpf" type="text" placeholder="000.000.000-00"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
         </div>
 
@@ -96,12 +96,12 @@ export default function NovoPacientePage() {
           <div>
             <label className="block text-xs font-bold mb-1.5">Data de Nascimento</label>
             <input name="birthDate" type="date"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
           <div>
             <label className="block text-xs font-bold mb-1.5">Gênero</label>
             <select name="gender"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
               <option value="">Selecione</option>
               <option value="feminino">Feminino</option>
               <option value="masculino">Masculino</option>
@@ -115,26 +115,26 @@ export default function NovoPacientePage() {
         <div>
           <label className="block text-xs font-bold mb-1.5">Endereço</label>
           <input name="address" type="text" placeholder="Endereço completo"
-            className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+            className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-bold mb-1.5">Contato de Emergência</label>
             <input name="emergencyContact" type="text" placeholder="Nome do contato"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
           <div>
             <label className="block text-xs font-bold mb-1.5">Tel. Emergência</label>
             <input name="emergencyPhone" type="tel" placeholder="(00) 99999-9999"
-              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
           </div>
         </div>
 
         <div>
           <label className="block text-xs font-bold mb-1.5">Observações</label>
           <textarea name="notes" rows={3} placeholder="Observações iniciais sobre o paciente…"
-            className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y" />
+            className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y" />
         </div>
 
         {/* Create Portal Access */}
@@ -158,7 +158,7 @@ export default function NovoPacientePage() {
               <div>
                 <label className="block text-xs font-bold mb-1.5">Senha do Portal *</label>
                 <input name="password" type="password" required={createAccount} placeholder="Mínimo 8 caracteres"
-                  className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
+                  className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm font-body text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />
               </div>
               <p className="text-[0.65rem] text-blue-700">💡 Informe ao paciente para trocar a senha após o primeiro acesso.</p>
             </div>

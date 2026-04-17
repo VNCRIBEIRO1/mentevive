@@ -168,7 +168,7 @@ export default function AssinaturaPage() {
       </div>
 
       {/* Current Status Card */}
-      <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+      <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-sm text-txt-muted mb-1">Plano Atual</p>
@@ -218,7 +218,7 @@ export default function AssinaturaPage() {
 
       {/* CDKey Section — only for free plan */}
       {plan === "free" && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h2 className="font-heading text-lg font-semibold text-txt mb-2">Código de Ativação (CDKey)</h2>
           <p className="text-sm text-txt-muted mb-4">
             Recebeu um código de ativação? Insira abaixo para liberar seu período de teste gratuito.
@@ -230,7 +230,7 @@ export default function AssinaturaPage() {
               onChange={(e) => setCdkeyCode(e.target.value.toUpperCase())}
               placeholder="Ex: A1B2C3D4E5F6G7H8"
               maxLength={32}
-              className="flex-1 py-2.5 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-mono text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 tracking-wider"
+              className="flex-1 py-2.5 px-4 border-[1.5px] border-primary/15 rounded-brand-sm font-mono text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 tracking-wider"
             />
             <button
               onClick={handleCDKey}
@@ -249,7 +249,7 @@ export default function AssinaturaPage() {
           <h2 className="font-heading text-lg font-semibold text-txt mb-4">Escolha seu Plano</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {/* Monthly Plan */}
-            <div className="bg-white rounded-brand p-6 shadow-sm border-[1.5px] border-primary/10 hover:border-primary/30 transition-colors relative overflow-hidden">
+            <div className="bg-card rounded-brand p-6 shadow-sm border-[1.5px] border-primary/10 hover:border-primary/30 transition-colors relative overflow-hidden">
               <div className="mb-4">
                 <h3 className="font-heading text-xl font-bold text-txt">Profissional</h3>
                 <p className="text-sm text-txt-muted mt-1">Plano mensal com todos os recursos</p>
@@ -277,7 +277,7 @@ export default function AssinaturaPage() {
             </div>
 
             {/* Annual Plan */}
-            <div className="bg-white rounded-brand p-6 shadow-sm border-[2px] border-teal/30 hover:border-teal/50 transition-colors relative overflow-hidden">
+            <div className="bg-card rounded-brand p-6 shadow-sm border-[2px] border-teal/30 hover:border-teal/50 transition-colors relative overflow-hidden">
               {/* Best value badge */}
               <div className="absolute top-4 right-4">
                 <span className="text-xs px-3 py-1 rounded-brand-full bg-teal/10 text-teal font-bold border border-teal/20">
@@ -318,7 +318,7 @@ export default function AssinaturaPage() {
 
       {/* Already subscribed info */}
       {isPaid && data?.hasSubscription && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h2 className="font-heading text-lg font-semibold text-txt mb-2">Gerenciar Assinatura</h2>
           <p className="text-sm text-txt-muted mb-4">
             Altere seu plano, atualize forma de pagamento ou cancele pelo portal do Stripe.

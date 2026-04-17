@@ -321,7 +321,7 @@ export function WaitingRoomView({ viewerArea = "portal" }: WaitingRoomViewProps)
         </div>
       </div>
 
-      <div className="mb-6 rounded-brand border border-primary/5 bg-white p-8 text-center shadow-sm">
+      <div className="mb-6 rounded-brand border border-primary/5 bg-card p-8 text-center shadow-sm">
         <p className="mb-2 text-sm text-txt-muted">
           {seconds !== null && seconds > 0 ? "Sua sessao comeca em" : "Sua sessao ja pode comecar"}
         </p>
@@ -341,7 +341,7 @@ export function WaitingRoomView({ viewerArea = "portal" }: WaitingRoomViewProps)
       />
 
       {!isAdminView && (
-        <div className="mb-6 rounded-brand border border-primary/5 bg-white p-6 shadow-sm">
+        <div className="mb-6 rounded-brand border border-primary/5 bg-card p-6 shadow-sm">
           <h3 className="mb-4 font-heading text-sm font-semibold text-txt">Checklist de preparacao</h3>
           <div className="space-y-3">
             {[
@@ -380,7 +380,7 @@ export function WaitingRoomView({ viewerArea = "portal" }: WaitingRoomViewProps)
         </div>
       )}
 
-      <div className="mb-6 rounded-brand border border-primary/5 bg-white p-6 shadow-sm">
+      <div className="mb-6 rounded-brand border border-primary/5 bg-card p-6 shadow-sm">
         <h3 className="mb-4 font-heading text-sm font-semibold text-txt">
           Instrucoes para videochamada
         </h3>

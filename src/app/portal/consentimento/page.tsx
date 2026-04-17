@@ -46,7 +46,7 @@ export default function ConsentimentoPage() {
           <p className="text-sm text-green-700 mt-2">Caso tenha dúvidas, entre em contato com seu/sua psicólogo(a).</p>
         </div>
       ) : (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 space-y-4">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 space-y-4">
           <div className="prose prose-sm max-h-80 overflow-y-auto border border-primary/10 rounded-brand p-4 text-txt-light">
             <h3>1. Consentimento para Atendimento Psicológico</h3>
             <p>Eu, paciente identificado(a) no cadastro desta plataforma, declaro que estou ciente e de acordo com o atendimento psicológico realizado pelo(a) profissional responsável por este consultório, na modalidade online (videochamada) ou presencial, conforme agendamento.</p>

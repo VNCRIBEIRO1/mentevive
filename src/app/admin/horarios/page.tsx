@@ -342,7 +342,7 @@ export default function HorariosPage() {
   return (
     <div>
       {toast && (
-        <div className="fixed top-4 right-4 z-50 bg-white border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
+        <div className="fixed top-4 right-4 z-50 bg-card border border-primary/20 text-txt text-sm px-5 py-3 rounded-brand-sm shadow-lg">
           {toast}
         </div>
       )}
@@ -362,25 +362,25 @@ export default function HorariosPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-brand p-4 shadow-sm border border-primary/5 text-center">
+        <div className="bg-card rounded-brand p-4 shadow-sm border border-primary/5 text-center">
           <p className="text-2xl font-heading font-bold text-primary-dark">
             {availability.filter((s) => s.active).length + customAvailability.length}
           </p>
           <p className="text-xs text-txt-muted mt-1">Janelas e Extras</p>
         </div>
-        <div className="bg-white rounded-brand p-4 shadow-sm border border-primary/5 text-center">
+        <div className="bg-card rounded-brand p-4 shadow-sm border border-primary/5 text-center">
           <p className="text-2xl font-heading font-bold text-red-500">
             {blockedDates.length}
           </p>
           <p className="text-xs text-txt-muted mt-1">Datas Bloqueadas</p>
         </div>
-        <div className="bg-white rounded-brand p-4 shadow-sm border border-primary/5 text-center">
+        <div className="bg-card rounded-brand p-4 shadow-sm border border-primary/5 text-center">
           <p className="text-2xl font-heading font-bold text-green-600">
             {appointments.filter((a) => a.status === "confirmed" || a.status === "pending").length}
           </p>
           <p className="text-xs text-txt-muted mt-1">Sessões Ativas</p>
         </div>
-        <div className="bg-white rounded-brand p-4 shadow-sm border border-primary/5 text-center">
+        <div className="bg-card rounded-brand p-4 shadow-sm border border-primary/5 text-center">
           <p className="text-2xl font-heading font-bold text-blue-600">
             {(() => {
               // Count free slots for next 7 days
@@ -403,7 +403,7 @@ export default function HorariosPage() {
 
       {/* Availability Editor */}
       {showAvailEditor && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 mb-6">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 mb-6">
           <h3 className="font-heading text-base font-semibold text-txt mb-2">⚙️ Horários Semanais</h3>
           <p className="text-sm text-txt-muted mb-4">
             Configure as janelas de atendimento por dia da semana. Sessões de 1 hora, horários de hora em hora.
@@ -494,7 +494,7 @@ export default function HorariosPage() {
       {!showAvailEditor && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Calendar */}
-          <div className="lg:col-span-2 bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+          <div className="lg:col-span-2 bg-card rounded-brand p-6 shadow-sm border border-primary/5">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-heading text-lg font-semibold text-txt">{MONTHS[month]} {year}</h3>
               <div className="flex gap-2">
@@ -565,7 +565,7 @@ export default function HorariosPage() {
           </div>
 
           {/* Detail Panel */}
-          <div className="lg:col-span-1 bg-white rounded-brand p-6 shadow-sm border border-primary/5">
+          <div className="lg:col-span-1 bg-card rounded-brand p-6 shadow-sm border border-primary/5">
             {loading ? (
               <p className="text-sm text-txt-muted text-center py-8">Carregando…</p>
             ) : !selectedDate ? (
@@ -659,7 +659,7 @@ export default function HorariosPage() {
                             if (!selectedDate) return;
                             setQuickBookSlot({ date: selectedDate, startTime: customStartTime, endTime: customEndTime });
                           }}
-                          className="text-[0.65rem] px-2.5 py-1.5 rounded-brand-sm border border-primary/20 bg-white text-primary-dark font-bold hover:bg-primary/5"
+                          className="text-[0.65rem] px-2.5 py-1.5 rounded-brand-sm border border-primary/20 bg-card text-primary-dark font-bold hover:bg-primary/5"
                         >
                           + Sessão livre
                         </button>
@@ -693,7 +693,7 @@ export default function HorariosPage() {
                       {selectedInfo.customSlotsForDay.length > 0 && (
                         <div className="mt-3 space-y-2">
                           {selectedInfo.customSlotsForDay.map((slot) => (
-                            <div key={slot.id} className="flex items-center justify-between gap-2 rounded-brand-sm border border-primary/10 bg-white px-3 py-2">
+                            <div key={slot.id} className="flex items-center justify-between gap-2 rounded-brand-sm border border-primary/10 bg-card px-3 py-2">
                               <div>
                                 <p className="text-xs font-semibold text-txt">{slot.startTime} - {slot.endTime}</p>
                                 <p className="text-[0.65rem] text-txt-muted">Disponibilidade extra deste dia</p>
@@ -761,7 +761,7 @@ export default function HorariosPage() {
 
       {/* Blocked Dates Overview */}
       {!showAvailEditor && blockedDates.length > 0 && (
-        <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 mt-6">
+        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5 mt-6">
           <h3 className="font-heading text-base font-semibold text-txt mb-4">🚫 Datas Bloqueadas</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {blockedDates.map((bd) => (
@@ -785,7 +785,7 @@ export default function HorariosPage() {
       {/* Quick-Book Modal */}
       {quickBookSlot && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="bg-white rounded-brand p-8 shadow-lg w-full max-w-md">
+          <div className="bg-card rounded-brand p-8 shadow-lg w-full max-w-md">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-heading text-lg font-semibold text-txt">Agendar Sessão Rápida</h3>
               <button onClick={() => setQuickBookSlot(null)} className="text-txt-muted hover:text-txt text-lg">✕</button>
@@ -807,7 +807,7 @@ export default function HorariosPage() {
                     step="900"
                     value={quickBookSlot.startTime}
                     onChange={(e) => setQuickBookSlot((prev) => prev ? { ...prev, startTime: e.target.value } : prev)}
-                    className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div>
@@ -817,7 +817,7 @@ export default function HorariosPage() {
                     step="900"
                     value={quickBookSlot.endTime}
                     onChange={(e) => setQuickBookSlot((prev) => prev ? { ...prev, endTime: e.target.value } : prev)}
-                    className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -826,7 +826,7 @@ export default function HorariosPage() {
                 <select
                   value={quickBookPatient}
                   onChange={(e) => setQuickBookPatient(e.target.value)}
-                  className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                  className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                 >
                   <option value="">Selecione o paciente</option>
                   {patients.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -847,7 +847,7 @@ export default function HorariosPage() {
                   onChange={(e) => setQuickBookNotes(e.target.value)}
                   rows={3}
                   placeholder="Resumo interno, combinado ou observação para a sessão..."
-                  className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-white text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
+                  className="w-full py-2.5 px-3 border-[1.5px] border-primary/15 rounded-brand-sm text-sm bg-card text-txt focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
                 />
               </div>
               <p className="text-[0.65rem] text-txt-muted">

@@ -30,7 +30,7 @@ export function SessionMismatch({ userName, userEmail, userRole, targetArea }: S
           Ψ
         </div>
 
-        <div className="bg-white rounded-brand p-8 shadow-md">
+        <div className="bg-card rounded-brand p-8 shadow-md">
           <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
             🔒
           </div>
