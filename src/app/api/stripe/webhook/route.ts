@@ -14,17 +14,8 @@ export async function POST(req: NextRequest) {
     let event = validateWebhookSignature(body, signature);
 
     if (!event) {
-      if (process.env.NODE_ENV === "development" && !process.env.STRIPE_WEBHOOK_SECRET) {
-        try {
-          event = JSON.parse(body);
-          console.warn("Stripe webhook: signature skipped (dev mode only)");
-        } catch {
-          return NextResponse.json({ error: "Invalid event body" }, { status: 400 });
-        }
-      } else {
-        console.error("Stripe webhook signature verification failed");
-        return NextResponse.json({ error: "Webhook signature verification failed" }, { status: 401 });
-      }
+      console.error("Stripe webhook signature verification failed");
+      return NextResponse.json({ error: "Webhook signature verification failed" }, { status: 401 });
     }
 
     const eventType = event?.type || "";

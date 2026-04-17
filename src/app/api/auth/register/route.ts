@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit: 5 registrations per minute per IP
     const ip = getClientIp(request);
-    const rl = rateLimit(ip, 5, 60_000);
+    const rl = await rateLimit(ip, 5, 60_000);
     if (!rl.success) {
       return NextResponse.json(
         { error: "Muitas tentativas. Aguarde um momento e tente novamente." },

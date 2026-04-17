@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     NextResponse.json(body, { ...opts, headers: cors });
   try {
     const ip = getClientIp(req);
-    const rl = rateLimit(`contact:${ip}`, 3, 10 * 60_000);
+    const rl = await rateLimit(`contact:${ip}`, 3, 10 * 60_000);
     if (!rl.success) {
       return json(
         { error: "Muitas tentativas. Aguarde alguns minutos antes de enviar nova mensagem." },

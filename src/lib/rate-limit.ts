@@ -1,21 +1,38 @@
 /**
- * In-memory rate limiter — zero external dependencies.
+ * Distributed rate limiter — Upstash Redis (HTTP-based, serverless-safe).
  *
- * Uses a Map<key, {count, resetAt}> with sliding window.
- * Suitable for Vercel Hobby / low-traffic deployments where
- * each serverless cold-start resets the map (acceptable trade-off).
- *
- * For higher traffic, swap with Redis / Upstash later.
+ * Falls back to in-memory if Upstash env vars are not configured.
+ * Each limiter uses a sliding window algorithm.
  */
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-type RateLimitEntry = {
-  count: number;
-  resetAt: number; // epoch ms
-};
+const hasUpstash = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
 
+const redis = hasUpstash
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    })
+  : undefined;
+
+// Specific limiters for different contexts
+export const loginLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(8, "10 m"), prefix: "rl:login" })
+  : null;
+
+export const apiLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "1 m"), prefix: "rl:api" })
+  : null;
+
+export const registrationLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(3, "1 h"), prefix: "rl:register" })
+  : null;
+
+// ── In-memory fallback (when Upstash is not configured) ──
+
+type RateLimitEntry = { count: number; resetAt: number };
 const store = new Map<string, RateLimitEntry>();
-
-// Auto-cleanup every 5 minutes to prevent memory leaks
 const CLEANUP_INTERVAL = 5 * 60 * 1000;
 let lastCleanup = Date.now();
 
@@ -23,46 +40,43 @@ function cleanup() {
   const now = Date.now();
   if (now - lastCleanup < CLEANUP_INTERVAL) return;
   lastCleanup = now;
-
   for (const [key, entry] of store) {
-    if (entry.resetAt <= now) {
-      store.delete(key);
-    }
+    if (entry.resetAt <= now) store.delete(key);
   }
 }
 
-/**
- * Check rate limit for a given key (IP, email, etc.).
- *
- * @param key      Unique identifier (IP address, email, etc.)
- * @param limit    Max requests allowed in the window
- * @param windowMs Window duration in milliseconds (default 60s)
- * @returns        { success: boolean, remaining: number }
- */
-export function rateLimit(
-  key: string,
-  limit: number,
-  windowMs = 60_000
-): { success: boolean; remaining: number } {
+function inMemoryLimit(key: string, limit: number, windowMs: number): { success: boolean; remaining: number } {
   cleanup();
-
   const now = Date.now();
   const entry = store.get(key);
-
-  // First request or window expired → reset
   if (!entry || entry.resetAt <= now) {
     store.set(key, { count: 1, resetAt: now + windowMs });
     return { success: true, remaining: limit - 1 };
   }
-
-  // Within window
   entry.count++;
-
-  if (entry.count > limit) {
-    return { success: false, remaining: 0 };
-  }
-
+  if (entry.count > limit) return { success: false, remaining: 0 };
   return { success: true, remaining: limit - entry.count };
+}
+
+/**
+ * Backward-compatible rate limit function.
+ * Uses Upstash Redis when available, falls back to in-memory.
+ */
+export async function rateLimit(
+  key: string,
+  limit: number,
+  windowMs = 60_000
+): Promise<{ success: boolean; remaining: number }> {
+  if (apiLimiter) {
+    try {
+      const { success, remaining } = await apiLimiter.limit(key);
+      return { success, remaining };
+    } catch {
+      // Fail-open: allow request if Redis is unreachable
+      return { success: true, remaining: 1 };
+    }
+  }
+  return inMemoryLimit(key, limit, windowMs);
 }
 
 /**

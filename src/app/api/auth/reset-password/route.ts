@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || "unknown";
-  const { success } = rateLimit(`reset-pwd:${ip}`, 5, 600_000); // 5 per 10 min
+  const { success } = await rateLimit(`reset-pwd:${ip}`, 5, 600_000); // 5 per 10 min
   if (!success) {
     return NextResponse.json(
       { error: "Muitas tentativas. Tente novamente em alguns minutos." },

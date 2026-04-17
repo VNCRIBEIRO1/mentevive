@@ -8,7 +8,7 @@ import { randomBytes } from "crypto";
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || "unknown";
-  const { success } = rateLimit(`forgot-pwd:${ip}`, 3, 600_000); // 3 per 10 min
+  const { success } = await rateLimit(`forgot-pwd:${ip}`, 3, 600_000); // 3 per 10 min
   if (!success) {
     return NextResponse.json(
       { error: "Muitas tentativas. Tente novamente em alguns minutos." },

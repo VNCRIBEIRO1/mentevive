@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         const ip = req?.headers ? getClientIp({ headers: req.headers }) : "unknown";
 
         // Rate limit: 8 login attempts per 10 minutes per IP + email
-        const rl = rateLimit(`login:${ip}:${email}`, 8, 10 * 60_000);
+        const rl = await rateLimit(`login:${ip}:${email}`, 8, 10 * 60_000);
         if (!rl.success) return null;
 
         const captchaOk = await verifyTurnstileToken(turnstileToken, ip);
@@ -134,7 +134,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60, updateAge: 24 * 60 * 60 },
   pages: {
     signIn: "/login",
     error: "/login",
