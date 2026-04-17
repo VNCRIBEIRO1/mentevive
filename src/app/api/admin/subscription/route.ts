@@ -17,9 +17,12 @@ const PLAN_CONFIG = {
   enterprise: {
     priceEnv: "STRIPE_PRICE_ANNUAL",
     label: "Anual",
-    amount: "R$ 500,00",
+    amount: "R$ 499,00",
   },
 } as const;
+
+/** Plans that grant trial access */
+const TRIAL_PLANS = ["basico", "pro", "starter"];
 
 /** GET — Current subscription status for the tenant */
 export async function GET() {
@@ -46,7 +49,9 @@ export async function GET() {
     }
 
     const now = new Date();
-    const isTrialActive = tenant.plan === "starter" && tenant.trialEndsAt && tenant.trialEndsAt > now;
+    const isTrialPlan = TRIAL_PLANS.includes(tenant.plan);
+    const isTrialActive = isTrialPlan && !!tenant.trialEndsAt && tenant.trialEndsAt > now;
+    const isTrialExpired = isTrialPlan && !!tenant.trialEndsAt && tenant.trialEndsAt <= now;
     const trialDaysRemaining = isTrialActive
       ? Math.ceil((tenant.trialEndsAt!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
       : 0;
@@ -57,6 +62,7 @@ export async function GET() {
       currentPeriodEnd: tenant.currentPeriodEnd,
       trialEndsAt: tenant.trialEndsAt,
       isTrialActive,
+      isTrialExpired,
       trialDaysRemaining,
       hasStripeCustomer: !!tenant.stripeCustomerId,
       hasSubscription: !!tenant.stripeSubscriptionId,

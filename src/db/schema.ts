@@ -45,7 +45,7 @@ export const paymentMethodEnum = pgEnum("payment_method", [
   "stripe",
 ]);
 export const blogStatusEnum = pgEnum("blog_status", ["draft", "published", "archived"]);
-export const tenantPlanEnum = pgEnum("tenant_plan", ["free", "starter", "professional", "enterprise"]);
+export const tenantPlanEnum = pgEnum("tenant_plan", ["free", "basico", "pro", "starter", "professional", "enterprise"]);
 export const subscriptionStatusEnum = pgEnum("subscription_status", [
   "trialing",
   "active",

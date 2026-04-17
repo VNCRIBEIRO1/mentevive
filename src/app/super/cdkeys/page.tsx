@@ -16,6 +16,8 @@ type Stats = { total: number; available: number; used: number };
 
 const PLAN_COLORS: Record<string, string> = {
   free: "bg-gray-500/20 text-gray-400",
+  basico: "bg-blue-500/20 text-blue-400",
+  pro: "bg-teal-500/20 text-teal-400",
   starter: "bg-blue-500/20 text-blue-400",
   professional: "bg-purple-500/20 text-purple-400",
   enterprise: "bg-amber-500/20 text-amber-400",
@@ -27,7 +29,7 @@ export default function CDKeysPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [quantity, setQuantity] = useState(5);
-  const [plan, setPlan] = useState("starter");
+  const [plan, setPlan] = useState("basico");
   const [durationDays, setDurationDays] = useState(30);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -138,9 +140,8 @@ export default function CDKeysPage() {
               onChange={(e) => setPlan(e.target.value)}
               className="px-3 py-2 bg-bg border border-border rounded-lg text-sm text-txt focus:outline-none focus:border-purple-500"
             >
-              <option value="starter">Starter (Trial)</option>
-              <option value="professional">Professional</option>
-              <option value="enterprise">Enterprise</option>
+              <option value="basico">Básico (30 dias)</option>
+              <option value="pro">Pro (90 dias)</option>
             </select>
           </div>
           <div>

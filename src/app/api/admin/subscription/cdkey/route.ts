@@ -47,6 +47,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Código inválido ou já utilizado." }, { status: 404 });
     }
 
+    // Map legacy plan names
+    const effectivePlan = cdkey.plan === "starter" ? "basico" : cdkey.plan;
+
     // Activate trial
     const now = new Date();
     const trialEnd = new Date(now.getTime() + cdkey.durationDays * 24 * 60 * 60 * 1000);
@@ -57,7 +60,7 @@ export async function POST(req: NextRequest) {
     }).where(eq(cdkeys.id, cdkey.id));
 
     await db.update(tenants).set({
-      plan: cdkey.plan,
+      plan: effectivePlan,
       subscriptionStatus: "trialing",
       trialEndsAt: trialEnd,
       updatedAt: now,
@@ -65,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      plan: cdkey.plan,
+      plan: effectivePlan,
       trialEndsAt: trialEnd.toISOString(),
       durationDays: cdkey.durationDays,
     });

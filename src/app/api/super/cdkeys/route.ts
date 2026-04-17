@@ -59,10 +59,10 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const quantity = Math.min(Math.max(body.quantity || 1, 1), 50); // 1-50
-    const plan = body.plan || "starter";
-    const durationDays = body.durationDays || 30;
+    const plan = body.plan || "basico";
+    const durationDays = body.durationDays || (plan === "pro" ? 90 : 30);
 
-    if (!["free", "starter", "professional", "enterprise"].includes(plan)) {
+    if (!["free", "basico", "pro", "starter", "professional", "enterprise"].includes(plan)) {
       return NextResponse.json({ error: "Plano inválido." }, { status: 400 });
     }
 

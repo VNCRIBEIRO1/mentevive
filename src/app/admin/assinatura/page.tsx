@@ -8,6 +8,7 @@ type SubscriptionData = {
   currentPeriodEnd: string | null;
   trialEndsAt: string | null;
   isTrialActive: boolean;
+  isTrialExpired: boolean;
   trialDaysRemaining: number;
   hasStripeCustomer: boolean;
   hasSubscription: boolean;
@@ -15,9 +16,11 @@ type SubscriptionData = {
 
 const PLAN_LABELS: Record<string, string> = {
   free: "Gratuito",
+  basico: "Básico",
+  pro: "Pro",
   starter: "Trial",
-  professional: "Profissional",
-  enterprise: "Empresarial",
+  professional: "Mensal",
+  enterprise: "Anual",
 };
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -144,7 +147,8 @@ export default function AssinaturaPage() {
   const statusInfo = subStatus ? STATUS_LABELS[subStatus] : null;
   const isPaid = plan === "professional" || plan === "enterprise";
   const isTrialing = data?.isTrialActive;
-  const canUpgrade = plan === "free" || (plan === "starter" && !data?.hasSubscription);
+  const isExpired = data?.isTrialExpired;
+  const canUpgrade = plan === "free" || isExpired || (["basico", "pro", "starter"].includes(plan) && !data?.hasSubscription);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -188,9 +192,14 @@ export default function AssinaturaPage() {
                 Próxima renovação: {new Date(data.currentPeriodEnd).toLocaleDateString("pt-BR")}
               </p>
             )}
-            {plan === "free" && !isTrialing && (
+            {plan === "free" && !isTrialing && !isExpired && (
               <p className="text-sm text-txt-muted mt-2">
                 Ative um código de teste ou escolha um plano para começar
+              </p>
+            )}
+            {isExpired && (
+              <p className="text-sm text-red-600 mt-2">
+                ⚠️ Seu período de teste expirou. Assine um plano para continuar usando o sistema.
               </p>
             )}
           </div>
@@ -280,12 +289,12 @@ export default function AssinaturaPage() {
                 <p className="text-sm text-txt-muted mt-1">Plano anual com melhor custo-benefício</p>
               </div>
               <div className="mb-2">
-                <span className="text-3xl font-heading font-bold text-txt">R$ 500</span>
+                <span className="text-3xl font-heading font-bold text-txt">R$ 499</span>
                 <span className="text-xl font-heading font-bold text-txt">,00</span>
                 <span className="text-sm text-txt-muted"> /ano</span>
               </div>
               <p className="text-xs text-teal font-semibold mb-6">
-                Equivale a R$ 41,67/mês — economize R$ 218,80
+                Equivale a R$ 41,58/mês — economize R$ 219,80
               </p>
               <ul className="space-y-2 mb-6 text-sm text-txt-light">
                 <li className="flex items-center gap-2"><span className="text-emerald-500">✓</span> Tudo do Profissional</li>
