@@ -38,6 +38,7 @@ export async function GET() {
       .where(
         and(
           eq(appointments.patientId, patient.id),
+          eq(appointments.tenantId, tenantId),
           eq(appointments.status, "completed")
         )
       )
@@ -54,6 +55,7 @@ export async function GET() {
       .where(
         and(
           eq(clinicalRecords.patientId, patient.id),
+          eq(clinicalRecords.tenantId, tenantId),
           eq(clinicalRecords.private, false)
         )
       )

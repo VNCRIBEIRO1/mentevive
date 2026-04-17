@@ -33,6 +33,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       sessionDate, sessionNumber, chiefComplaint, clinicalNotes,
       interventions, homework, mood, riskAssessment, nextSessionPlan,
     } = body;
+    const isPrivate = body.private;
 
     const [updated] = await db.update(clinicalRecords).set({
       ...(sessionDate !== undefined && { sessionDate: new Date(sessionDate) }),
@@ -44,6 +45,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(mood !== undefined && { mood }),
       ...(riskAssessment !== undefined && { riskAssessment }),
       ...(nextSessionPlan !== undefined && { nextSessionPlan }),
+      ...(isPrivate !== undefined && { private: Boolean(isPrivate) }),
       updatedAt: new Date(),
     }).where(and(eq(clinicalRecords.tenantId, auth.tenantId!), eq(clinicalRecords.id, id))).returning();
 

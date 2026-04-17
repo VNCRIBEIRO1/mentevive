@@ -140,9 +140,9 @@ export function AppointmentDetailModal({ apt, onClose, onStatus, onDelete, onUpd
             <span className="text-right text-xs font-bold text-primary-dark">{timing.relativeLabel}</span>
           </div>
           {apt.notes && (
-            <div className="py-1.5">
-              <span className="text-txt-muted text-xs">Notas:</span>
-              <p className="text-txt mt-1">{apt.notes}</p>
+            <div className="py-1.5 bg-amber-50 border border-amber-200 rounded-brand-sm p-3 mt-2">
+              <span className="text-amber-700 text-xs font-bold">🔒 Anotação interna (o paciente não vê):</span>
+              <p className="text-txt mt-1 text-sm">{apt.notes}</p>
             </div>
           )}
           {apt.patientNotes && (
@@ -265,12 +265,18 @@ export function AppointmentDetailModal({ apt, onClose, onStatus, onDelete, onUpd
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold mb-1">Notas</label>
-              <textarea defaultValue={apt.notes || ""} id="edit-notes" rows={2} className={inputCls} />
+              <label className="block text-xs font-bold mb-1">🔒 Anotações internas</label>
+              <div className="mb-2 flex items-center gap-2 rounded-brand-sm border border-amber-300 bg-amber-50 px-3 py-1.5">
+                <span className="text-amber-600 text-[0.65rem] font-bold">⚠️ Esta anotação o paciente NÃO verá — uso exclusivo da terapeuta.</span>
+              </div>
+              <textarea defaultValue={apt.notes || ""} id="edit-notes" rows={2} className={inputCls} placeholder="Notas internas da sessão (privadas)..." />
             </div>
             {(apt.status === "completed" || apt.status === "no_show") && (
               <div>
-                <label className="block text-xs font-bold mb-1">💬 Feedback pós-sessão (visível ao paciente)</label>
+                <label className="block text-xs font-bold mb-1">💬 Feedback pós-sessão</label>
+                <div className="mb-2 flex items-center gap-2 rounded-brand-sm border border-green-300 bg-green-50 px-3 py-1.5">
+                  <span className="text-green-700 text-[0.65rem] font-bold">👁️ O paciente VERÁ esta mensagem na Evolução.</span>
+                </div>
                 <textarea defaultValue={apt.therapistFeedback || ""} id="edit-therapistFeedback" rows={3} className={inputCls} placeholder="Ex: Boa sessão! Praticar a técnica de respiração esta semana..." />
               </div>
             )}

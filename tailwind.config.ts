@@ -9,17 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: { DEFAULT: "#D4A574", dark: "#B8895C", light: "#E8C9A8" },
-        accent: { DEFAULT: "#E8A0BF", light: "#F5C8DE" },
-        teal: { DEFAULT: "#0f766e", dark: "#0a6158", light: "#14b8a6" },
-        sage: { DEFAULT: "#e6f0eb", dark: "#c8ddd0" },
-        bg: { DEFAULT: "#FFF5EE", white: "#FFFFFF", soft: "#FDE8D8", warm: "#F9EDE3" },
-        txt: { DEFAULT: "#3D2B1F", light: "#6B5445", muted: "#7D6E62" },
-        surface: "#FFFFFF",
-        border: "#E8DDD5",
-        card: "#FFFFFF",
-        foreground: "#3D2B1F",
-        background: "#FFF5EE",
+        primary: { DEFAULT: "#C49A6C", dark: "#A67B4B", light: "#DBBF9A" },
+        accent: { DEFAULT: "#D68BA8", light: "#F0B8CE" },
+        teal: { DEFAULT: "#0d6b63", dark: "#084f49", light: "#14b8a6" },
+        sage: { DEFAULT: "#dce9e3", dark: "#c8ddd0" },
+        bg: { DEFAULT: "#F5EDE6", white: "#FAFAFA", soft: "#EDD9C8", warm: "#EDE0D4" },
+        txt: { DEFAULT: "#2D1F15", light: "#5A4535", muted: "#6B5C50" },
+        surface: "#FAFAF9",
+        border: "#D4C5B8",
+        card: "#FEFEFE",
+        foreground: "#2D1F15",
+        background: "#F5EDE6",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Georgia", "serif"],

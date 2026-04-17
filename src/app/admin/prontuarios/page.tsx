@@ -14,6 +14,7 @@ type RecordRow = {
   interventions: string | null;
   homework: string | null;
   mood: string | null;
+  private: boolean;
 };
 
 const inputCls =
@@ -49,6 +50,7 @@ export default function ProntuariosPage() {
               interventions: rec.interventions as string | null,
               homework: rec.homework as string | null,
               mood: rec.mood as string | null,
+              private: (rec.private ?? true) as boolean,
             };
           })
         );
@@ -111,17 +113,18 @@ export default function ProntuariosPage() {
                 <th className="text-left px-6 py-3 text-xs font-bold text-txt-muted uppercase tracking-wide">Sessão Nº</th>
                 <th className="text-left px-6 py-3 text-xs font-bold text-txt-muted uppercase tracking-wide">Humor</th>
                 <th className="text-left px-6 py-3 text-xs font-bold text-txt-muted uppercase tracking-wide">Queixa</th>
+                <th className="text-left px-6 py-3 text-xs font-bold text-txt-muted uppercase tracking-wide">Visível</th>
                 <th className="text-left px-6 py-3 text-xs font-bold text-txt-muted uppercase tracking-wide">Ações</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-sm text-txt-muted">Carregando…</td>
+                  <td colSpan={7} className="text-center py-12 text-sm text-txt-muted">Carregando…</td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-sm text-txt-muted">
+                  <td colSpan={7} className="text-center py-12 text-sm text-txt-muted">
                     {search ? "Nenhum registro encontrado para a busca." : "Nenhum registro clínico cadastrado. Acesse a ficha de um paciente para criar registros."}
                   </td>
                 </tr>
@@ -133,6 +136,13 @@ export default function ProntuariosPage() {
                     <td className="px-6 py-4 text-sm text-txt-light">{r.sessionNumber ?? "—"}</td>
                     <td className="px-6 py-4 text-sm text-txt-light">{r.mood ? (moodLabel[r.mood] || r.mood) : "—"}</td>
                     <td className="px-6 py-4 text-sm text-txt-light max-w-[200px] truncate">{r.chiefComplaint || "—"}</td>
+                    <td className="px-6 py-4">
+                      {r.private ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6rem] font-bold bg-amber-100 text-amber-700 border border-amber-200">🔒 Privado</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6rem] font-bold bg-green-100 text-green-700 border border-green-200">👁️ Visível</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
                         onClick={() => setEditRecord(r)}
@@ -179,6 +189,7 @@ export default function ProntuariosPage() {
                       interventions: fd.get("interventions"),
                       homework: fd.get("homework"),
                       mood: fd.get("mood"),
+                      private: fd.get("private") === "on",
                     }),
                   });
                   if (res.ok) {
@@ -218,6 +229,28 @@ export default function ProntuariosPage() {
                 <label className="block text-xs font-bold mb-1">Tarefa de Casa</label>
                 <input name="homework" type="text" defaultValue={editRecord.homework || ""} className={inputCls} />
               </div>
+
+              {/* Private toggle with clear visual warning */}
+              <div className={`rounded-brand-sm border-2 p-3 ${editRecord.private ? "border-amber-300 bg-amber-50" : "border-green-300 bg-green-50"}`}>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="private"
+                    defaultChecked={editRecord.private}
+                    onChange={(e) => setEditRecord({ ...editRecord, private: e.target.checked })}
+                    className="w-4 h-4 accent-amber-600"
+                  />
+                  <span className="text-xs font-bold">
+                    {editRecord.private ? "🔒 Prontuário PRIVADO" : "👁️ Prontuário VISÍVEL ao paciente"}
+                  </span>
+                </label>
+                <p className="text-[0.65rem] mt-1.5 ml-7 font-semibold">
+                  {editRecord.private
+                    ? "⚠️ Esta anotação o paciente NÃO verá — uso exclusivo da terapeuta."
+                    : "✅ O paciente verá este registro na página de Evolução."}
+                </p>
+              </div>
+
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving} className="btn-brand-primary flex-1 disabled:opacity-50">
                   {saving ? "Salvando…" : "Salvar Alterações 🌿"}
