@@ -146,3 +146,21 @@ After remediation, verify:
 | C3 | CRITICAL | `platform/Platform{Nav,Hero,CTA,Pricing}.tsx` | WhatsApp fallback to Beatriz's number | ✅ Fixed |
 | C4 | MEDIUM | `components/landing/` (15 files) | Orphaned components with hardcoded branding | ✅ Deleted |
 | M5 | MEDIUM | `platform/PlatformPricing.tsx` | "Basic" instead of "Básico" | ✅ Fixed |
+
+## Known Issues Found (2025-07-26 Audit)
+
+| ID | Severity | File | Issue | Status |
+|----|----------|------|-------|--------|
+| B1 | HIGH | `portal/agendar/page.tsx` | 3x hardcoded "Bea" in scheduling text | ✅ Fixed → PROFESSIONAL_NAME dynamic |
+
+### Pattern 5: Dynamic professional name in platform
+```typescript
+// ❌ BAD — hardcoded nickname in shared platform page
+"...mensagem com a Bea."
+"...para a Bea, sem compromisso..."
+
+// ✅ GOOD — dynamic with env var fallback
+import { PROFESSIONAL_NAME } from "@/lib/utils";
+`...mensagem com ${PROFESSIONAL_NAME || "seu/sua psicólogo(a)"}.`
+`...para ${PROFESSIONAL_NAME || "seu/sua psicólogo(a)"}, sem compromisso...`
+```
