@@ -43,13 +43,13 @@ export default function ConsentimentoPage() {
       {accepted ? (
         <div className="bg-green-50 border border-green-200 rounded-brand p-6">
           <p className="text-green-800 font-medium">✅ Você aceitou os termos em {new Date(accepted).toLocaleDateString("pt-BR")}.</p>
-          <p className="text-sm text-green-700 mt-2">Caso tenha dúvidas, entre em contato com Bea pelo WhatsApp.</p>
+          <p className="text-sm text-green-700 mt-2">Caso tenha dúvidas, entre em contato com seu/sua psicólogo(a).</p>
         </div>
       ) : (
         <div className="bg-white rounded-brand p-6 shadow-sm border border-primary/5 space-y-4">
           <div className="prose prose-sm max-h-80 overflow-y-auto border border-primary/10 rounded-brand p-4 text-txt-light">
             <h3>1. Consentimento para Atendimento Psicológico</h3>
-            <p>Eu, paciente identificado(a) no cadastro desta plataforma, declaro que estou ciente e de acordo com o atendimento psicológico realizado pela psicóloga <strong>Beatriz Ribeiro — CRP 06/173961</strong>, na modalidade online (videochamada), conforme agendamento.</p>
+            <p>Eu, paciente identificado(a) no cadastro desta plataforma, declaro que estou ciente e de acordo com o atendimento psicológico realizado pelo(a) profissional responsável por este consultório, na modalidade online (videochamada) ou presencial, conforme agendamento.</p>
 
             <h3>2. Sigilo Profissional</h3>
             <p>O sigilo profissional é garantido conforme o Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005). As informações compartilhadas durante as sessões são confidenciais e só serão compartilhadas mediante autorização expressa ou nas exceções previstas em lei.</p>

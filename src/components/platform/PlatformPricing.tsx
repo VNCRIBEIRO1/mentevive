@@ -5,7 +5,7 @@ import { Check, Sparkles } from "lucide-react";
 import { WHATSAPP_LINK, buildWhatsAppUrl } from "@/lib/utils";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 
-const PLATFORM_WHATSAPP = WHATSAPP_LINK || "https://wa.me/5511988840525";
+const PLATFORM_WHATSAPP = WHATSAPP_LINK || "";
 
 const sharedFeatures = [
   "Site / landing page profissional",
@@ -22,12 +22,12 @@ const sharedFeatures = [
 
 const plans = [
   {
-    name: "Basic",
+    name: "Básico",
     setup: "399",
     trial: "30 dias grátis",
     trialNote: "Teste a plataforma por 30 dias sem custo adicional",
     popular: false,
-    whatsappMsg: "Olá! Tenho interesse no plano Basic da MenteVive.",
+    whatsappMsg: "Olá! Tenho interesse no plano Básico da MenteVive.",
   },
   {
     name: "Pro",
@@ -51,7 +51,7 @@ export function PlatformPricing() {
           <p className="mt-4 text-foreground/60 max-w-xl mx-auto">
             Criamos seu site profissional e integramos com toda a plataforma.
             Após o período de teste, a assinatura é de{" "}
-            <strong className="text-foreground">R$&nbsp;59,00/mês</strong> ou{" "}
+            <strong className="text-foreground">R$&nbsp;59,90/mês</strong> ou{" "}
             <strong className="text-foreground">R$&nbsp;499,00/ano</strong>.
           </p>
         </AnimatedSection>
@@ -62,7 +62,7 @@ export function PlatformPricing() {
           className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch"
         >
           {plans.map((plan) => {
-            const href = `${PLATFORM_WHATSAPP}?text=${encodeURIComponent(plan.whatsappMsg)}`;
+            const href = PLATFORM_WHATSAPP ? `${PLATFORM_WHATSAPP}?text=${encodeURIComponent(plan.whatsappMsg)}` : "#planos";
 
             return (
               <AnimatedItem key={plan.name}>
@@ -113,7 +113,7 @@ export function PlatformPricing() {
                       Após o período grátis
                     </p>
                     <p className="text-sm font-medium text-foreground">
-                      R$ 59,00/mês{" "}
+                      R$ 59,90/mês{" "}
                       <span className="text-foreground/40">ou</span>{" "}
                       R$ 499,00/ano
                     </p>
@@ -136,6 +136,7 @@ export function PlatformPricing() {
                   </ul>
 
                   {/* CTA */}
+                  {PLATFORM_WHATSAPP ? (
                   <a
                     href={href}
                     target="_blank"
@@ -149,9 +150,21 @@ export function PlatformPricing() {
                     <WhatsAppIcon className="w-5 h-5" />
                     Quero o plano {plan.name}
                   </a>
+                  ) : (
+                  <a
+                    href="/registro"
+                    className={`inline-flex items-center justify-center gap-2.5 text-base font-semibold px-8 py-3.5 rounded-brand transition-all duration-300 ${
+                      plan.popular
+                        ? "btn-brand-primary shadow-warm-lg hover:shadow-warm-xl"
+                        : "btn-brand-outline"
+                    }`}
+                  >
+                    Começar agora
+                  </a>
+                  )}
 
                   <p className="mt-3 text-xs text-foreground/40 text-center">
-                    Fale conosco pelo WhatsApp
+                    {PLATFORM_WHATSAPP ? "Fale conosco pelo WhatsApp" : "Cadastre-se para começar"}
                   </p>
                 </div>
               </AnimatedItem>

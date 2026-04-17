@@ -154,13 +154,21 @@ export async function POST(req: NextRequest) {
     if (eventType === "charge.refunded") {
       const paymentIntentId = (eventData.payment_intent as string) || "";
       if (paymentIntentId) {
-        await db
-          .update(payments)
-          .set({
-            status: "refunded",
-            stripeStatus: "refunded",
-          })
-          .where(eq(payments.stripePaymentIntentId, paymentIntentId));
+        const [existingPayment] = await db
+          .select({ id: payments.id, tenantId: payments.tenantId })
+          .from(payments)
+          .where(eq(payments.stripePaymentIntentId, paymentIntentId))
+          .limit(1);
+
+        if (existingPayment) {
+          await db
+            .update(payments)
+            .set({
+              status: "refunded",
+              stripeStatus: "refunded",
+            })
+            .where(and(eq(payments.tenantId, existingPayment.tenantId), eq(payments.id, existingPayment.id)));
+        }
       }
     }
 

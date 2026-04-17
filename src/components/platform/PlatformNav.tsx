@@ -14,8 +14,8 @@ const navLinks = [
   { label: "FAQ", href: "#faq" },
 ];
 
-const PLATFORM_WA = WHATSAPP_LINK || "https://wa.me/5511988840525";
-const whatsappHref = `${PLATFORM_WA}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre a MenteVive.")}`;
+const PLATFORM_WA = WHATSAPP_LINK || "";
+const whatsappHref = PLATFORM_WA ? `${PLATFORM_WA}?text=${encodeURIComponent("Olá! Gostaria de saber mais sobre a MenteVive.")}` : "";
 
 export function PlatformNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -65,6 +65,7 @@ export function PlatformNav() {
           >
             Entrar
           </Link>
+          {whatsappHref && (
           <a
             href={whatsappHref}
             target="_blank"
@@ -74,6 +75,7 @@ export function PlatformNav() {
             <WhatsAppIcon className="w-4 h-4" />
             Fale conosco
           </a>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -114,6 +116,7 @@ export function PlatformNav() {
               >
                 Entrar
               </Link>
+              {whatsappHref && (
               <a
                 href={whatsappHref}
                 target="_blank"
@@ -124,6 +127,7 @@ export function PlatformNav() {
                 <WhatsAppIcon className="w-4 h-4" />
                 Fale conosco
               </a>
+              )}
             </div>
           </motion.div>
         )}
