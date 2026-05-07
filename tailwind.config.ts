@@ -9,17 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: { DEFAULT: "#5B9BD5", dark: "#4680B4", light: "#8BC1EB" },
-        accent: { DEFAULT: "#6ECFF6", light: "#9BDEF8" },
-        teal: { DEFAULT: "#5EADA5", dark: "#43918A", light: "#7ECAC2" },
-        sage: { DEFAULT: "#1F2331", dark: "#181C28" },
-        bg: { DEFAULT: "#111520", white: "#1A1E2B", soft: "#161A25", warm: "#1D2130" },
-        txt: { DEFAULT: "#E1E5ED", light: "#9DA4B3", muted: "#6C7384" },
-        surface: "#1A1E2B",
-        border: "#2B3042",
-        card: "#1D2130",
-        foreground: "#E1E5ED",
-        background: "#111520",
+        // Warm therapy-environment palette (mirrors psicolobia tenant template)
+        primary: { DEFAULT: "#D4A574", dark: "#B8895C", light: "#E8C9A8" },
+        accent: { DEFAULT: "#E8A0BF", light: "#F5C8DE" },
+        teal: { DEFAULT: "#0f766e", dark: "#0a6158", light: "#14b8a6" },
+        sage: { DEFAULT: "#e6f0eb", dark: "#c8ddd0" },
+        bg: { DEFAULT: "#FFF5EE", white: "#FFFFFF", soft: "#FDE8D8", warm: "#F9EDE3" },
+        txt: { DEFAULT: "#3D2B1F", light: "#6B5445", muted: "#7D6E62" },
+        surface: "#FFFFFF",
+        border: "#E8DFD3",
+        card: "#FFFFFF",
+        foreground: "#3D2B1F",
+        background: "#FFF5EE",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Georgia", "serif"],
@@ -31,14 +32,14 @@ const config: Config = {
         "brand-full": "50px",
       },
       boxShadow: {
-        "warm-sm": "0 1px 3px 0 rgba(0,0,0,0.2), 0 1px 2px -1px rgba(91,155,213,0.08)",
-        "warm-md": "0 4px 12px -2px rgba(0,0,0,0.25), 0 2px 6px -2px rgba(91,155,213,0.10)",
-        "warm-lg": "0 10px 25px -5px rgba(0,0,0,0.3), 0 4px 10px -5px rgba(91,155,213,0.10)",
-        "warm-xl": "0 20px 40px -10px rgba(0,0,0,0.35), 0 8px 16px -8px rgba(91,155,213,0.12)",
-        "warm-2xl": "0 25px 50px -12px rgba(0,0,0,0.4)",
-        "warm-glow": "0 0 20px -5px rgba(91,155,213,0.25)",
-        "teal-glow": "0 0 20px -5px rgba(94,173,165,0.3)",
-        "glass-inner": "inset 0 0 25px -5px rgba(91,155,213,0.08)",
+        "warm-sm": "0 1px 3px 0 rgba(212,165,116,0.10), 0 1px 2px -1px rgba(212,165,116,0.08)",
+        "warm-md": "0 4px 12px -2px rgba(212,165,116,0.15), 0 2px 6px -2px rgba(212,165,116,0.10)",
+        "warm-lg": "0 10px 25px -5px rgba(212,165,116,0.18), 0 4px 10px -5px rgba(212,165,116,0.12)",
+        "warm-xl": "0 20px 40px -10px rgba(212,165,116,0.22), 0 8px 16px -8px rgba(212,165,116,0.14)",
+        "warm-2xl": "0 25px 50px -12px rgba(212,165,116,0.25)",
+        "warm-glow": "0 0 20px -5px rgba(212,165,116,0.30)",
+        "teal-glow": "0 0 20px -5px rgba(15,118,110,0.25)",
+        "glass-inner": "inset 0 0 25px -5px rgba(255,245,238,0.6)",
       },
       keyframes: {
         "liquid-float": {

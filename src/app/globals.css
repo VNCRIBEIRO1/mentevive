@@ -4,25 +4,26 @@
 
 @layer base {
   :root {
-    --primary: #5B9BD5;
-    --primary-dark: #4680B4;
-    --primary-light: #8BC1EB;
-    --accent: #6ECFF6;
-    --accent-light: #9BDEF8;
-    --teal: #5EADA5;
-    --teal-dark: #43918A;
-    --sage: #1F2331;
-    --bg: #111520;
-    --bg-white: #1A1E2B;
-    --bg-soft: #161A25;
-    --bg-warm: #1D2130;
-    --text: #E1E5ED;
-    --text-light: #9DA4B3;
-    --text-muted: #6C7384;
-    --surface: #1A1E2B;
-    --border: #2B3042;
-    --card: #1D2130;
-    --foreground: #E1E5ED;
+    /* Warm therapy-environment palette aligned with the psicolobia tenant template */
+    --primary: #D4A574;
+    --primary-dark: #B8895C;
+    --primary-light: #E8C9A8;
+    --accent: #E8A0BF;
+    --accent-light: #F5C8DE;
+    --teal: #0f766e;
+    --teal-dark: #0a6158;
+    --sage: #e6f0eb;
+    --bg: #FFF5EE;
+    --bg-white: #FFFFFF;
+    --bg-soft: #FDE8D8;
+    --bg-warm: #F9EDE3;
+    --text: #3D2B1F;
+    --text-light: #6B5445;
+    --text-muted: #7D6E62;
+    --surface: #FFFFFF;
+    --border: #E8DFD3;
+    --card: #FFFFFF;
+    --foreground: #3D2B1F;
   }
 
   html {
@@ -34,7 +35,7 @@
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   *:focus-visible {
@@ -89,33 +90,33 @@
     @apply bg-card rounded-brand p-6 shadow-warm-md transition-all duration-300 hover:shadow-warm-lg hover:-translate-y-1;
   }
 
-  /* ── Liquid Glass 2.0 ── */
+  /* ── Liquid Glass — light warm ── */
   .glass {
-    background: rgba(26, 30, 43, 0.7);
-    backdrop-filter: blur(40px) saturate(1.4);
-    -webkit-backdrop-filter: blur(40px) saturate(1.4);
-    border: 1px solid rgba(91, 155, 213, 0.12);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(40px) saturate(1.2);
+    -webkit-backdrop-filter: blur(40px) saturate(1.2);
+    border: 1px solid rgba(212, 165, 116, 0.18);
     box-shadow:
-      0 4px 12px -2px rgba(0, 0, 0, 0.25),
-      inset 0 0 25px -5px rgba(91, 155, 213, 0.06);
+      0 4px 12px -2px rgba(212, 165, 116, 0.08),
+      inset 0 0 25px -5px rgba(255, 245, 238, 0.6);
   }
   .glass-strong {
-    background: rgba(26, 30, 43, 0.85);
-    backdrop-filter: blur(50px) saturate(1.5);
-    -webkit-backdrop-filter: blur(50px) saturate(1.5);
-    border: 1px solid rgba(91, 155, 213, 0.18);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(50px) saturate(1.3);
+    -webkit-backdrop-filter: blur(50px) saturate(1.3);
+    border: 1px solid rgba(212, 165, 116, 0.22);
     box-shadow:
-      0 8px 20px -4px rgba(0, 0, 0, 0.3),
-      inset 0 0 30px -5px rgba(91, 155, 213, 0.08);
+      0 8px 20px -4px rgba(212, 165, 116, 0.12),
+      inset 0 0 30px -5px rgba(255, 245, 238, 0.8);
   }
   .glass-glow {
-    background: linear-gradient(135deg, rgba(26,30,43,0.7), rgba(17,21,32,0.5));
-    backdrop-filter: blur(40px) saturate(1.4);
-    -webkit-backdrop-filter: blur(40px) saturate(1.4);
-    border: 1px solid rgba(110, 207, 246, 0.15);
+    background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(249,237,227,0.7));
+    backdrop-filter: blur(40px) saturate(1.3);
+    -webkit-backdrop-filter: blur(40px) saturate(1.3);
+    border: 1px solid rgba(15, 118, 110, 0.18);
     box-shadow:
-      0 0 30px -10px rgba(110, 207, 246, 0.2),
-      inset 0 0 20px -5px rgba(91, 155, 213, 0.08);
+      0 0 30px -10px rgba(15, 118, 110, 0.15),
+      inset 0 0 20px -5px rgba(212, 165, 116, 0.06);
   }
 
   /* ── Gradient mesh background ── */
