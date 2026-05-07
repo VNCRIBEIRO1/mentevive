@@ -6,6 +6,7 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { SessionProvider } from "next-auth/react";
 import { SessionMismatch } from "@/components/SessionMismatch";
 import { BrandingProvider } from "@/components/branding/BrandingContext";
+import { PsychologistTour } from "@/components/onboarding/PsychologistTour";
 import { Clock } from "lucide-react";
 
 interface SubscriptionStatus {
@@ -135,6 +136,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {children}
             </main>
           </div>
+          <PsychologistTour />
         </BrandingProvider>
       </AdminAuthGuard>
     </SessionProvider>

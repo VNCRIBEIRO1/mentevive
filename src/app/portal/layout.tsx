@@ -7,20 +7,24 @@ import { signOut } from "next-auth/react";
 import { SessionMismatch } from "@/components/SessionMismatch";
 import { BrandingProvider, useBranding, brandingInitial } from "@/components/branding/BrandingContext";
 import { PoweredByMenteVive } from "@/components/branding/PoweredByMenteVive";
+import { PatientTour, PATIENT_TOUR_KEY } from "@/components/onboarding/PatientTour";
+import { HelpButton } from "@/components/onboarding/HelpButton";
 import {
   Home, CalendarPlus, Leaf, CalendarCheck, Sprout,
   CreditCard, FileText, ShieldCheck, Settings, LogOut,
   ArrowLeft, Menu, X,
 } from "lucide-react";
 
-const NAV_ITEMS = [
+type NavItem = { href: string; label: string; icon: typeof Home; group: string; tourId?: string };
+
+const NAV_ITEMS: NavItem[] = [
   { href: "/portal", label: "Início", icon: Home, group: "main" },
-  { href: "/portal/agendar", label: "Agendar Sessão", icon: CalendarPlus, group: "main" },
+  { href: "/portal/agendar", label: "Agendar Sessão", icon: CalendarPlus, group: "main", tourId: "nav-agendar" },
   { href: "/portal/processo", label: "Processo Terapêutico", icon: Leaf, group: "main" },
-  { href: "/portal/sessoes", label: "Minhas Sessões", icon: CalendarCheck, group: "therapy" },
+  { href: "/portal/sessoes", label: "Minhas Sessões", icon: CalendarCheck, group: "therapy", tourId: "nav-sessoes" },
   { href: "/portal/evolucao", label: "Minha Evolução", icon: Sprout, group: "therapy" },
-  { href: "/portal/pagamentos", label: "Pagamentos", icon: CreditCard, group: "account" },
-  { href: "/portal/documentos", label: "Notas e Docs", icon: FileText, group: "account" },
+  { href: "/portal/pagamentos", label: "Pagamentos", icon: CreditCard, group: "account", tourId: "nav-pagamentos" },
+  { href: "/portal/documentos", label: "Notas e Docs", icon: FileText, group: "account", tourId: "nav-documentos" },
   { href: "/portal/consentimento", label: "Termos LGPD", icon: ShieldCheck, group: "account" },
   { href: "/portal/configuracoes", label: "Configurações", icon: Settings, group: "account" },
 ];
@@ -114,6 +118,7 @@ function PortalSidebar({ mobileOpen, onClose, userName, userEmail }: { mobileOpe
                           key={item.href}
                           href={item.href}
                           onClick={onClose}
+                          data-tour={item.tourId}
                           className={`
                             flex items-center gap-3 px-3 py-2.5 rounded-xl text-[0.82rem] font-medium
                             transition-all duration-200 group/nav relative
@@ -141,6 +146,7 @@ function PortalSidebar({ mobileOpen, onClose, userName, userEmail }: { mobileOpe
 
           {/* Footer actions */}
           <div className="border-t border-primary/10 pt-4 mt-4 space-y-1">
+            <HelpButton storageKey={PATIENT_TOUR_KEY} />
             <Link href="/" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-txt-muted hover:text-primary-dark hover:bg-primary/5 transition-colors">
               <ArrowLeft className="w-3.5 h-3.5" />
               Voltar ao site
@@ -166,6 +172,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
       <PortalAuthGuard>
         <BrandingProvider>
           <PortalShell>{children}</PortalShell>
+          <PatientTour />
         </BrandingProvider>
       </PortalAuthGuard>
     </SessionProvider>
