@@ -1,20 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-
-const DAY_NAMES = ["Domingo", "Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado"];
+import Link from "next/link";
+import { CalendarClock } from "lucide-react";
 
 const AREAS = [
   "Ansiedade", "Depressao", "Traumas", "Autoestima", "Burnout Digital",
   "Relacionamentos", "Luto", "Autoconhecimento", "ACT", "Terapia de Casal", "Criadores de Conteudo",
 ];
-
-type AvailSlot = {
-  id?: string;
-  dayOfWeek: number;
-  startTime: string;
-  endTime: string;
-  active: boolean;
-};
 
 type PricingItem = { label: string; key: string; duration: string; value: string };
 
@@ -33,7 +25,6 @@ export default function ConfiguracoesPage() {
   const [bio, setBio] = useState("");
   const [crp, setCrp] = useState("");
   const [profileVisible, setProfileVisible] = useState(false);
-  const [slots, setSlots] = useState<AvailSlot[]>([]);
   const [pricing, setPricing] = useState<PricingItem[]>(defaultPricing);
   const [areas, setAreas] = useState<string[]>([]);
   const [toast, setToast] = useState("");
@@ -43,23 +34,15 @@ export default function ConfiguracoesPage() {
 
   useEffect(() => {
     const init = async () => {
-      try {
-        const res = await fetch("/api/auth/session");
-        if (res.ok) {
-          const session = await res.json();
-          if (session?.user) {
-            setName(session.user.name || "");
-            setEmail(session.user.email || "");
-            setPhone(session.user.phone || "");
-          }
-        }
-      } catch {}
-
+      // Single fetch: profile contains all user fields including email
       try {
         const res = await fetch("/api/profile");
         if (res.ok) {
           const profile = await res.json();
           if (profile) {
+            setName(profile.name || "");
+            setEmail(profile.email || "");
+            setPhone(profile.phone || "");
             setSpecialty(profile.specialty || "");
             setBio(profile.bio || "");
             setCrp(profile.crp || "");
@@ -69,27 +52,13 @@ export default function ConfiguracoesPage() {
       } catch {}
 
       try {
-        const res = await fetch("/api/availability");
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setSlots(data);
-          } else {
-            setSlots([1, 2, 3, 4, 5].map((d) => ({ dayOfWeek: d, startTime: "08:00", endTime: "20:00", active: true })));
-          }
-        }
-      } catch {
-        setSlots([1, 2, 3, 4, 5].map((d) => ({ dayOfWeek: d, startTime: "08:00", endTime: "20:00", active: true })));
-      }
-
-      try {
         const res = await fetch("/api/settings?key=pricing");
         if (res.ok) {
           const data = await res.json();
           if (data.value && Array.isArray(data.value)) {
             const incoming = data.value as PricingItem[];
             const videoItem = incoming.find((p) => p.key === "videochamada") || incoming.find((p) => p.key === "individual_online");
-            setPricing([{ ...defaultPricing[0], value: videoItem?.value || "" }]);
+            if (videoItem) setPricing([{ ...defaultPricing[0], value: videoItem.value || "" }]);
           }
         }
       } catch {}
@@ -98,9 +67,7 @@ export default function ConfiguracoesPage() {
         const res = await fetch("/api/settings?key=areas");
         if (res.ok) {
           const data = await res.json();
-          if (data.value && Array.isArray(data.value)) {
-            setAreas(data.value);
-          }
+          if (data.value && Array.isArray(data.value)) setAreas(data.value);
         }
       } catch {}
 
@@ -113,14 +80,6 @@ export default function ConfiguracoesPage() {
     setToast(msg);
     setToastType(type);
     setTimeout(() => setToast(""), 4000);
-  };
-
-  const updateSlot = (idx: number, field: keyof AvailSlot, value: string | boolean | number) => {
-    setSlots((prev) => prev.map((s, i) => (i === idx ? { ...s, [field]: value } : s)));
-  };
-
-  const removeSlot = (idx: number) => {
-    setSlots((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const toggleArea = (area: string) => {
@@ -140,17 +99,6 @@ export default function ConfiguracoesPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, phone, specialty, bio, crp, profileVisible }),
-      });
-      if (!res.ok) hasError = true;
-    } catch {
-      hasError = true;
-    }
-
-    try {
-      const res = await fetch("/api/availability", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slots }),
       });
       if (!res.ok) hasError = true;
     } catch {
@@ -179,14 +127,17 @@ export default function ConfiguracoesPage() {
       hasError = true;
     }
 
-    flash(hasError ? "Erro ao salvar algumas configuracoes." : "Configuracoes salvas com sucesso.", hasError ? "error" : "success");
+    flash(
+      hasError ? "Erro ao salvar algumas configurações." : "Configurações salvas com sucesso.",
+      hasError ? "error" : "success"
+    );
     setSaving(false);
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-txt-muted">Carregando configuracoes...</p>
+        <p className="text-sm text-txt-muted">Carregando configurações...</p>
       </div>
     );
   }
@@ -194,17 +145,20 @@ export default function ConfiguracoesPage() {
   return (
     <div>
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 border text-sm px-5 py-3 rounded-brand-sm shadow-lg ${toastType === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-card border-primary/20 text-txt"}`}>
+        <div className={`fixed top-4 right-4 z-50 border text-sm px-5 py-3 rounded-brand-sm shadow-lg ${
+          toastType === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-card border-primary/20 text-txt"
+        }`}>
           {toast}
         </div>
       )}
 
       <div className="mb-8">
-        <h1 className="font-heading text-2xl font-bold text-txt">Configuracoes</h1>
-        <p className="text-sm text-txt-light mt-1">Configuracoes da plataforma</p>
+        <h1 className="font-heading text-2xl font-bold text-txt">Configurações</h1>
+        <p className="text-sm text-txt-light mt-1">Perfil profissional, valores e áreas de atuação</p>
       </div>
 
       <div className="space-y-6 max-w-2xl">
+        {/* Perfil */}
         <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
           <h3 className="font-heading text-base font-semibold text-txt mb-4">Perfil</h3>
           <div className="space-y-4">
@@ -214,78 +168,99 @@ export default function ConfiguracoesPage() {
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5">E-mail</label>
-              <input type="email" value={email} readOnly className={inputCls + " bg-bg cursor-not-allowed"} />
+              <input type="email" value={email} readOnly className={inputCls + " bg-bg cursor-not-allowed opacity-60"} />
+              <p className="text-[0.7rem] text-txt-muted mt-1">O e-mail não pode ser alterado aqui.</p>
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5">Telefone</label>
-              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="(11) 98884-0525" />
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className={inputCls}
+                placeholder="(11) 98884-0525"
+              />
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5">CRP</label>
-              <input type="text" value={crp} onChange={(e) => setCrp(e.target.value)} className={inputCls} placeholder="06/123456" />
+              <input
+                type="text"
+                value={crp}
+                onChange={(e) => setCrp(e.target.value)}
+                className={inputCls}
+                placeholder="06/123456"
+              />
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5">Especialidade</label>
-              <input type="text" value={specialty} onChange={(e) => setSpecialty(e.target.value)} className={inputCls} placeholder="Ex: Terapia Cognitivo-Comportamental" />
+              <input
+                type="text"
+                value={specialty}
+                onChange={(e) => setSpecialty(e.target.value)}
+                className={inputCls}
+                placeholder="Ex: Terapia de Aceitação e Compromisso (ACT)"
+              />
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5">Bio</label>
-              <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className={inputCls + " resize-none"} placeholder="Uma breve descricao sobre voce e sua abordagem..." maxLength={500} />
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={3}
+                className={inputCls + " resize-none"}
+                placeholder="Uma breve descrição sobre você e sua abordagem..."
+                maxLength={500}
+              />
               <span className="text-xs text-txt-muted mt-1 block">{bio.length}/500</span>
             </div>
           </div>
         </div>
 
+        {/* Diretório Público */}
         <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
-          <h3 className="font-heading text-base font-semibold text-txt mb-2">Diretorio Publico</h3>
-          <p className="text-sm text-txt-muted mb-4">Controle se seu perfil aparece no diretorio de profissionais da landing page.</p>
+          <h3 className="font-heading text-base font-semibold text-txt mb-2">Diretório Público</h3>
+          <p className="text-sm text-txt-muted mb-4">
+            Controle se seu perfil aparece no diretório de profissionais da landing page.
+          </p>
           <label className="flex items-center gap-3 cursor-pointer">
             <div className="relative">
-              <input type="checkbox" checked={profileVisible} onChange={(e) => setProfileVisible(e.target.checked)} className="sr-only peer" />
-              <div className="w-11 h-6 bg-primary/15 rounded-full peer-checked:bg-teal transition-colors"></div>
-              <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-card rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
+              <input
+                type="checkbox"
+                checked={profileVisible}
+                onChange={(e) => setProfileVisible(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-primary/15 rounded-full peer-checked:bg-teal transition-colors" />
+              <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-card rounded-full shadow transition-transform peer-checked:translate-x-5" />
             </div>
-            <span className="text-sm font-medium text-txt">Aparecer no diretorio de profissionais</span>
+            <span className="text-sm font-medium text-txt">Aparecer no diretório de profissionais</span>
           </label>
           {profileVisible && (
-            <p className="text-xs text-teal mt-2">Seu nome, especialidade, CRP e bio serao exibidos publicamente.</p>
+            <p className="text-xs text-teal mt-2">Seu nome, especialidade, CRP e bio serão exibidos publicamente.</p>
           )}
         </div>
 
-        <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
-          <h3 className="font-heading text-base font-semibold text-txt mb-2">Horarios de Atendimento</h3>
-          <p className="text-sm text-txt-muted mb-4">Configure seus horarios disponiveis. As sessoes duram 1 hora.</p>
-          <div className="space-y-2">
-            {slots.map((slot, idx) => (
-              <div key={idx} className="flex items-center gap-3 py-2 border-b border-primary/5 last:border-0 flex-wrap">
-                <label className="flex items-center gap-2 w-28 shrink-0">
-                  <input type="checkbox" checked={slot.active} onChange={(e) => updateSlot(idx, "active", e.target.checked)} className="rounded border-primary/30 text-primary-dark focus:ring-primary/20" />
-                  <span className="text-sm font-medium text-txt">{DAY_NAMES[slot.dayOfWeek]}</span>
-                </label>
-                <input type="time" value={slot.startTime} onChange={(e) => updateSlot(idx, "startTime", e.target.value)} disabled={!slot.active} step="3600" className="py-1.5 px-2 border border-primary/15 rounded-brand-sm text-sm disabled:opacity-50" />
-                <span className="text-xs text-txt-muted">ate</span>
-                <input type="time" value={slot.endTime} onChange={(e) => updateSlot(idx, "endTime", e.target.value)} disabled={!slot.active} step="3600" className="py-1.5 px-2 border border-primary/15 rounded-brand-sm text-sm disabled:opacity-50" />
-                <button onClick={() => removeSlot(idx)} className="text-red-400 hover:text-red-600 text-xs font-bold ml-1" title="Remover horario">x</button>
-              </div>
-            ))}
+        {/* Link para Horários */}
+        <Link
+          href="/admin/horarios"
+          className="flex items-center gap-4 bg-card rounded-brand p-6 shadow-sm border border-primary/5 hover:border-primary/20 hover:shadow-warm-md transition-all group"
+        >
+          <div className="w-10 h-10 rounded-brand-sm bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
+            <CalendarClock className="w-5 h-5 text-primary-dark" />
           </div>
-          <div className="flex items-center gap-3 mt-3">
-            <select id="newSlotDay" className="py-1.5 px-2 border border-primary/15 rounded-brand-sm text-sm" defaultValue="6">
-              {DAY_NAMES.map((n, i) => (
-                <option key={i} value={i}>{n}</option>
-              ))}
-            </select>
-            <button onClick={() => {
-              const sel = document.getElementById("newSlotDay") as HTMLSelectElement;
-              const dow = Number(sel.value);
-              setSlots((prev) => [...prev, { dayOfWeek: dow, startTime: "09:00", endTime: "13:00", active: true }]);
-            }} className="text-xs text-primary-dark font-bold hover:underline">+ Adicionar horario</button>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-heading text-base font-semibold text-txt">Horários de Atendimento</h3>
+            <p className="text-sm text-txt-muted mt-0.5">
+              Configure grade semanal, bloqueie datas e gerencie disponibilidades no calendário completo.
+            </p>
           </div>
-        </div>
+          <span className="text-txt-muted text-lg group-hover:text-primary-dark transition-colors">›</span>
+        </Link>
 
+        {/* Valor da Videochamada */}
         <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
-          <h3 className="font-heading text-base font-semibold text-txt mb-2">Valor da Videochamada</h3>
-          <p className="text-sm text-txt-muted mb-4">Valor fixo exibido no agendamento de sessoes online.</p>
+          <h3 className="font-heading text-base font-semibold text-txt mb-2">Valor da Sessão</h3>
+          <p className="text-sm text-txt-muted mb-4">Valor exibido aos pacientes ao agendar uma sessão online.</p>
           {pricing.map((p, idx) => (
             <div key={p.key} className="flex items-center gap-4">
               <div className="flex-1">
@@ -294,18 +269,34 @@ export default function ConfiguracoesPage() {
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-txt-muted">R$</span>
-                <input type="number" placeholder="0,00" value={p.value} onChange={(e) => updatePricing(idx, e.target.value)} className="w-24 py-1.5 px-2 border border-primary/15 rounded-brand-sm text-sm text-right" />
+                <input
+                  type="number"
+                  placeholder="0,00"
+                  value={p.value}
+                  onChange={(e) => updatePricing(idx, e.target.value)}
+                  className="w-28 py-2 px-3 border border-primary/15 rounded-brand-sm text-sm text-right"
+                  min="0"
+                  step="0.01"
+                />
               </div>
             </div>
           ))}
         </div>
 
+        {/* Áreas de Atuação */}
         <div className="bg-card rounded-brand p-6 shadow-sm border border-primary/5">
-          <h3 className="font-heading text-base font-semibold text-txt mb-2">Areas de Atuacao</h3>
-          <p className="text-sm text-txt-muted mb-4">Selecione suas especialidades para integracao futura no SaaS.</p>
+          <h3 className="font-heading text-base font-semibold text-txt mb-2">Áreas de Atuação</h3>
+          <p className="text-sm text-txt-muted mb-4">Selecione suas especialidades para o diretório público e o portal do paciente.</p>
           <div className="flex flex-wrap gap-3">
             {AREAS.map((area) => (
-              <label key={area} className={`flex items-center gap-2 px-3 py-2 rounded-brand-sm border cursor-pointer transition-colors text-sm ${areas.includes(area) ? "border-primary bg-primary/10 text-primary-dark font-medium" : "border-primary/10 bg-card text-txt-light hover:border-primary/30"}`}>
+              <label
+                key={area}
+                className={`flex items-center gap-2 px-3 py-2 rounded-brand-sm border cursor-pointer transition-colors text-sm ${
+                  areas.includes(area)
+                    ? "border-primary bg-primary/10 text-primary-dark font-medium"
+                    : "border-primary/10 bg-card text-txt-light hover:border-primary/30"
+                }`}
+              >
                 <input type="checkbox" checked={areas.includes(area)} onChange={() => toggleArea(area)} className="sr-only" />
                 {area}
               </label>
@@ -314,7 +305,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         <button onClick={handleSave} disabled={saving} className="btn-brand-primary disabled:opacity-50">
-          {saving ? "Salvando..." : "Salvar Configuracoes"}
+          {saving ? "Salvando..." : "Salvar Configurações"}
         </button>
       </div>
     </div>
