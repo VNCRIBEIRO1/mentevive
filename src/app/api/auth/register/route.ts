@@ -95,12 +95,17 @@ export async function POST(request: Request) {
           crp: crp || null,
       }).returning();
 
-      // Create tenant
+      // Create tenant with 7-day starter trial (hybrid self-service:
+      // user gets immediate access without payment; upgrades via /admin/assinatura).
+      const trialEndsAt = new Date();
+      trialEndsAt.setDate(trialEndsAt.getDate() + 7);
+
       const [newTenant] = await db.insert(tenants).values({
         slug,
         name: clinicName!,
         ownerUserId: newUser.id,
-        plan: "free",
+        plan: "starter",
+        trialEndsAt,
         maxPatients: 50,
         maxAppointmentsPerMonth: 200,
       }).returning();
@@ -109,8 +114,9 @@ export async function POST(request: Request) {
       await ensureTenantMembership(newTenant.id, newUser.id, "admin");
 
       return NextResponse.json({
-        message: "Conta profissional criada com sucesso!",
+        message: "Conta profissional criada com sucesso! Você tem 7 dias de trial gratuito.",
         tenantSlug: slug,
+        trialEndsAt: trialEndsAt.toISOString(),
         crp: crp || undefined,
       }, { status: 201 });
     }

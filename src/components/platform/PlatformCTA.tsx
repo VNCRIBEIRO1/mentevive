@@ -1,6 +1,7 @@
 import { AnimatedSection } from "@/components/landing";
 import { buildSaasWhatsAppUrl } from "./constants";
 import { WhatsAppIcon } from "./WhatsAppIcon";
+import { Sparkles } from "lucide-react";
 
 const whatsappHref = buildSaasWhatsAppUrl("Olá! Quero começar com a MenteVive.");
 
@@ -17,17 +18,26 @@ export function PlatformCTA() {
               Pronto para ter seu consultório online?
             </h2>
             <p className="mt-4 text-white/80 text-lg max-w-lg mx-auto">
-              Fale conosco pelo WhatsApp e tenha seu site profissional pronto com a plataforma completa.
+              Comece em menos de 60 segundos com 7 dias de trial gratuito. Sem cartão.
             </p>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2.5 bg-card text-foreground font-semibold px-8 py-3.5 rounded-brand shadow-warm-lg hover:shadow-warm-xl transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <WhatsAppIcon className="w-5 h-5" />
-              Fale conosco agora
-            </a>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <a
+                href="/registro?type=therapist"
+                className="inline-flex items-center gap-2.5 bg-card text-foreground font-semibold px-8 py-3.5 rounded-brand shadow-warm-lg hover:shadow-warm-xl transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <Sparkles className="w-5 h-5 text-teal" />
+                Começar trial gratuito
+              </a>
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 bg-white/15 backdrop-blur-md border border-white/30 text-white font-semibold px-8 py-3.5 rounded-brand hover:bg-white/25 transition-all duration-300"
+              >
+                <WhatsAppIcon className="w-5 h-5" />
+                Falar pelo WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       </AnimatedSection>

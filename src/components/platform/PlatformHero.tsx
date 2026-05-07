@@ -12,6 +12,7 @@ import {
   Video,
   Shield,
   Users,
+  Sparkles,
 } from "lucide-react";
 import { buildSaasWhatsAppUrl } from "./constants";
 import { WhatsAppIcon } from "./WhatsAppIcon";
@@ -66,21 +67,25 @@ export function PlatformHero() {
 
           <div className="mt-8 flex flex-col sm:flex-row items-start gap-4">
             <a
+              href="/registro?type=therapist"
+              className="btn-brand-primary text-base px-8 py-3.5 shadow-warm-lg inline-flex items-center gap-2.5"
+            >
+              <Sparkles className="w-5 h-5" />
+              Comece grátis — 7 dias
+            </a>
+            <a
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-brand-primary text-base px-8 py-3.5 shadow-warm-lg inline-flex items-center gap-2.5"
+              className="btn-brand-outline text-base px-8 py-3.5 inline-flex items-center gap-2.5"
             >
               <WhatsAppIcon className="w-5 h-5" />
-              Quero meu consultório
-            </a>
-            <a
-              href="#planos"
-              className="btn-brand-outline text-base px-8 py-3.5"
-            >
-              Ver planos
+              Falar pelo WhatsApp
             </a>
           </div>
+          <p className="mt-3 text-xs text-foreground/50">
+            Sem cartão de crédito. Sem compromisso. Cancele quando quiser.
+          </p>
 
           {/* Feature pills */}
           <div className="mt-10 flex flex-wrap items-center gap-3">

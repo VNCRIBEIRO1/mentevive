@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatedSection, AnimatedItem } from "@/components/landing";
-import { Check, Sparkles, Star } from "lucide-react";
+import { Check, Sparkles, Star, Zap } from "lucide-react";
 import { buildSaasWhatsAppUrl } from "./constants";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 
@@ -173,6 +173,32 @@ export function PlatformPricing() {
               </AnimatedItem>
             );
           })}
+        </AnimatedSection>
+
+        {/* Self-service trial banner — alternative to high-touch WhatsApp flow */}
+        <AnimatedSection direction="up" className="mt-10">
+          <div className="max-w-3xl mx-auto rounded-2xl glass-strong border border-teal/20 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-teal/15 flex items-center justify-center shrink-0">
+                <Zap size={20} className="text-teal" />
+              </div>
+              <div>
+                <p className="font-heading font-semibold text-foreground text-lg">
+                  Não quer falar com a gente agora?
+                </p>
+                <p className="text-sm text-foreground/60 mt-1">
+                  Crie sua conta em 60 segundos e use a plataforma por <strong className="text-foreground">7 dias grátis</strong>. Sem cartão.
+                </p>
+              </div>
+            </div>
+            <a
+              href="/registro?type=therapist"
+              className="btn-brand-primary inline-flex items-center gap-2 px-6 py-3 shrink-0"
+            >
+              <Sparkles size={16} />
+              Começar agora
+            </a>
+          </div>
         </AnimatedSection>
       </div>
     </section>
