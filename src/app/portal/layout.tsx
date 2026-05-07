@@ -5,6 +5,8 @@ import { useEffect, useState, ReactNode } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { SessionMismatch } from "@/components/SessionMismatch";
+import { BrandingProvider, useBranding, brandingInitial } from "@/components/branding/BrandingContext";
+import { PoweredByMenteVive } from "@/components/branding/PoweredByMenteVive";
 import {
   Home, CalendarPlus, Leaf, CalendarCheck, Sprout,
   CreditCard, FileText, ShieldCheck, Settings, LogOut,
@@ -29,8 +31,9 @@ const GROUP_LABELS: Record<string, string> = {
   account: "Conta",
 };
 
-function PortalSidebar({ mobileOpen, onClose, userName, userEmail, tenantName }: { mobileOpen: boolean; onClose: () => void; userName?: string; userEmail?: string; tenantName?: string }) {
+function PortalSidebar({ mobileOpen, onClose, userName, userEmail }: { mobileOpen: boolean; onClose: () => void; userName?: string; userEmail?: string }) {
   const pathname = usePathname();
+  const branding = useBranding();
   const initials = userName
     ? userName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
     : "?";
@@ -58,11 +61,19 @@ function PortalSidebar({ mobileOpen, onClose, userName, userEmail, tenantName }:
           {/* Logo + close button */}
           <div className="flex items-center justify-between mb-7">
             <Link href="/portal" className="flex items-center gap-2.5 group" onClick={onClose}>
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal to-teal-dark flex items-center justify-center shadow-sm">
-                <Leaf className="w-4.5 h-4.5 text-white" />
-              </div>
+              {branding.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={branding.logoUrl} alt={branding.displayName} className="w-9 h-9 rounded-xl object-cover shadow-sm" />
+              ) : (
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm text-white font-heading font-bold"
+                  style={{ background: `linear-gradient(135deg, var(--tenant-primary, #5EADA5), var(--tenant-accent, #5B9BD5))` }}
+                >
+                  {brandingInitial(branding)}
+                </div>
+              )}
               <span className="font-heading text-lg font-bold text-txt group-hover:text-teal-dark transition-colors">
-                {tenantName || "MenteVive"}
+                {branding.displayName}
               </span>
             </Link>
             <button onClick={onClose} className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-txt-muted hover:text-txt hover:bg-gray-100 transition-colors">
@@ -142,6 +153,7 @@ function PortalSidebar({ mobileOpen, onClose, userName, userEmail, tenantName }:
               Sair
             </button>
           </div>
+          <PoweredByMenteVive />
         </div>
       </aside>
     </>
@@ -152,7 +164,9 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
       <PortalAuthGuard>
-        <PortalShell>{children}</PortalShell>
+        <BrandingProvider>
+          <PortalShell>{children}</PortalShell>
+        </BrandingProvider>
       </PortalAuthGuard>
     </SessionProvider>
   );
@@ -200,6 +214,7 @@ function PortalAuthGuard({ children }: { children: ReactNode }) {
 
 function PortalShell({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
+  const branding = useBranding();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -212,7 +227,6 @@ function PortalShell({ children }: { children: ReactNode }) {
         onClose={() => setMobileOpen(false)}
         userName={session?.user?.name || undefined}
         userEmail={session?.user?.email || undefined}
-        tenantName={session?.user?.tenantName || undefined}
       />
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
@@ -221,10 +235,18 @@ function PortalShell({ children }: { children: ReactNode }) {
             <Menu className="w-5 h-5" />
           </button>
           <Link href="/portal" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-teal to-teal-dark flex items-center justify-center">
-              <Leaf className="w-3.5 h-3.5 text-white" />
-            </div>
-            <span className="font-heading text-base font-bold text-txt">{session?.user?.tenantName || "MenteVive"}</span>
+            {branding.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={branding.logoUrl} alt={branding.displayName} className="w-7 h-7 rounded-lg object-cover" />
+            ) : (
+              <div
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-heading font-bold"
+                style={{ background: `linear-gradient(135deg, var(--tenant-primary, #5EADA5), var(--tenant-accent, #5B9BD5))` }}
+              >
+                {brandingInitial(branding)}
+              </div>
+            )}
+            <span className="font-heading text-base font-bold text-txt">{branding.displayName}</span>
           </Link>
           <div className="w-9" />
         </header>

@@ -4,21 +4,26 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { NotificationBell } from "@/components/admin/NotificationBell";
+import { useBranding, brandingInitial } from "@/components/branding/BrandingContext";
+import { PoweredByMenteVive } from "@/components/branding/PoweredByMenteVive";
 import {
   LayoutDashboard, Users, CalendarDays, Clock,
-  Wallet, ClipboardList, CreditCard, Settings,
+  Wallet, ClipboardList, CreditCard, Settings, Palette,
   LogOut, ArrowLeft, Menu, X,
 } from "lucide-react";
 
-const NAV_ITEMS = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard", group: "principal" },
+type NavItem = { href: string; icon: typeof LayoutDashboard; label: string; group: string; exact?: boolean };
+
+const NAV_ITEMS: NavItem[] = [
+  { href: "/admin", icon: LayoutDashboard, label: "Dashboard", group: "principal", exact: true },
   { href: "/admin/pacientes", icon: Users, label: "Pacientes", group: "principal" },
   { href: "/admin/agenda", icon: CalendarDays, label: "Agenda", group: "clinica" },
   { href: "/admin/horarios", icon: Clock, label: "Horários", group: "clinica" },
   { href: "/admin/prontuarios", icon: ClipboardList, label: "Prontuários", group: "clinica" },
   { href: "/admin/financeiro", icon: Wallet, label: "Financeiro", group: "gestao" },
   { href: "/admin/assinatura", icon: CreditCard, label: "Assinatura", group: "gestao" },
-  { href: "/admin/configuracoes", icon: Settings, label: "Configurações", group: "gestao" },
+  { href: "/admin/configuracoes/marca", icon: Palette, label: "Marca", group: "gestao" },
+  { href: "/admin/configuracoes", icon: Settings, label: "Configurações", group: "gestao", exact: true },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
@@ -30,6 +35,7 @@ const GROUP_LABELS: Record<string, string> = {
 export function AdminSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const branding = useBranding();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const userName = session?.user?.name || "";
@@ -45,11 +51,25 @@ export function AdminSidebar() {
       {/* Logo + Brand */}
       <div className="p-5 border-b border-primary/10 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-sm">
-            <span className="text-white font-heading text-base font-bold">Ψ</span>
-          </div>
+          {branding.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={branding.logoUrl}
+              alt={branding.displayName}
+              className="w-9 h-9 rounded-xl object-cover shadow-sm"
+            />
+          ) : (
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm text-white font-heading text-base font-bold"
+              style={{
+                background: `linear-gradient(135deg, var(--tenant-primary, #5B9BD5), var(--tenant-accent, #6ECFF6))`,
+              }}
+            >
+              {brandingInitial(branding)}
+            </div>
+          )}
           <span className="font-heading text-lg font-bold text-txt group-hover:text-primary-dark transition-colors">
-            {session?.user?.tenantName || "MenteVive"}
+            {branding.displayName}
           </span>
         </Link>
         <NotificationBell />
@@ -81,7 +101,9 @@ export function AdminSidebar() {
               </p>
               <div className="space-y-0.5">
                 {items.map((item) => {
-                  const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+                  const isActive = item.exact
+                    ? pathname === item.href
+                    : pathname === item.href || pathname.startsWith(item.href + "/");
                   const Icon = item.icon;
                   return (
                     <Link
@@ -114,7 +136,7 @@ export function AdminSidebar() {
       </nav>
 
       {/* Footer actions */}
-      <div className="border-t border-primary/10 px-5 pt-4 pb-5 space-y-1">
+      <div className="border-t border-primary/10 px-5 pt-4 pb-2 space-y-1">
         <Link href="/" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-txt-muted hover:text-primary-dark hover:bg-primary/5 transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
           Voltar ao site
@@ -127,6 +149,7 @@ export function AdminSidebar() {
           Sair
         </button>
       </div>
+      <PoweredByMenteVive />
     </>
   );
 

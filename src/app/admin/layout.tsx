@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { SessionProvider } from "next-auth/react";
 import { SessionMismatch } from "@/components/SessionMismatch";
+import { BrandingProvider } from "@/components/branding/BrandingContext";
 import { Clock } from "lucide-react";
 
 interface SubscriptionStatus {
@@ -127,12 +128,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <SessionProvider>
       <AdminAuthGuard>
-        <div className="min-h-screen bg-bg flex">
-          <AdminSidebar />
-          <main className="flex-1 p-6 md:p-8 ml-0 md:ml-64 min-h-screen">
-            {children}
-          </main>
-        </div>
+        <BrandingProvider>
+          <div className="min-h-screen bg-bg flex">
+            <AdminSidebar />
+            <main className="flex-1 p-6 md:p-8 ml-0 md:ml-64 min-h-screen">
+              {children}
+            </main>
+          </div>
+        </BrandingProvider>
       </AdminAuthGuard>
     </SessionProvider>
   );
